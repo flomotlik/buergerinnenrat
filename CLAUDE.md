@@ -4,14 +4,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Projekt in einem Satz
 
-Machbarkeitsstudie + Produktplanung für eine **browser-native, backend-lose Sortition-Web-App** zur stratifizierten Zufallsauswahl von Teilnehmenden für Bürgerräte (Deutschland/Österreich). Aktuell sind nur Planungsdokumente hier — noch kein Code.
+Browser-native, backend-lose Sortition-Web-App für stratifizierte Zufallsauswahl in Bürgerräten (Deutschland/Österreich). **Iteration 1 ist gebaut**, Engine B (Pyodide) bleibt für Iteration 2.
 
-## Aktueller Stand (2026-04-24)
+## Aktueller Stand (2026-04-24, post-Iteration-1)
 
-- Der ursprüngliche Recherche-Bogen zu "Bürgerrat auf adhocracy+" hat ergeben: adhocracy+ deckt nur die Deliberation, das Los-/Einladungsverfahren fehlt. Siehe `research/`.
-- Das daraus abgeleitete Produktkonzept "browser-native Sortition-App" wurde in fünf Fachreports + einem Masterplan ausgearbeitet (`sortition-tool/00-masterplan.md`).
-- Der Masterplan **v1** wurde von drei externen LLMs (Claude Opus 4.7, OpenAI Codex gpt-5.4, Google Gemini 3 Pro Preview) reviewed. Ergebnis: **2× FAIL, 1× WARN** — nicht freigabefähig. Die Reviews liegen in `reviews/`.
-- Die Konsolidierung der Reviews mit priorisiertem Änderungs-Backlog (P0/P1/P2, 16 Items) liegt in `sortition-tool/06-review-consolidation.md`. Das ist das aktuellste Dokument und der Einstiegspunkt.
+- Iteration 1 in 25 Issues aus `.issues/` zerlegt, alle bis auf Track 4 (#12-#14, Engine B) und #09 (Engine-A property tests) abgearbeitet. Archive unter `.issues/archived/`.
+- **App läuft End-to-End im Browser**: CSV-Import → Quoten → Engine A (TS+highs-js, Maximin-Heuristik) → Ergebnis-View → Audit-Export (Ed25519/ECDSA). Smoke-Test in Chromium und Firefox grün.
+- **Daten-Vergleich Engine A vs Reference C** (native Python, full Maximin) liegt vor: `docs/quality-comparison-iteration-1.md`. Engine A 5–28× schneller, 15–17 % schlechteres min π.
+- **Findings als Input für Masterplan v2**: `docs/iteration-1-findings.md`.
+- Der Masterplan **v1** war von drei externen LLMs reviewed (FAIL, FAIL, WARN). Konsolidierung in `sortition-tool/06-review-consolidation.md`. Iteration 1 hat einen Teil der P0/P1-Items beantwortet, der Rest ist in den Findings dokumentiert.
 
 ## Wenn du hier einsteigst — lies in dieser Reihenfolge
 
