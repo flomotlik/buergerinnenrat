@@ -1,0 +1,23 @@
+{
+  "name": "sortition-iteration-1",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@9.12.3",
+  "license": "GPL-3.0-or-later",
+  "description": "Browser-native sortition tool (Iteration 1)",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "pnpm --filter @sortition/web dev",
+    "build": "pnpm --filter @sortition/web build",
+    "test": "pnpm --filter @sortition/web test",
+    "test:e2e": "pnpm --filter @sortition/web test:e2e",
+    "lint": "pnpm --filter @sortition/web lint",
+    "typecheck": "pnpm --filter @sortition/web typecheck"
+  },
+  "devDependencies": {
+    "typescript": "5.6.3"
+  }
+}
