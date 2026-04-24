@@ -1,0 +1,3014 @@
+{
+  "instance_id": "sf_b_20",
+  "source": "Flanigan et al. 2021 (Nature) \u2014 citizensassemblies-replication, reference_output/",
+  "format": "quantile_curve",
+  "note": "Aggregated quantile curves of selection probability per algorithm. Not per-person marginals \u2014 those were not released for privacy reasons. Use these to overlay engine output CDFs in the comparison report (#20).",
+  "curves": {
+    "Legacy": [
+      {
+        "percentile": 0.0,
+        "probability": 0.0004
+      },
+      {
+        "percentile": 0.4,
+        "probability": 0.0004
+      },
+      {
+        "percentile": 0.8,
+        "probability": 0.0004
+      },
+      {
+        "percentile": 1.2,
+        "probability": 0.0007
+      },
+      {
+        "percentile": 1.6,
+        "probability": 0.0007
+      },
+      {
+        "percentile": 2.0,
+        "probability": 0.0007
+      },
+      {
+        "percentile": 2.4,
+        "probability": 0.0008
+      },
+      {
+        "percentile": 2.8000000000000003,
+        "probability": 0.001
+      },
+      {
+        "percentile": 3.2,
+        "probability": 0.0025
+      },
+      {
+        "percentile": 3.5999999999999996,
+        "probability": 0.0025
+      },
+      {
+        "percentile": 4.0,
+        "probability": 0.0026
+      },
+      {
+        "percentile": 4.3999999999999995,
+        "probability": 0.003
+      },
+      {
+        "percentile": 4.8,
+        "probability": 0.003
+      },
+      {
+        "percentile": 5.2,
+        "probability": 0.0031
+      },
+      {
+        "percentile": 5.6000000000000005,
+        "probability": 0.0031
+      },
+      {
+        "percentile": 6.0,
+        "probability": 0.0032
+      },
+      {
+        "percentile": 6.4,
+        "probability": 0.0032
+      },
+      {
+        "percentile": 6.800000000000001,
+        "probability": 0.0033
+      },
+      {
+        "percentile": 7.199999999999999,
+        "probability": 0.0034
+      },
+      {
+        "percentile": 7.6,
+        "probability": 0.0034
+      },
+      {
+        "percentile": 8.0,
+        "probability": 0.0034
+      },
+      {
+        "percentile": 8.4,
+        "probability": 0.0035
+      },
+      {
+        "percentile": 8.799999999999999,
+        "probability": 0.0036
+      },
+      {
+        "percentile": 9.2,
+        "probability": 0.0037
+      },
+      {
+        "percentile": 9.6,
+        "probability": 0.0037
+      },
+      {
+        "percentile": 10.0,
+        "probability": 0.0037
+      },
+      {
+        "percentile": 10.4,
+        "probability": 0.0038
+      },
+      {
+        "percentile": 10.8,
+        "probability": 0.0038
+      },
+      {
+        "percentile": 11.200000000000001,
+        "probability": 0.0039
+      },
+      {
+        "percentile": 11.600000000000001,
+        "probability": 0.0039
+      },
+      {
+        "percentile": 12.0,
+        "probability": 0.0041
+      },
+      {
+        "percentile": 12.4,
+        "probability": 0.0041
+      },
+      {
+        "percentile": 12.8,
+        "probability": 0.0043
+      },
+      {
+        "percentile": 13.200000000000001,
+        "probability": 0.0044
+      },
+      {
+        "percentile": 13.600000000000001,
+        "probability": 0.0044
+      },
+      {
+        "percentile": 14.000000000000002,
+        "probability": 0.0045
+      },
+      {
+        "percentile": 14.399999999999999,
+        "probability": 0.0053
+      },
+      {
+        "percentile": 14.799999999999999,
+        "probability": 0.0067
+      },
+      {
+        "percentile": 15.2,
+        "probability": 0.0071
+      },
+      {
+        "percentile": 15.6,
+        "probability": 0.0074
+      },
+      {
+        "percentile": 16.0,
+        "probability": 0.008
+      },
+      {
+        "percentile": 16.400000000000002,
+        "probability": 0.0099
+      },
+      {
+        "percentile": 16.8,
+        "probability": 0.0102
+      },
+      {
+        "percentile": 17.2,
+        "probability": 0.0121
+      },
+      {
+        "percentile": 17.599999999999998,
+        "probability": 0.0132
+      },
+      {
+        "percentile": 18.0,
+        "probability": 0.0139
+      },
+      {
+        "percentile": 18.4,
+        "probability": 0.0139
+      },
+      {
+        "percentile": 18.8,
+        "probability": 0.0142
+      },
+      {
+        "percentile": 19.2,
+        "probability": 0.0142
+      },
+      {
+        "percentile": 19.6,
+        "probability": 0.0144
+      },
+      {
+        "percentile": 20.0,
+        "probability": 0.0145
+      },
+      {
+        "percentile": 20.4,
+        "probability": 0.0145
+      },
+      {
+        "percentile": 20.8,
+        "probability": 0.0146
+      },
+      {
+        "percentile": 21.2,
+        "probability": 0.0146
+      },
+      {
+        "percentile": 21.6,
+        "probability": 0.0147
+      },
+      {
+        "percentile": 22.0,
+        "probability": 0.0148
+      },
+      {
+        "percentile": 22.400000000000002,
+        "probability": 0.0148
+      },
+      {
+        "percentile": 22.8,
+        "probability": 0.0148
+      },
+      {
+        "percentile": 23.200000000000003,
+        "probability": 0.0149
+      },
+      {
+        "percentile": 23.599999999999998,
+        "probability": 0.0152
+      },
+      {
+        "percentile": 24.0,
+        "probability": 0.0153
+      },
+      {
+        "percentile": 24.4,
+        "probability": 0.0154
+      },
+      {
+        "percentile": 24.8,
+        "probability": 0.0154
+      },
+      {
+        "percentile": 25.2,
+        "probability": 0.0155
+      },
+      {
+        "percentile": 25.6,
+        "probability": 0.0155
+      },
+      {
+        "percentile": 26.0,
+        "probability": 0.0157
+      },
+      {
+        "percentile": 26.400000000000002,
+        "probability": 0.016
+      },
+      {
+        "percentile": 26.8,
+        "probability": 0.0163
+      },
+      {
+        "percentile": 27.200000000000003,
+        "probability": 0.0165
+      },
+      {
+        "percentile": 27.6,
+        "probability": 0.0167
+      },
+      {
+        "percentile": 28.000000000000004,
+        "probability": 0.0169
+      },
+      {
+        "percentile": 28.4,
+        "probability": 0.0171
+      },
+      {
+        "percentile": 28.799999999999997,
+        "probability": 0.0178
+      },
+      {
+        "percentile": 29.2,
+        "probability": 0.0182
+      },
+      {
+        "percentile": 29.599999999999998,
+        "probability": 0.0217
+      },
+      {
+        "percentile": 30.0,
+        "probability": 0.0225
+      },
+      {
+        "percentile": 30.4,
+        "probability": 0.0225
+      },
+      {
+        "percentile": 30.8,
+        "probability": 0.0233
+      },
+      {
+        "percentile": 31.2,
+        "probability": 0.0233
+      },
+      {
+        "percentile": 31.6,
+        "probability": 0.0234
+      },
+      {
+        "percentile": 32.0,
+        "probability": 0.0234
+      },
+      {
+        "percentile": 32.4,
+        "probability": 0.024
+      },
+      {
+        "percentile": 32.800000000000004,
+        "probability": 0.0243
+      },
+      {
+        "percentile": 33.2,
+        "probability": 0.0248
+      },
+      {
+        "percentile": 33.6,
+        "probability": 0.0254
+      },
+      {
+        "percentile": 34.0,
+        "probability": 0.0257
+      },
+      {
+        "percentile": 34.4,
+        "probability": 0.0259
+      },
+      {
+        "percentile": 34.8,
+        "probability": 0.0264
+      },
+      {
+        "percentile": 35.199999999999996,
+        "probability": 0.027
+      },
+      {
+        "percentile": 35.6,
+        "probability": 0.0275
+      },
+      {
+        "percentile": 36.0,
+        "probability": 0.0277
+      },
+      {
+        "percentile": 36.4,
+        "probability": 0.0286
+      },
+      {
+        "percentile": 36.8,
+        "probability": 0.0293
+      },
+      {
+        "percentile": 37.2,
+        "probability": 0.0293
+      },
+      {
+        "percentile": 37.6,
+        "probability": 0.0299
+      },
+      {
+        "percentile": 38.0,
+        "probability": 0.0305
+      },
+      {
+        "percentile": 38.4,
+        "probability": 0.0315
+      },
+      {
+        "percentile": 38.800000000000004,
+        "probability": 0.0316
+      },
+      {
+        "percentile": 39.2,
+        "probability": 0.0317
+      },
+      {
+        "percentile": 39.6,
+        "probability": 0.0318
+      },
+      {
+        "percentile": 40.0,
+        "probability": 0.0323
+      },
+      {
+        "percentile": 40.400000000000006,
+        "probability": 0.0341
+      },
+      {
+        "percentile": 40.8,
+        "probability": 0.0354
+      },
+      {
+        "percentile": 41.199999999999996,
+        "probability": 0.0361
+      },
+      {
+        "percentile": 41.6,
+        "probability": 0.0366
+      },
+      {
+        "percentile": 42.0,
+        "probability": 0.037
+      },
+      {
+        "percentile": 42.4,
+        "probability": 0.0372
+      },
+      {
+        "percentile": 42.8,
+        "probability": 0.0382
+      },
+      {
+        "percentile": 43.2,
+        "probability": 0.0389
+      },
+      {
+        "percentile": 43.6,
+        "probability": 0.0391
+      },
+      {
+        "percentile": 44.0,
+        "probability": 0.04
+      },
+      {
+        "percentile": 44.4,
+        "probability": 0.04
+      },
+      {
+        "percentile": 44.800000000000004,
+        "probability": 0.0403
+      },
+      {
+        "percentile": 45.2,
+        "probability": 0.0403
+      },
+      {
+        "percentile": 45.6,
+        "probability": 0.0412
+      },
+      {
+        "percentile": 46.0,
+        "probability": 0.0413
+      },
+      {
+        "percentile": 46.400000000000006,
+        "probability": 0.0417
+      },
+      {
+        "percentile": 46.800000000000004,
+        "probability": 0.042
+      },
+      {
+        "percentile": 47.199999999999996,
+        "probability": 0.0425
+      },
+      {
+        "percentile": 47.599999999999994,
+        "probability": 0.0425
+      },
+      {
+        "percentile": 48.0,
+        "probability": 0.0425
+      },
+      {
+        "percentile": 48.4,
+        "probability": 0.0429
+      },
+      {
+        "percentile": 48.8,
+        "probability": 0.0462
+      },
+      {
+        "percentile": 49.2,
+        "probability": 0.0463
+      },
+      {
+        "percentile": 49.6,
+        "probability": 0.0472
+      },
+      {
+        "percentile": 50.0,
+        "probability": 0.0477
+      },
+      {
+        "percentile": 50.4,
+        "probability": 0.0482
+      },
+      {
+        "percentile": 50.8,
+        "probability": 0.0484
+      },
+      {
+        "percentile": 51.2,
+        "probability": 0.0486
+      },
+      {
+        "percentile": 51.6,
+        "probability": 0.0502
+      },
+      {
+        "percentile": 52.0,
+        "probability": 0.0505
+      },
+      {
+        "percentile": 52.400000000000006,
+        "probability": 0.0513
+      },
+      {
+        "percentile": 52.800000000000004,
+        "probability": 0.0514
+      },
+      {
+        "percentile": 53.2,
+        "probability": 0.0515
+      },
+      {
+        "percentile": 53.6,
+        "probability": 0.0522
+      },
+      {
+        "percentile": 54.0,
+        "probability": 0.0523
+      },
+      {
+        "percentile": 54.400000000000006,
+        "probability": 0.0531
+      },
+      {
+        "percentile": 54.800000000000004,
+        "probability": 0.0535
+      },
+      {
+        "percentile": 55.2,
+        "probability": 0.0538
+      },
+      {
+        "percentile": 55.60000000000001,
+        "probability": 0.0539
+      },
+      {
+        "percentile": 56.00000000000001,
+        "probability": 0.054
+      },
+      {
+        "percentile": 56.39999999999999,
+        "probability": 0.054
+      },
+      {
+        "percentile": 56.8,
+        "probability": 0.0542
+      },
+      {
+        "percentile": 57.199999999999996,
+        "probability": 0.055
+      },
+      {
+        "percentile": 57.599999999999994,
+        "probability": 0.0552
+      },
+      {
+        "percentile": 57.99999999999999,
+        "probability": 0.0556
+      },
+      {
+        "percentile": 58.4,
+        "probability": 0.0557
+      },
+      {
+        "percentile": 58.8,
+        "probability": 0.0558
+      },
+      {
+        "percentile": 59.199999999999996,
+        "probability": 0.0564
+      },
+      {
+        "percentile": 59.599999999999994,
+        "probability": 0.057
+      },
+      {
+        "percentile": 60.0,
+        "probability": 0.0577
+      },
+      {
+        "percentile": 60.4,
+        "probability": 0.0582
+      },
+      {
+        "percentile": 60.8,
+        "probability": 0.0587
+      },
+      {
+        "percentile": 61.199999999999996,
+        "probability": 0.0594
+      },
+      {
+        "percentile": 61.6,
+        "probability": 0.0597
+      },
+      {
+        "percentile": 62.0,
+        "probability": 0.0598
+      },
+      {
+        "percentile": 62.4,
+        "probability": 0.0599
+      },
+      {
+        "percentile": 62.8,
+        "probability": 0.06
+      },
+      {
+        "percentile": 63.2,
+        "probability": 0.06
+      },
+      {
+        "percentile": 63.6,
+        "probability": 0.0601
+      },
+      {
+        "percentile": 64.0,
+        "probability": 0.0603
+      },
+      {
+        "percentile": 64.4,
+        "probability": 0.0613
+      },
+      {
+        "percentile": 64.8,
+        "probability": 0.0613
+      },
+      {
+        "percentile": 65.2,
+        "probability": 0.062
+      },
+      {
+        "percentile": 65.60000000000001,
+        "probability": 0.0625
+      },
+      {
+        "percentile": 66.0,
+        "probability": 0.063
+      },
+      {
+        "percentile": 66.4,
+        "probability": 0.0639
+      },
+      {
+        "percentile": 66.8,
+        "probability": 0.0639
+      },
+      {
+        "percentile": 67.2,
+        "probability": 0.064
+      },
+      {
+        "percentile": 67.60000000000001,
+        "probability": 0.0645
+      },
+      {
+        "percentile": 68.0,
+        "probability": 0.0663
+      },
+      {
+        "percentile": 68.4,
+        "probability": 0.0668
+      },
+      {
+        "percentile": 68.8,
+        "probability": 0.0671
+      },
+      {
+        "percentile": 69.19999999999999,
+        "probability": 0.0689
+      },
+      {
+        "percentile": 69.6,
+        "probability": 0.0707
+      },
+      {
+        "percentile": 70.0,
+        "probability": 0.0739
+      },
+      {
+        "percentile": 70.39999999999999,
+        "probability": 0.0746
+      },
+      {
+        "percentile": 70.8,
+        "probability": 0.0755
+      },
+      {
+        "percentile": 71.2,
+        "probability": 0.0764
+      },
+      {
+        "percentile": 71.6,
+        "probability": 0.077
+      },
+      {
+        "percentile": 72.0,
+        "probability": 0.077
+      },
+      {
+        "percentile": 72.39999999999999,
+        "probability": 0.078
+      },
+      {
+        "percentile": 72.8,
+        "probability": 0.0838
+      },
+      {
+        "percentile": 73.2,
+        "probability": 0.0865
+      },
+      {
+        "percentile": 73.6,
+        "probability": 0.0867
+      },
+      {
+        "percentile": 74.0,
+        "probability": 0.088
+      },
+      {
+        "percentile": 74.4,
+        "probability": 0.0884
+      },
+      {
+        "percentile": 74.8,
+        "probability": 0.0885
+      },
+      {
+        "percentile": 75.2,
+        "probability": 0.0901
+      },
+      {
+        "percentile": 75.6,
+        "probability": 0.0911
+      },
+      {
+        "percentile": 76.0,
+        "probability": 0.0915
+      },
+      {
+        "percentile": 76.4,
+        "probability": 0.0917
+      },
+      {
+        "percentile": 76.8,
+        "probability": 0.0925
+      },
+      {
+        "percentile": 77.2,
+        "probability": 0.0977
+      },
+      {
+        "percentile": 77.60000000000001,
+        "probability": 0.0995
+      },
+      {
+        "percentile": 78.0,
+        "probability": 0.1013
+      },
+      {
+        "percentile": 78.4,
+        "probability": 0.1016
+      },
+      {
+        "percentile": 78.8,
+        "probability": 0.1036
+      },
+      {
+        "percentile": 79.2,
+        "probability": 0.1052
+      },
+      {
+        "percentile": 79.60000000000001,
+        "probability": 0.1053
+      },
+      {
+        "percentile": 80.0,
+        "probability": 0.112
+      },
+      {
+        "percentile": 80.4,
+        "probability": 0.1121
+      },
+      {
+        "percentile": 80.80000000000001,
+        "probability": 0.1121
+      },
+      {
+        "percentile": 81.2,
+        "probability": 0.1123
+      },
+      {
+        "percentile": 81.6,
+        "probability": 0.1136
+      },
+      {
+        "percentile": 82.0,
+        "probability": 0.1139
+      },
+      {
+        "percentile": 82.39999999999999,
+        "probability": 0.1223
+      },
+      {
+        "percentile": 82.8,
+        "probability": 0.1233
+      },
+      {
+        "percentile": 83.2,
+        "probability": 0.1245
+      },
+      {
+        "percentile": 83.6,
+        "probability": 0.1344
+      },
+      {
+        "percentile": 84.0,
+        "probability": 0.1348
+      },
+      {
+        "percentile": 84.39999999999999,
+        "probability": 0.1369
+      },
+      {
+        "percentile": 84.8,
+        "probability": 0.138
+      },
+      {
+        "percentile": 85.2,
+        "probability": 0.1388
+      },
+      {
+        "percentile": 85.6,
+        "probability": 0.1402
+      },
+      {
+        "percentile": 86.0,
+        "probability": 0.1406
+      },
+      {
+        "percentile": 86.4,
+        "probability": 0.1418
+      },
+      {
+        "percentile": 86.8,
+        "probability": 0.1444
+      },
+      {
+        "percentile": 87.2,
+        "probability": 0.146
+      },
+      {
+        "percentile": 87.6,
+        "probability": 0.1635
+      },
+      {
+        "percentile": 88.0,
+        "probability": 0.1639
+      },
+      {
+        "percentile": 88.4,
+        "probability": 0.165
+      },
+      {
+        "percentile": 88.8,
+        "probability": 0.1742
+      },
+      {
+        "percentile": 89.2,
+        "probability": 0.18
+      },
+      {
+        "percentile": 89.60000000000001,
+        "probability": 0.1802
+      },
+      {
+        "percentile": 90.0,
+        "probability": 0.1997
+      },
+      {
+        "percentile": 90.4,
+        "probability": 0.2045
+      },
+      {
+        "percentile": 90.8,
+        "probability": 0.2057
+      },
+      {
+        "percentile": 91.2,
+        "probability": 0.2393
+      },
+      {
+        "percentile": 91.60000000000001,
+        "probability": 0.2506
+      },
+      {
+        "percentile": 92.0,
+        "probability": 0.2688
+      },
+      {
+        "percentile": 92.4,
+        "probability": 0.2695
+      },
+      {
+        "percentile": 92.80000000000001,
+        "probability": 0.2722
+      },
+      {
+        "percentile": 93.2,
+        "probability": 0.2889
+      },
+      {
+        "percentile": 93.60000000000001,
+        "probability": 0.2896
+      },
+      {
+        "percentile": 94.0,
+        "probability": 0.2923
+      },
+      {
+        "percentile": 94.39999999999999,
+        "probability": 0.3056
+      },
+      {
+        "percentile": 94.8,
+        "probability": 0.3091
+      },
+      {
+        "percentile": 95.19999999999999,
+        "probability": 0.3092
+      },
+      {
+        "percentile": 95.6,
+        "probability": 0.3137
+      },
+      {
+        "percentile": 96.0,
+        "probability": 0.3187
+      },
+      {
+        "percentile": 96.39999999999999,
+        "probability": 0.366
+      },
+      {
+        "percentile": 96.8,
+        "probability": 0.3749
+      },
+      {
+        "percentile": 97.2,
+        "probability": 0.3791
+      },
+      {
+        "percentile": 97.6,
+        "probability": 0.3802
+      },
+      {
+        "percentile": 98.0,
+        "probability": 0.3835
+      },
+      {
+        "percentile": 98.4,
+        "probability": 0.4102
+      },
+      {
+        "percentile": 98.8,
+        "probability": 0.4698
+      },
+      {
+        "percentile": 99.2,
+        "probability": 1.0
+      },
+      {
+        "percentile": 99.6,
+        "probability": 1.0
+      }
+    ],
+    "LexiMin": [
+      {
+        "percentile": 0.0,
+        "probability": 0.04011862729016502
+      },
+      {
+        "percentile": 0.4,
+        "probability": 0.04011873101539185
+      },
+      {
+        "percentile": 0.8,
+        "probability": 0.04011879883959967
+      },
+      {
+        "percentile": 1.2,
+        "probability": 0.04011880774680161
+      },
+      {
+        "percentile": 1.6,
+        "probability": 0.04011883119179435
+      },
+      {
+        "percentile": 2.0,
+        "probability": 0.04011887074741203
+      },
+      {
+        "percentile": 2.4,
+        "probability": 0.040118870747412036
+      },
+      {
+        "percentile": 2.8000000000000003,
+        "probability": 0.04011887074741214
+      },
+      {
+        "percentile": 3.2,
+        "probability": 0.04011887074741214
+      },
+      {
+        "percentile": 3.5999999999999996,
+        "probability": 0.04011887074741215
+      },
+      {
+        "percentile": 4.0,
+        "probability": 0.04011887074741217
+      },
+      {
+        "percentile": 4.3999999999999995,
+        "probability": 0.04011887074741217
+      },
+      {
+        "percentile": 4.8,
+        "probability": 0.04011887074741218
+      },
+      {
+        "percentile": 5.2,
+        "probability": 0.04011887074741219
+      },
+      {
+        "percentile": 5.6000000000000005,
+        "probability": 0.04011887074741219
+      },
+      {
+        "percentile": 6.0,
+        "probability": 0.040118870747412196
+      },
+      {
+        "percentile": 6.4,
+        "probability": 0.0401188707474122
+      },
+      {
+        "percentile": 6.800000000000001,
+        "probability": 0.0401188707474122
+      },
+      {
+        "percentile": 7.199999999999999,
+        "probability": 0.04011887074741221
+      },
+      {
+        "percentile": 7.6,
+        "probability": 0.040118870747412216
+      },
+      {
+        "percentile": 8.0,
+        "probability": 0.04011887074741222
+      },
+      {
+        "percentile": 8.4,
+        "probability": 0.04011887074741222
+      },
+      {
+        "percentile": 8.799999999999999,
+        "probability": 0.04011887074741224
+      },
+      {
+        "percentile": 9.2,
+        "probability": 0.04011887074741224
+      },
+      {
+        "percentile": 9.6,
+        "probability": 0.040118870747412244
+      },
+      {
+        "percentile": 10.0,
+        "probability": 0.040118870747412244
+      },
+      {
+        "percentile": 10.4,
+        "probability": 0.04011887074741225
+      },
+      {
+        "percentile": 10.8,
+        "probability": 0.04011887074741225
+      },
+      {
+        "percentile": 11.200000000000001,
+        "probability": 0.04011887074741225
+      },
+      {
+        "percentile": 11.600000000000001,
+        "probability": 0.04011887074741225
+      },
+      {
+        "percentile": 12.0,
+        "probability": 0.04011887074741225
+      },
+      {
+        "percentile": 12.4,
+        "probability": 0.04011887074741225
+      },
+      {
+        "percentile": 12.8,
+        "probability": 0.04011887074741225
+      },
+      {
+        "percentile": 13.200000000000001,
+        "probability": 0.04011887074741225
+      },
+      {
+        "percentile": 13.600000000000001,
+        "probability": 0.04011887074741226
+      },
+      {
+        "percentile": 14.000000000000002,
+        "probability": 0.04011887074741226
+      },
+      {
+        "percentile": 14.399999999999999,
+        "probability": 0.04011887074741226
+      },
+      {
+        "percentile": 14.799999999999999,
+        "probability": 0.04011887074741226
+      },
+      {
+        "percentile": 15.2,
+        "probability": 0.040118870747412265
+      },
+      {
+        "percentile": 15.6,
+        "probability": 0.040118870747412265
+      },
+      {
+        "percentile": 16.0,
+        "probability": 0.040118870747412265
+      },
+      {
+        "percentile": 16.400000000000002,
+        "probability": 0.040118870747412265
+      },
+      {
+        "percentile": 16.8,
+        "probability": 0.040118870747412265
+      },
+      {
+        "percentile": 17.2,
+        "probability": 0.040118870747412265
+      },
+      {
+        "percentile": 17.599999999999998,
+        "probability": 0.04011887074741227
+      },
+      {
+        "percentile": 18.0,
+        "probability": 0.04011887074741227
+      },
+      {
+        "percentile": 18.4,
+        "probability": 0.04011887074741227
+      },
+      {
+        "percentile": 18.8,
+        "probability": 0.04011887074741227
+      },
+      {
+        "percentile": 19.2,
+        "probability": 0.04011887074741227
+      },
+      {
+        "percentile": 19.6,
+        "probability": 0.04011887074741227
+      },
+      {
+        "percentile": 20.0,
+        "probability": 0.04011887074741227
+      },
+      {
+        "percentile": 20.4,
+        "probability": 0.04011887074741227
+      },
+      {
+        "percentile": 20.8,
+        "probability": 0.04011887074741228
+      },
+      {
+        "percentile": 21.2,
+        "probability": 0.04011887074741228
+      },
+      {
+        "percentile": 21.6,
+        "probability": 0.04011887074741228
+      },
+      {
+        "percentile": 22.0,
+        "probability": 0.04011887074741228
+      },
+      {
+        "percentile": 22.400000000000002,
+        "probability": 0.040118870747412286
+      },
+      {
+        "percentile": 22.8,
+        "probability": 0.040118870747412286
+      },
+      {
+        "percentile": 23.200000000000003,
+        "probability": 0.040118870747412286
+      },
+      {
+        "percentile": 23.599999999999998,
+        "probability": 0.040118870747412286
+      },
+      {
+        "percentile": 24.0,
+        "probability": 0.040118870747412286
+      },
+      {
+        "percentile": 24.4,
+        "probability": 0.040118870747412286
+      },
+      {
+        "percentile": 24.8,
+        "probability": 0.040118870747412286
+      },
+      {
+        "percentile": 25.2,
+        "probability": 0.040118870747412286
+      },
+      {
+        "percentile": 25.6,
+        "probability": 0.040118870747412286
+      },
+      {
+        "percentile": 26.0,
+        "probability": 0.040118870747412286
+      },
+      {
+        "percentile": 26.400000000000002,
+        "probability": 0.040118870747412286
+      },
+      {
+        "percentile": 26.8,
+        "probability": 0.040118870747412286
+      },
+      {
+        "percentile": 27.200000000000003,
+        "probability": 0.040118870747412286
+      },
+      {
+        "percentile": 27.6,
+        "probability": 0.040118870747412286
+      },
+      {
+        "percentile": 28.000000000000004,
+        "probability": 0.040118870747412286
+      },
+      {
+        "percentile": 28.4,
+        "probability": 0.040118870747412286
+      },
+      {
+        "percentile": 28.799999999999997,
+        "probability": 0.040118870747412286
+      },
+      {
+        "percentile": 29.2,
+        "probability": 0.040118870747412286
+      },
+      {
+        "percentile": 29.599999999999998,
+        "probability": 0.040118870747412286
+      },
+      {
+        "percentile": 30.0,
+        "probability": 0.040118870747412286
+      },
+      {
+        "percentile": 30.4,
+        "probability": 0.040118870747412286
+      },
+      {
+        "percentile": 30.8,
+        "probability": 0.040118870747412286
+      },
+      {
+        "percentile": 31.2,
+        "probability": 0.040118870747412286
+      },
+      {
+        "percentile": 31.6,
+        "probability": 0.040118870747412286
+      },
+      {
+        "percentile": 32.0,
+        "probability": 0.040118870747412286
+      },
+      {
+        "percentile": 32.4,
+        "probability": 0.04011887074741229
+      },
+      {
+        "percentile": 32.800000000000004,
+        "probability": 0.04011887074741229
+      },
+      {
+        "percentile": 33.2,
+        "probability": 0.04011887074741229
+      },
+      {
+        "percentile": 33.6,
+        "probability": 0.04011887074741229
+      },
+      {
+        "percentile": 34.0,
+        "probability": 0.04011887074741229
+      },
+      {
+        "percentile": 34.4,
+        "probability": 0.04011887074741229
+      },
+      {
+        "percentile": 34.8,
+        "probability": 0.04011887074741229
+      },
+      {
+        "percentile": 35.199999999999996,
+        "probability": 0.04011887074741229
+      },
+      {
+        "percentile": 35.6,
+        "probability": 0.04011887074741229
+      },
+      {
+        "percentile": 36.0,
+        "probability": 0.04011887074741229
+      },
+      {
+        "percentile": 36.4,
+        "probability": 0.04011887074741229
+      },
+      {
+        "percentile": 36.8,
+        "probability": 0.04011887074741229
+      },
+      {
+        "percentile": 37.2,
+        "probability": 0.04011887074741229
+      },
+      {
+        "percentile": 37.6,
+        "probability": 0.04011887074741229
+      },
+      {
+        "percentile": 38.0,
+        "probability": 0.04011887074741229
+      },
+      {
+        "percentile": 38.4,
+        "probability": 0.04011887074741229
+      },
+      {
+        "percentile": 38.800000000000004,
+        "probability": 0.04011887074741229
+      },
+      {
+        "percentile": 39.2,
+        "probability": 0.04011887074741229
+      },
+      {
+        "percentile": 39.6,
+        "probability": 0.04011887074741229
+      },
+      {
+        "percentile": 40.0,
+        "probability": 0.04011887074741229
+      },
+      {
+        "percentile": 40.400000000000006,
+        "probability": 0.04011887074741229
+      },
+      {
+        "percentile": 40.8,
+        "probability": 0.04011887074741229
+      },
+      {
+        "percentile": 41.199999999999996,
+        "probability": 0.04011887074741229
+      },
+      {
+        "percentile": 41.6,
+        "probability": 0.04011887074741229
+      },
+      {
+        "percentile": 42.0,
+        "probability": 0.04011887074741229
+      },
+      {
+        "percentile": 42.4,
+        "probability": 0.04011887074741229
+      },
+      {
+        "percentile": 42.8,
+        "probability": 0.04011887074741229
+      },
+      {
+        "percentile": 43.2,
+        "probability": 0.04011887074741229
+      },
+      {
+        "percentile": 43.6,
+        "probability": 0.04011887074741229
+      },
+      {
+        "percentile": 44.0,
+        "probability": 0.04011887074741229
+      },
+      {
+        "percentile": 44.4,
+        "probability": 0.04011887074741229
+      },
+      {
+        "percentile": 44.800000000000004,
+        "probability": 0.04011887074741229
+      },
+      {
+        "percentile": 45.2,
+        "probability": 0.04011887074741229
+      },
+      {
+        "percentile": 45.6,
+        "probability": 0.04011887074741229
+      },
+      {
+        "percentile": 46.0,
+        "probability": 0.04011887074741229
+      },
+      {
+        "percentile": 46.400000000000006,
+        "probability": 0.04011887074741229
+      },
+      {
+        "percentile": 46.800000000000004,
+        "probability": 0.04011887074741229
+      },
+      {
+        "percentile": 47.199999999999996,
+        "probability": 0.04011887074741229
+      },
+      {
+        "percentile": 47.599999999999994,
+        "probability": 0.04011887074741229
+      },
+      {
+        "percentile": 48.0,
+        "probability": 0.04011887074741229
+      },
+      {
+        "percentile": 48.4,
+        "probability": 0.04011887074741229
+      },
+      {
+        "percentile": 48.8,
+        "probability": 0.04011887074741229
+      },
+      {
+        "percentile": 49.2,
+        "probability": 0.04011887074741229
+      },
+      {
+        "percentile": 49.6,
+        "probability": 0.04011887074741229
+      },
+      {
+        "percentile": 50.0,
+        "probability": 0.04011887074741229
+      },
+      {
+        "percentile": 50.4,
+        "probability": 0.04011887074741229
+      },
+      {
+        "percentile": 50.8,
+        "probability": 0.0401188707474123
+      },
+      {
+        "percentile": 51.2,
+        "probability": 0.0401188707474123
+      },
+      {
+        "percentile": 51.6,
+        "probability": 0.0401188707474123
+      },
+      {
+        "percentile": 52.0,
+        "probability": 0.0401188707474123
+      },
+      {
+        "percentile": 52.400000000000006,
+        "probability": 0.0401188707474123
+      },
+      {
+        "percentile": 52.800000000000004,
+        "probability": 0.0401188707474123
+      },
+      {
+        "percentile": 53.2,
+        "probability": 0.0401188707474123
+      },
+      {
+        "percentile": 53.6,
+        "probability": 0.0401188707474123
+      },
+      {
+        "percentile": 54.0,
+        "probability": 0.0401188707474123
+      },
+      {
+        "percentile": 54.400000000000006,
+        "probability": 0.0401188707474123
+      },
+      {
+        "percentile": 54.800000000000004,
+        "probability": 0.0401188707474123
+      },
+      {
+        "percentile": 55.2,
+        "probability": 0.0401188707474123
+      },
+      {
+        "percentile": 55.60000000000001,
+        "probability": 0.0401188707474123
+      },
+      {
+        "percentile": 56.00000000000001,
+        "probability": 0.0401188707474123
+      },
+      {
+        "percentile": 56.39999999999999,
+        "probability": 0.0401188707474123
+      },
+      {
+        "percentile": 56.8,
+        "probability": 0.0401188707474123
+      },
+      {
+        "percentile": 57.199999999999996,
+        "probability": 0.0401188707474123
+      },
+      {
+        "percentile": 57.599999999999994,
+        "probability": 0.0401188707474123
+      },
+      {
+        "percentile": 57.99999999999999,
+        "probability": 0.0401188707474123
+      },
+      {
+        "percentile": 58.4,
+        "probability": 0.0401188707474123
+      },
+      {
+        "percentile": 58.8,
+        "probability": 0.0401188707474123
+      },
+      {
+        "percentile": 59.199999999999996,
+        "probability": 0.0401188707474123
+      },
+      {
+        "percentile": 59.599999999999994,
+        "probability": 0.0401188707474123
+      },
+      {
+        "percentile": 60.0,
+        "probability": 0.0401188707474123
+      },
+      {
+        "percentile": 60.4,
+        "probability": 0.0401188707474123
+      },
+      {
+        "percentile": 60.8,
+        "probability": 0.04011887074741231
+      },
+      {
+        "percentile": 61.199999999999996,
+        "probability": 0.04011887074741231
+      },
+      {
+        "percentile": 61.6,
+        "probability": 0.04011887074741231
+      },
+      {
+        "percentile": 62.0,
+        "probability": 0.04011887074741231
+      },
+      {
+        "percentile": 62.4,
+        "probability": 0.04011887074741231
+      },
+      {
+        "percentile": 62.8,
+        "probability": 0.04011887074741231
+      },
+      {
+        "percentile": 63.2,
+        "probability": 0.04011887074741231
+      },
+      {
+        "percentile": 63.6,
+        "probability": 0.04011887074741231
+      },
+      {
+        "percentile": 64.0,
+        "probability": 0.04011887074741231
+      },
+      {
+        "percentile": 64.4,
+        "probability": 0.04011887074741231
+      },
+      {
+        "percentile": 64.8,
+        "probability": 0.04011887074741231
+      },
+      {
+        "percentile": 65.2,
+        "probability": 0.04011887074741231
+      },
+      {
+        "percentile": 65.60000000000001,
+        "probability": 0.040118870747412314
+      },
+      {
+        "percentile": 66.0,
+        "probability": 0.040118870747412314
+      },
+      {
+        "percentile": 66.4,
+        "probability": 0.040118870747412314
+      },
+      {
+        "percentile": 66.8,
+        "probability": 0.040118870747412314
+      },
+      {
+        "percentile": 67.2,
+        "probability": 0.040118870747412314
+      },
+      {
+        "percentile": 67.60000000000001,
+        "probability": 0.040118870747412314
+      },
+      {
+        "percentile": 68.0,
+        "probability": 0.040118870747412314
+      },
+      {
+        "percentile": 68.4,
+        "probability": 0.04011887074741232
+      },
+      {
+        "percentile": 68.8,
+        "probability": 0.04011887074741232
+      },
+      {
+        "percentile": 69.19999999999999,
+        "probability": 0.04011887074741232
+      },
+      {
+        "percentile": 69.6,
+        "probability": 0.04011887074741232
+      },
+      {
+        "percentile": 70.0,
+        "probability": 0.04011887074741232
+      },
+      {
+        "percentile": 70.39999999999999,
+        "probability": 0.04011887074741232
+      },
+      {
+        "percentile": 70.8,
+        "probability": 0.04011887074741232
+      },
+      {
+        "percentile": 71.2,
+        "probability": 0.04011887074741232
+      },
+      {
+        "percentile": 71.6,
+        "probability": 0.04011887074741233
+      },
+      {
+        "percentile": 72.0,
+        "probability": 0.04011887074741233
+      },
+      {
+        "percentile": 72.39999999999999,
+        "probability": 0.04011887074741233
+      },
+      {
+        "percentile": 72.8,
+        "probability": 0.04011887074741233
+      },
+      {
+        "percentile": 73.2,
+        "probability": 0.04011887074741233
+      },
+      {
+        "percentile": 73.6,
+        "probability": 0.040118870747412334
+      },
+      {
+        "percentile": 74.0,
+        "probability": 0.040118870747412334
+      },
+      {
+        "percentile": 74.4,
+        "probability": 0.040118870747412334
+      },
+      {
+        "percentile": 74.8,
+        "probability": 0.040118870747412334
+      },
+      {
+        "percentile": 75.2,
+        "probability": 0.04011887074741234
+      },
+      {
+        "percentile": 75.6,
+        "probability": 0.04011887074741235
+      },
+      {
+        "percentile": 76.0,
+        "probability": 0.040118870747412355
+      },
+      {
+        "percentile": 76.4,
+        "probability": 0.040118870747412355
+      },
+      {
+        "percentile": 76.8,
+        "probability": 0.04011887074741236
+      },
+      {
+        "percentile": 77.2,
+        "probability": 0.04011887074741236
+      },
+      {
+        "percentile": 77.60000000000001,
+        "probability": 0.04011887074741237
+      },
+      {
+        "percentile": 78.0,
+        "probability": 0.04011887074741237
+      },
+      {
+        "percentile": 78.4,
+        "probability": 0.040118870747412376
+      },
+      {
+        "percentile": 78.8,
+        "probability": 0.040118870747412376
+      },
+      {
+        "percentile": 79.2,
+        "probability": 0.040118870747412376
+      },
+      {
+        "percentile": 79.60000000000001,
+        "probability": 0.040118870747412376
+      },
+      {
+        "percentile": 80.0,
+        "probability": 0.040118870747412376
+      },
+      {
+        "percentile": 80.4,
+        "probability": 0.04011887074741238
+      },
+      {
+        "percentile": 80.80000000000001,
+        "probability": 0.04011887074741238
+      },
+      {
+        "percentile": 81.2,
+        "probability": 0.04011887074741239
+      },
+      {
+        "percentile": 81.6,
+        "probability": 0.04011887074741239
+      },
+      {
+        "percentile": 82.0,
+        "probability": 0.04011887074741239
+      },
+      {
+        "percentile": 82.39999999999999,
+        "probability": 0.040118870747412404
+      },
+      {
+        "percentile": 82.8,
+        "probability": 0.04011887074741241
+      },
+      {
+        "percentile": 83.2,
+        "probability": 0.04011887074741242
+      },
+      {
+        "percentile": 83.6,
+        "probability": 0.04011887074741242
+      },
+      {
+        "percentile": 84.0,
+        "probability": 0.040118870747412425
+      },
+      {
+        "percentile": 84.39999999999999,
+        "probability": 0.040118870747412425
+      },
+      {
+        "percentile": 84.8,
+        "probability": 0.04011887074741244
+      },
+      {
+        "percentile": 85.2,
+        "probability": 0.040118870747412466
+      },
+      {
+        "percentile": 85.6,
+        "probability": 0.04011887074741249
+      },
+      {
+        "percentile": 86.0,
+        "probability": 0.040118870747412494
+      },
+      {
+        "percentile": 86.4,
+        "probability": 0.0401188707474125
+      },
+      {
+        "percentile": 86.8,
+        "probability": 0.04011887074741251
+      },
+      {
+        "percentile": 87.2,
+        "probability": 0.04011887790972537
+      },
+      {
+        "percentile": 87.6,
+        "probability": 0.04011892438259179
+      },
+      {
+        "percentile": 88.0,
+        "probability": 0.04011893682592303
+      },
+      {
+        "percentile": 88.4,
+        "probability": 0.040118985872398115
+      },
+      {
+        "percentile": 88.8,
+        "probability": 0.04011906057453228
+      },
+      {
+        "percentile": 89.2,
+        "probability": 0.04148092689803545
+      },
+      {
+        "percentile": 89.60000000000001,
+        "probability": 0.041480926898035536
+      },
+      {
+        "percentile": 90.0,
+        "probability": 0.04148092689803554
+      },
+      {
+        "percentile": 90.4,
+        "probability": 0.04148092689803555
+      },
+      {
+        "percentile": 90.8,
+        "probability": 0.04148092689803555
+      },
+      {
+        "percentile": 91.2,
+        "probability": 0.041480926898035585
+      },
+      {
+        "percentile": 91.60000000000001,
+        "probability": 0.04148092689803563
+      },
+      {
+        "percentile": 92.0,
+        "probability": 0.04148092689803564
+      },
+      {
+        "percentile": 92.4,
+        "probability": 0.04148092689803565
+      },
+      {
+        "percentile": 92.80000000000001,
+        "probability": 0.041481176105835356
+      },
+      {
+        "percentile": 93.2,
+        "probability": 0.16815255393719045
+      },
+      {
+        "percentile": 93.60000000000001,
+        "probability": 0.258481922876337
+      },
+      {
+        "percentile": 94.0,
+        "probability": 0.25848192287633703
+      },
+      {
+        "percentile": 94.39999999999999,
+        "probability": 0.32568723438021346
+      },
+      {
+        "percentile": 94.8,
+        "probability": 0.3256872343802135
+      },
+      {
+        "percentile": 95.19999999999999,
+        "probability": 0.3968548754758797
+      },
+      {
+        "percentile": 95.6,
+        "probability": 0.41258053291737445
+      },
+      {
+        "percentile": 96.0,
+        "probability": 0.4233531333166263
+      },
+      {
+        "percentile": 96.39999999999999,
+        "probability": 0.7076213189645828
+      },
+      {
+        "percentile": 96.8,
+        "probability": 0.7076213850072788
+      },
+      {
+        "percentile": 97.2,
+        "probability": 0.7888807683262588
+      },
+      {
+        "percentile": 97.6,
+        "probability": 0.8812529779111564
+      },
+      {
+        "percentile": 98.0,
+        "probability": 0.9869984661064775
+      },
+      {
+        "percentile": 98.4,
+        "probability": 0.9970281044881835
+      },
+      {
+        "percentile": 98.8,
+        "probability": 0.9999999999999998
+      },
+      {
+        "percentile": 99.2,
+        "probability": 0.9999999999999998
+      },
+      {
+        "percentile": 99.6,
+        "probability": 0.9999999999999998
+      }
+    ],
+    "k/n": [
+      {
+        "percentile": 0.0,
+        "probability": 0.08
+      },
+      {
+        "percentile": 0.4,
+        "probability": 0.08
+      },
+      {
+        "percentile": 0.8,
+        "probability": 0.08
+      },
+      {
+        "percentile": 1.2,
+        "probability": 0.08
+      },
+      {
+        "percentile": 1.6,
+        "probability": 0.08
+      },
+      {
+        "percentile": 2.0,
+        "probability": 0.08
+      },
+      {
+        "percentile": 2.4,
+        "probability": 0.08
+      },
+      {
+        "percentile": 2.8000000000000003,
+        "probability": 0.08
+      },
+      {
+        "percentile": 3.2,
+        "probability": 0.08
+      },
+      {
+        "percentile": 3.5999999999999996,
+        "probability": 0.08
+      },
+      {
+        "percentile": 4.0,
+        "probability": 0.08
+      },
+      {
+        "percentile": 4.3999999999999995,
+        "probability": 0.08
+      },
+      {
+        "percentile": 4.8,
+        "probability": 0.08
+      },
+      {
+        "percentile": 5.2,
+        "probability": 0.08
+      },
+      {
+        "percentile": 5.6000000000000005,
+        "probability": 0.08
+      },
+      {
+        "percentile": 6.0,
+        "probability": 0.08
+      },
+      {
+        "percentile": 6.4,
+        "probability": 0.08
+      },
+      {
+        "percentile": 6.800000000000001,
+        "probability": 0.08
+      },
+      {
+        "percentile": 7.199999999999999,
+        "probability": 0.08
+      },
+      {
+        "percentile": 7.6,
+        "probability": 0.08
+      },
+      {
+        "percentile": 8.0,
+        "probability": 0.08
+      },
+      {
+        "percentile": 8.4,
+        "probability": 0.08
+      },
+      {
+        "percentile": 8.799999999999999,
+        "probability": 0.08
+      },
+      {
+        "percentile": 9.2,
+        "probability": 0.08
+      },
+      {
+        "percentile": 9.6,
+        "probability": 0.08
+      },
+      {
+        "percentile": 10.0,
+        "probability": 0.08
+      },
+      {
+        "percentile": 10.4,
+        "probability": 0.08
+      },
+      {
+        "percentile": 10.8,
+        "probability": 0.08
+      },
+      {
+        "percentile": 11.200000000000001,
+        "probability": 0.08
+      },
+      {
+        "percentile": 11.600000000000001,
+        "probability": 0.08
+      },
+      {
+        "percentile": 12.0,
+        "probability": 0.08
+      },
+      {
+        "percentile": 12.4,
+        "probability": 0.08
+      },
+      {
+        "percentile": 12.8,
+        "probability": 0.08
+      },
+      {
+        "percentile": 13.200000000000001,
+        "probability": 0.08
+      },
+      {
+        "percentile": 13.600000000000001,
+        "probability": 0.08
+      },
+      {
+        "percentile": 14.000000000000002,
+        "probability": 0.08
+      },
+      {
+        "percentile": 14.399999999999999,
+        "probability": 0.08
+      },
+      {
+        "percentile": 14.799999999999999,
+        "probability": 0.08
+      },
+      {
+        "percentile": 15.2,
+        "probability": 0.08
+      },
+      {
+        "percentile": 15.6,
+        "probability": 0.08
+      },
+      {
+        "percentile": 16.0,
+        "probability": 0.08
+      },
+      {
+        "percentile": 16.400000000000002,
+        "probability": 0.08
+      },
+      {
+        "percentile": 16.8,
+        "probability": 0.08
+      },
+      {
+        "percentile": 17.2,
+        "probability": 0.08
+      },
+      {
+        "percentile": 17.599999999999998,
+        "probability": 0.08
+      },
+      {
+        "percentile": 18.0,
+        "probability": 0.08
+      },
+      {
+        "percentile": 18.4,
+        "probability": 0.08
+      },
+      {
+        "percentile": 18.8,
+        "probability": 0.08
+      },
+      {
+        "percentile": 19.2,
+        "probability": 0.08
+      },
+      {
+        "percentile": 19.6,
+        "probability": 0.08
+      },
+      {
+        "percentile": 20.0,
+        "probability": 0.08
+      },
+      {
+        "percentile": 20.4,
+        "probability": 0.08
+      },
+      {
+        "percentile": 20.8,
+        "probability": 0.08
+      },
+      {
+        "percentile": 21.2,
+        "probability": 0.08
+      },
+      {
+        "percentile": 21.6,
+        "probability": 0.08
+      },
+      {
+        "percentile": 22.0,
+        "probability": 0.08
+      },
+      {
+        "percentile": 22.400000000000002,
+        "probability": 0.08
+      },
+      {
+        "percentile": 22.8,
+        "probability": 0.08
+      },
+      {
+        "percentile": 23.200000000000003,
+        "probability": 0.08
+      },
+      {
+        "percentile": 23.599999999999998,
+        "probability": 0.08
+      },
+      {
+        "percentile": 24.0,
+        "probability": 0.08
+      },
+      {
+        "percentile": 24.4,
+        "probability": 0.08
+      },
+      {
+        "percentile": 24.8,
+        "probability": 0.08
+      },
+      {
+        "percentile": 25.2,
+        "probability": 0.08
+      },
+      {
+        "percentile": 25.6,
+        "probability": 0.08
+      },
+      {
+        "percentile": 26.0,
+        "probability": 0.08
+      },
+      {
+        "percentile": 26.400000000000002,
+        "probability": 0.08
+      },
+      {
+        "percentile": 26.8,
+        "probability": 0.08
+      },
+      {
+        "percentile": 27.200000000000003,
+        "probability": 0.08
+      },
+      {
+        "percentile": 27.6,
+        "probability": 0.08
+      },
+      {
+        "percentile": 28.000000000000004,
+        "probability": 0.08
+      },
+      {
+        "percentile": 28.4,
+        "probability": 0.08
+      },
+      {
+        "percentile": 28.799999999999997,
+        "probability": 0.08
+      },
+      {
+        "percentile": 29.2,
+        "probability": 0.08
+      },
+      {
+        "percentile": 29.599999999999998,
+        "probability": 0.08
+      },
+      {
+        "percentile": 30.0,
+        "probability": 0.08
+      },
+      {
+        "percentile": 30.4,
+        "probability": 0.08
+      },
+      {
+        "percentile": 30.8,
+        "probability": 0.08
+      },
+      {
+        "percentile": 31.2,
+        "probability": 0.08
+      },
+      {
+        "percentile": 31.6,
+        "probability": 0.08
+      },
+      {
+        "percentile": 32.0,
+        "probability": 0.08
+      },
+      {
+        "percentile": 32.4,
+        "probability": 0.08
+      },
+      {
+        "percentile": 32.800000000000004,
+        "probability": 0.08
+      },
+      {
+        "percentile": 33.2,
+        "probability": 0.08
+      },
+      {
+        "percentile": 33.6,
+        "probability": 0.08
+      },
+      {
+        "percentile": 34.0,
+        "probability": 0.08
+      },
+      {
+        "percentile": 34.4,
+        "probability": 0.08
+      },
+      {
+        "percentile": 34.8,
+        "probability": 0.08
+      },
+      {
+        "percentile": 35.199999999999996,
+        "probability": 0.08
+      },
+      {
+        "percentile": 35.6,
+        "probability": 0.08
+      },
+      {
+        "percentile": 36.0,
+        "probability": 0.08
+      },
+      {
+        "percentile": 36.4,
+        "probability": 0.08
+      },
+      {
+        "percentile": 36.8,
+        "probability": 0.08
+      },
+      {
+        "percentile": 37.2,
+        "probability": 0.08
+      },
+      {
+        "percentile": 37.6,
+        "probability": 0.08
+      },
+      {
+        "percentile": 38.0,
+        "probability": 0.08
+      },
+      {
+        "percentile": 38.4,
+        "probability": 0.08
+      },
+      {
+        "percentile": 38.800000000000004,
+        "probability": 0.08
+      },
+      {
+        "percentile": 39.2,
+        "probability": 0.08
+      },
+      {
+        "percentile": 39.6,
+        "probability": 0.08
+      },
+      {
+        "percentile": 40.0,
+        "probability": 0.08
+      },
+      {
+        "percentile": 40.400000000000006,
+        "probability": 0.08
+      },
+      {
+        "percentile": 40.8,
+        "probability": 0.08
+      },
+      {
+        "percentile": 41.199999999999996,
+        "probability": 0.08
+      },
+      {
+        "percentile": 41.6,
+        "probability": 0.08
+      },
+      {
+        "percentile": 42.0,
+        "probability": 0.08
+      },
+      {
+        "percentile": 42.4,
+        "probability": 0.08
+      },
+      {
+        "percentile": 42.8,
+        "probability": 0.08
+      },
+      {
+        "percentile": 43.2,
+        "probability": 0.08
+      },
+      {
+        "percentile": 43.6,
+        "probability": 0.08
+      },
+      {
+        "percentile": 44.0,
+        "probability": 0.08
+      },
+      {
+        "percentile": 44.4,
+        "probability": 0.08
+      },
+      {
+        "percentile": 44.800000000000004,
+        "probability": 0.08
+      },
+      {
+        "percentile": 45.2,
+        "probability": 0.08
+      },
+      {
+        "percentile": 45.6,
+        "probability": 0.08
+      },
+      {
+        "percentile": 46.0,
+        "probability": 0.08
+      },
+      {
+        "percentile": 46.400000000000006,
+        "probability": 0.08
+      },
+      {
+        "percentile": 46.800000000000004,
+        "probability": 0.08
+      },
+      {
+        "percentile": 47.199999999999996,
+        "probability": 0.08
+      },
+      {
+        "percentile": 47.599999999999994,
+        "probability": 0.08
+      },
+      {
+        "percentile": 48.0,
+        "probability": 0.08
+      },
+      {
+        "percentile": 48.4,
+        "probability": 0.08
+      },
+      {
+        "percentile": 48.8,
+        "probability": 0.08
+      },
+      {
+        "percentile": 49.2,
+        "probability": 0.08
+      },
+      {
+        "percentile": 49.6,
+        "probability": 0.08
+      },
+      {
+        "percentile": 50.0,
+        "probability": 0.08
+      },
+      {
+        "percentile": 50.4,
+        "probability": 0.08
+      },
+      {
+        "percentile": 50.8,
+        "probability": 0.08
+      },
+      {
+        "percentile": 51.2,
+        "probability": 0.08
+      },
+      {
+        "percentile": 51.6,
+        "probability": 0.08
+      },
+      {
+        "percentile": 52.0,
+        "probability": 0.08
+      },
+      {
+        "percentile": 52.400000000000006,
+        "probability": 0.08
+      },
+      {
+        "percentile": 52.800000000000004,
+        "probability": 0.08
+      },
+      {
+        "percentile": 53.2,
+        "probability": 0.08
+      },
+      {
+        "percentile": 53.6,
+        "probability": 0.08
+      },
+      {
+        "percentile": 54.0,
+        "probability": 0.08
+      },
+      {
+        "percentile": 54.400000000000006,
+        "probability": 0.08
+      },
+      {
+        "percentile": 54.800000000000004,
+        "probability": 0.08
+      },
+      {
+        "percentile": 55.2,
+        "probability": 0.08
+      },
+      {
+        "percentile": 55.60000000000001,
+        "probability": 0.08
+      },
+      {
+        "percentile": 56.00000000000001,
+        "probability": 0.08
+      },
+      {
+        "percentile": 56.39999999999999,
+        "probability": 0.08
+      },
+      {
+        "percentile": 56.8,
+        "probability": 0.08
+      },
+      {
+        "percentile": 57.199999999999996,
+        "probability": 0.08
+      },
+      {
+        "percentile": 57.599999999999994,
+        "probability": 0.08
+      },
+      {
+        "percentile": 57.99999999999999,
+        "probability": 0.08
+      },
+      {
+        "percentile": 58.4,
+        "probability": 0.08
+      },
+      {
+        "percentile": 58.8,
+        "probability": 0.08
+      },
+      {
+        "percentile": 59.199999999999996,
+        "probability": 0.08
+      },
+      {
+        "percentile": 59.599999999999994,
+        "probability": 0.08
+      },
+      {
+        "percentile": 60.0,
+        "probability": 0.08
+      },
+      {
+        "percentile": 60.4,
+        "probability": 0.08
+      },
+      {
+        "percentile": 60.8,
+        "probability": 0.08
+      },
+      {
+        "percentile": 61.199999999999996,
+        "probability": 0.08
+      },
+      {
+        "percentile": 61.6,
+        "probability": 0.08
+      },
+      {
+        "percentile": 62.0,
+        "probability": 0.08
+      },
+      {
+        "percentile": 62.4,
+        "probability": 0.08
+      },
+      {
+        "percentile": 62.8,
+        "probability": 0.08
+      },
+      {
+        "percentile": 63.2,
+        "probability": 0.08
+      },
+      {
+        "percentile": 63.6,
+        "probability": 0.08
+      },
+      {
+        "percentile": 64.0,
+        "probability": 0.08
+      },
+      {
+        "percentile": 64.4,
+        "probability": 0.08
+      },
+      {
+        "percentile": 64.8,
+        "probability": 0.08
+      },
+      {
+        "percentile": 65.2,
+        "probability": 0.08
+      },
+      {
+        "percentile": 65.60000000000001,
+        "probability": 0.08
+      },
+      {
+        "percentile": 66.0,
+        "probability": 0.08
+      },
+      {
+        "percentile": 66.4,
+        "probability": 0.08
+      },
+      {
+        "percentile": 66.8,
+        "probability": 0.08
+      },
+      {
+        "percentile": 67.2,
+        "probability": 0.08
+      },
+      {
+        "percentile": 67.60000000000001,
+        "probability": 0.08
+      },
+      {
+        "percentile": 68.0,
+        "probability": 0.08
+      },
+      {
+        "percentile": 68.4,
+        "probability": 0.08
+      },
+      {
+        "percentile": 68.8,
+        "probability": 0.08
+      },
+      {
+        "percentile": 69.19999999999999,
+        "probability": 0.08
+      },
+      {
+        "percentile": 69.6,
+        "probability": 0.08
+      },
+      {
+        "percentile": 70.0,
+        "probability": 0.08
+      },
+      {
+        "percentile": 70.39999999999999,
+        "probability": 0.08
+      },
+      {
+        "percentile": 70.8,
+        "probability": 0.08
+      },
+      {
+        "percentile": 71.2,
+        "probability": 0.08
+      },
+      {
+        "percentile": 71.6,
+        "probability": 0.08
+      },
+      {
+        "percentile": 72.0,
+        "probability": 0.08
+      },
+      {
+        "percentile": 72.39999999999999,
+        "probability": 0.08
+      },
+      {
+        "percentile": 72.8,
+        "probability": 0.08
+      },
+      {
+        "percentile": 73.2,
+        "probability": 0.08
+      },
+      {
+        "percentile": 73.6,
+        "probability": 0.08
+      },
+      {
+        "percentile": 74.0,
+        "probability": 0.08
+      },
+      {
+        "percentile": 74.4,
+        "probability": 0.08
+      },
+      {
+        "percentile": 74.8,
+        "probability": 0.08
+      },
+      {
+        "percentile": 75.2,
+        "probability": 0.08
+      },
+      {
+        "percentile": 75.6,
+        "probability": 0.08
+      },
+      {
+        "percentile": 76.0,
+        "probability": 0.08
+      },
+      {
+        "percentile": 76.4,
+        "probability": 0.08
+      },
+      {
+        "percentile": 76.8,
+        "probability": 0.08
+      },
+      {
+        "percentile": 77.2,
+        "probability": 0.08
+      },
+      {
+        "percentile": 77.60000000000001,
+        "probability": 0.08
+      },
+      {
+        "percentile": 78.0,
+        "probability": 0.08
+      },
+      {
+        "percentile": 78.4,
+        "probability": 0.08
+      },
+      {
+        "percentile": 78.8,
+        "probability": 0.08
+      },
+      {
+        "percentile": 79.2,
+        "probability": 0.08
+      },
+      {
+        "percentile": 79.60000000000001,
+        "probability": 0.08
+      },
+      {
+        "percentile": 80.0,
+        "probability": 0.08
+      },
+      {
+        "percentile": 80.4,
+        "probability": 0.08
+      },
+      {
+        "percentile": 80.80000000000001,
+        "probability": 0.08
+      },
+      {
+        "percentile": 81.2,
+        "probability": 0.08
+      },
+      {
+        "percentile": 81.6,
+        "probability": 0.08
+      },
+      {
+        "percentile": 82.0,
+        "probability": 0.08
+      },
+      {
+        "percentile": 82.39999999999999,
+        "probability": 0.08
+      },
+      {
+        "percentile": 82.8,
+        "probability": 0.08
+      },
+      {
+        "percentile": 83.2,
+        "probability": 0.08
+      },
+      {
+        "percentile": 83.6,
+        "probability": 0.08
+      },
+      {
+        "percentile": 84.0,
+        "probability": 0.08
+      },
+      {
+        "percentile": 84.39999999999999,
+        "probability": 0.08
+      },
+      {
+        "percentile": 84.8,
+        "probability": 0.08
+      },
+      {
+        "percentile": 85.2,
+        "probability": 0.08
+      },
+      {
+        "percentile": 85.6,
+        "probability": 0.08
+      },
+      {
+        "percentile": 86.0,
+        "probability": 0.08
+      },
+      {
+        "percentile": 86.4,
+        "probability": 0.08
+      },
+      {
+        "percentile": 86.8,
+        "probability": 0.08
+      },
+      {
+        "percentile": 87.2,
+        "probability": 0.08
+      },
+      {
+        "percentile": 87.6,
+        "probability": 0.08
+      },
+      {
+        "percentile": 88.0,
+        "probability": 0.08
+      },
+      {
+        "percentile": 88.4,
+        "probability": 0.08
+      },
+      {
+        "percentile": 88.8,
+        "probability": 0.08
+      },
+      {
+        "percentile": 89.2,
+        "probability": 0.08
+      },
+      {
+        "percentile": 89.60000000000001,
+        "probability": 0.08
+      },
+      {
+        "percentile": 90.0,
+        "probability": 0.08
+      },
+      {
+        "percentile": 90.4,
+        "probability": 0.08
+      },
+      {
+        "percentile": 90.8,
+        "probability": 0.08
+      },
+      {
+        "percentile": 91.2,
+        "probability": 0.08
+      },
+      {
+        "percentile": 91.60000000000001,
+        "probability": 0.08
+      },
+      {
+        "percentile": 92.0,
+        "probability": 0.08
+      },
+      {
+        "percentile": 92.4,
+        "probability": 0.08
+      },
+      {
+        "percentile": 92.80000000000001,
+        "probability": 0.08
+      },
+      {
+        "percentile": 93.2,
+        "probability": 0.08
+      },
+      {
+        "percentile": 93.60000000000001,
+        "probability": 0.08
+      },
+      {
+        "percentile": 94.0,
+        "probability": 0.08
+      },
+      {
+        "percentile": 94.39999999999999,
+        "probability": 0.08
+      },
+      {
+        "percentile": 94.8,
+        "probability": 0.08
+      },
+      {
+        "percentile": 95.19999999999999,
+        "probability": 0.08
+      },
+      {
+        "percentile": 95.6,
+        "probability": 0.08
+      },
+      {
+        "percentile": 96.0,
+        "probability": 0.08
+      },
+      {
+        "percentile": 96.39999999999999,
+        "probability": 0.08
+      },
+      {
+        "percentile": 96.8,
+        "probability": 0.08
+      },
+      {
+        "percentile": 97.2,
+        "probability": 0.08
+      },
+      {
+        "percentile": 97.6,
+        "probability": 0.08
+      },
+      {
+        "percentile": 98.0,
+        "probability": 0.08
+      },
+      {
+        "percentile": 98.4,
+        "probability": 0.08
+      },
+      {
+        "percentile": 98.8,
+        "probability": 0.08
+      },
+      {
+        "percentile": 99.2,
+        "probability": 0.08
+      },
+      {
+        "percentile": 99.6,
+        "probability": 0.08
+      }
+    ]
+  }
+}
