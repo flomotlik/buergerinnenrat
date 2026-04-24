@@ -1,0 +1,25 @@
+{
+  "panel_size": 20,
+  "categories": [
+    {
+      "column": "gender",
+      "bounds": {
+        "female": { "min": 9, "max": 12 },
+        "male": { "min": 8, "max": 12 },
+        "diverse": { "min": 0, "max": 1 }
+      }
+    },
+    {
+      "column": "age_band",
+      "bounds": {
+        "16-24": { "min": 1, "max": 4 },
+        "25-34": { "min": 1, "max": 4 },
+        "35-44": { "min": 2, "max": 5 },
+        "45-54": { "min": 2, "max": 5 },
+        "55-64": { "min": 2, "max": 5 },
+        "65-74": { "min": 2, "max": 5 },
+        "75+": { "min": 1, "max": 4 }
+      }
+    }
+  ]
+}
