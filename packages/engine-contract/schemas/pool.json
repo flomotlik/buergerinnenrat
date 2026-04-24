@@ -1,0 +1,39 @@
+{
+  "$ref": "#/definitions/Pool",
+  "definitions": {
+    "Pool": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "people": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "person_id": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "person_id"
+            ],
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "minItems": 1
+        }
+      },
+      "required": [
+        "id",
+        "people"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

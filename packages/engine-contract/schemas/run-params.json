@@ -1,0 +1,27 @@
+{
+  "$ref": "#/definitions/RunParams",
+  "definitions": {
+    "RunParams": {
+      "type": "object",
+      "properties": {
+        "seed": {
+          "type": "integer"
+        },
+        "algorithm": {
+          "type": "string",
+          "const": "maximin"
+        },
+        "timeout_ms": {
+          "type": "integer",
+          "exclusiveMinimum": 0
+        }
+      },
+      "required": [
+        "seed",
+        "algorithm"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
