@@ -36,7 +36,6 @@ test('configures quotas and reaches the run-stub', async ({ page }) => {
   await page.getByTestId('quota-panel-size').fill('20');
   await page.getByTestId('quota-add-category').selectOption('gender');
 
-  // Set a sensible bound on female so the panel-size sum check passes.
-  // The defaults are min=0, max=20 which already passes for both values, so just check status.
-  await expect(page.getByTestId('run-stub')).toBeVisible();
+  // With valid quotas the RunPanel takes over (issue 10 wires the engine).
+  await expect(page.getByTestId('run-panel')).toBeVisible();
 });

@@ -25,6 +25,17 @@ export async function loadHighs(opts: LoadHighsOptions = {}): Promise<HighsType>
     typeof (mod as { default?: unknown }).default === 'function'
       ? (mod as { default: HighsFactory }).default
       : (mod as HighsFactory);
-  cached = await factory(opts);
+  // In the browser, highs.wasm is shipped from the app's `public/` directory
+  // (Vite copies it on build to `/highs.wasm`). The highs factory expects
+  // a `locateFile(file)` callback to resolve "highs.wasm" → URL.
+  // In Node, the package resolves relative to its own build dir, so we
+  // only override locateFile when in a browser-like environment.
+  const isBrowser = typeof window !== 'undefined' && typeof document !== 'undefined';
+  const finalOpts = opts.locateFile
+    ? opts
+    : isBrowser
+      ? { ...opts, locateFile: (file: string) => `/${file}` }
+      : opts;
+  cached = await factory(finalOpts);
   return cached;
 }
