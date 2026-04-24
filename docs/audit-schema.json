@@ -1,0 +1,72 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SortitionAuditDoc",
+  "description": "Iteration 1 audit JSON exported by the browser app after a sortition run.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "engine",
+    "algorithm",
+    "seed",
+    "input_sha256",
+    "panel_size",
+    "pool_size",
+    "selected",
+    "marginals",
+    "quota_fulfillment",
+    "timing",
+    "public_key",
+    "signature"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "const": "0.1" },
+    "engine": {
+      "type": "object",
+      "required": ["id", "version"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "enum": ["engine-a-highs", "engine-b-pyodide", "reference-c-native"]
+        },
+        "version": { "type": "string" }
+      }
+    },
+    "algorithm": { "type": "string", "const": "maximin" },
+    "seed": { "type": "integer" },
+    "input_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "panel_size": { "type": "integer", "minimum": 1 },
+    "pool_size": { "type": "integer", "minimum": 1 },
+    "selected": { "type": "array", "items": { "type": "string" } },
+    "marginals": {
+      "type": "object",
+      "additionalProperties": { "type": "number", "minimum": 0, "maximum": 1 }
+    },
+    "quota_fulfillment": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["column", "value", "selected", "bound_min", "bound_max", "ok"],
+        "properties": {
+          "column": { "type": "string" },
+          "value": { "type": "string" },
+          "selected": { "type": "integer", "minimum": 0 },
+          "bound_min": { "type": "integer", "minimum": 0 },
+          "bound_max": { "type": "integer", "minimum": 0 },
+          "ok": { "type": "boolean" }
+        }
+      }
+    },
+    "timing": {
+      "type": "object",
+      "required": ["duration_ms", "total_ms"],
+      "properties": {
+        "duration_ms": { "type": "number", "minimum": 0 },
+        "total_ms": { "type": "number", "minimum": 0 },
+        "num_committees": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "public_key": { "type": "string", "description": "Base64 raw bytes (Ed25519) or SPKI (ECDSA-P256)" },
+    "signature": { "type": "string", "description": "Base64 detached signature over canonical JSON of all other fields" },
+    "signature_algo": { "type": "string", "enum": ["Ed25519", "ECDSA-P256-SHA256"] }
+  }
+}
