@@ -1,0 +1,37 @@
+{
+  "id": "example_small_20",
+  "panel_size": 20,
+  "source": "pgoelz/citizensassemblies-replication, data/example_small_20",
+  "features": [
+    {
+      "name": "gender",
+      "values": [
+        {
+          "value": "female",
+          "min": 9,
+          "max": 20
+        },
+        {
+          "value": "male",
+          "min": 9,
+          "max": 20
+        }
+      ]
+    },
+    {
+      "name": "leaning",
+      "values": [
+        {
+          "value": "liberal",
+          "min": 9,
+          "max": 20
+        },
+        {
+          "value": "conservative",
+          "min": 9,
+          "max": 20
+        }
+      ]
+    }
+  ]
+}
