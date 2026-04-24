@@ -1,0 +1,197 @@
+{
+  "id": "sf_e_110_synth",
+  "panel_size": 110,
+  "source": "pgoelz/citizensassemblies-replication, data/sf_e_110_synth",
+  "features": [
+    {
+      "name": "a",
+      "values": [
+        {
+          "value": "a1",
+          "min": 47,
+          "max": 59
+        },
+        {
+          "value": "a2",
+          "min": 51,
+          "max": 63
+        },
+        {
+          "value": "a3",
+          "min": 0,
+          "max": 1
+        }
+      ]
+    },
+    {
+      "name": "b",
+      "values": [
+        {
+          "value": "b1",
+          "min": 21,
+          "max": 27
+        },
+        {
+          "value": "b2",
+          "min": 24,
+          "max": 31
+        },
+        {
+          "value": "b3",
+          "min": 23,
+          "max": 29
+        },
+        {
+          "value": "b4",
+          "min": 29,
+          "max": 36
+        }
+      ]
+    },
+    {
+      "name": "c",
+      "values": [
+        {
+          "value": "c1",
+          "min": 4,
+          "max": 6
+        },
+        {
+          "value": "c10",
+          "min": 4,
+          "max": 6
+        },
+        {
+          "value": "c11",
+          "min": 8,
+          "max": 11
+        },
+        {
+          "value": "c12",
+          "min": 2,
+          "max": 4
+        },
+        {
+          "value": "c2",
+          "min": 10,
+          "max": 13
+        },
+        {
+          "value": "c3",
+          "min": 8,
+          "max": 11
+        },
+        {
+          "value": "c4",
+          "min": 7,
+          "max": 10
+        },
+        {
+          "value": "c5",
+          "min": 8,
+          "max": 11
+        },
+        {
+          "value": "c6",
+          "min": 9,
+          "max": 12
+        },
+        {
+          "value": "c7",
+          "min": 12,
+          "max": 16
+        },
+        {
+          "value": "c8",
+          "min": 12,
+          "max": 16
+        },
+        {
+          "value": "c9",
+          "min": 8,
+          "max": 11
+        }
+      ]
+    },
+    {
+      "name": "d",
+      "values": [
+        {
+          "value": "d1",
+          "min": 18,
+          "max": 23
+        },
+        {
+          "value": "d2",
+          "min": 36,
+          "max": 45
+        },
+        {
+          "value": "d3",
+          "min": 44,
+          "max": 55
+        }
+      ]
+    },
+    {
+      "name": "e",
+      "values": [
+        {
+          "value": "e1",
+          "min": 23,
+          "max": 29
+        },
+        {
+          "value": "e2",
+          "min": 43,
+          "max": 53
+        },
+        {
+          "value": "e3",
+          "min": 22,
+          "max": 28
+        },
+        {
+          "value": "e4",
+          "min": 8,
+          "max": 11
+        },
+        {
+          "value": "e5",
+          "min": 1,
+          "max": 3
+        }
+      ]
+    },
+    {
+      "name": "f",
+      "values": [
+        {
+          "value": "f1",
+          "min": 88,
+          "max": 109
+        },
+        {
+          "value": "f2",
+          "min": 10,
+          "max": 13
+        }
+      ]
+    },
+    {
+      "name": "g",
+      "values": [
+        {
+          "value": "g1",
+          "min": 73,
+          "max": 90
+        },
+        {
+          "value": "g2",
+          "min": 25,
+          "max": 32
+        }
+      ]
+    }
+  ]
+}
