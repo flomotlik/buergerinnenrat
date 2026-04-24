@@ -1,0 +1,18 @@
+.git
+.github
+node_modules
+**/node_modules
+.venv
+.venv-*
+.benchmarks
+dist
+build
+.vite
+.playwright-cache
+playwright-report
+test-results
+
+# Never let real Melderegister data into a build context
+private-data
+**/*.real.csv
+**/*.meldereg.csv

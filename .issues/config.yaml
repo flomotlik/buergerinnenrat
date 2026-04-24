@@ -1,0 +1,19 @@
+# Issue system configuration
+# Docs: see /issue:init, /issue:new, /issue:work
+
+model: opus
+
+source:
+  type: local
+  sync_on_create: false
+
+branch:
+  template: "{slug}"
+
+commit:
+  format: conventional
+
+# Single-workspace mode (no multi-repo).
+# Note: this workspace is not a git repo. `/issue:execute` and `/issue:ship`
+# will require `git init` (or moving work into a child repo) before they work.
+repos: []
