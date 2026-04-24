@@ -36,7 +36,8 @@ def test_probabilities_in_unit_interval() -> None:
         doc = json.loads((FIXTURES / f"{inst}.json").read_text())
         for algo, points in doc["curves"].items():
             for p in points:
-                assert 0.0 <= p["probability"] <= 1.0, f"{inst}/{algo}: {p}"
+                # Floating-point slop: paper outputs rounded to ~16 digits.
+                assert -1e-9 <= p["probability"] <= 1 + 1e-9, f"{inst}/{algo}: {p}"
 
 
 def test_metadata_present() -> None:
