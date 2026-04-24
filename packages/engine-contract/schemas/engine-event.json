@@ -1,0 +1,244 @@
+{
+  "$ref": "#/definitions/EngineEvent",
+  "definitions": {
+    "EngineEvent": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "progress"
+            },
+            "phase": {
+              "type": "string"
+            },
+            "fraction": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "message": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "phase"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "log"
+            },
+            "level": {
+              "type": "string",
+              "enum": [
+                "debug",
+                "info",
+                "warn",
+                "error"
+              ]
+            },
+            "message": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "level",
+            "message"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "done"
+            },
+            "result": {
+              "type": "object",
+              "properties": {
+                "selected": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "minItems": 1
+                },
+                "marginals": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  }
+                },
+                "quota_fulfillment": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "column": {
+                        "type": "string"
+                      },
+                      "value": {
+                        "type": "string"
+                      },
+                      "selected": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "bound_min": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "bound_max": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "ok": {
+                        "type": "boolean"
+                      }
+                    },
+                    "required": [
+                      "column",
+                      "value",
+                      "selected",
+                      "bound_min",
+                      "bound_max",
+                      "ok"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "timing": {
+                  "type": "object",
+                  "properties": {
+                    "total_ms": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "initial_committees_ms": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "lp_solve_ms": {
+                      "type": "number",
+                      "minimum": 0
+                    },
+                    "num_committees": {
+                      "type": "integer",
+                      "minimum": 0
+                    }
+                  },
+                  "required": [
+                    "total_ms"
+                  ],
+                  "additionalProperties": false
+                },
+                "engine_meta": {
+                  "type": "object",
+                  "properties": {
+                    "engine_id": {
+                      "type": "string",
+                      "enum": [
+                        "engine-a-highs",
+                        "engine-b-pyodide",
+                        "reference-c-native"
+                      ]
+                    },
+                    "engine_version": {
+                      "type": "string"
+                    },
+                    "solver": {
+                      "type": "string"
+                    },
+                    "algorithm": {
+                      "type": "string",
+                      "const": "maximin"
+                    }
+                  },
+                  "required": [
+                    "engine_id",
+                    "engine_version",
+                    "solver",
+                    "algorithm"
+                  ],
+                  "additionalProperties": false
+                },
+                "committees": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "members": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "minItems": 1
+                      },
+                      "probability": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 1
+                      }
+                    },
+                    "required": [
+                      "members",
+                      "probability"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "selected",
+                "marginals",
+                "quota_fulfillment",
+                "timing",
+                "engine_meta"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "type",
+            "result"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "error"
+            },
+            "code": {
+              "type": "string"
+            },
+            "message": {
+              "type": "string"
+            },
+            "detail": {}
+          },
+          "required": [
+            "type",
+            "code",
+            "message"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
