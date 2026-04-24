@@ -13,6 +13,10 @@ export interface FeasibleCommitteeArgs {
   objective: Record<string, number>; // person_id -> coefficient (we maximize Σ obj × x)
   seed?: number;
   timeLimitSec?: number;
+  // Iteration 1 panel ops (issues 22, 23): pin certain people in or out of
+  // the committee. forceIn → x_i = 1, forceOut → x_i = 0.
+  forceIn?: Iterable<string>;
+  forceOut?: Iterable<string>;
 }
 
 export interface FeasibleCommitteeOk {
@@ -55,6 +59,26 @@ export async function findFeasibleCommittee(
     op: '=',
     rhs: quotas.panel_size,
   });
+
+  // Optional pinning (issues 22 + 23).
+  if (args.forceIn) {
+    let i = 0;
+    for (const id of args.forceIn) {
+      const v = idToVar.get(id);
+      if (v) {
+        constraints.push({ name: `force_in_${i++}`, terms: [{ coef: 1, var: v }], op: '=', rhs: 1 });
+      }
+    }
+  }
+  if (args.forceOut) {
+    let i = 0;
+    for (const id of args.forceOut) {
+      const v = idToVar.get(id);
+      if (v) {
+        constraints.push({ name: `force_out_${i++}`, terms: [{ coef: 1, var: v }], op: '=', rhs: 0 });
+      }
+    }
+  }
 
   // For each (column, value) bound: Σ x_i ∈ [min, max]
   for (const cat of quotas.categories) {
