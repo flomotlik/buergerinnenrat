@@ -54,7 +54,11 @@ RUN uv python install 3.12 && \
       "jupyter" \
       "pytest" \
       "pytest-cov" \
-      "hypothesis"
+      "hypothesis" \
+      "rich>=13" \
+      "click>=8" \
+      "typer>=0.12" \
+      "tomli_w>=1.0"
 
 # --- Playwright CLI + browsers -----------------------------------------------
 # Browsers land under /opt so they survive workspace wipes and are shared.
