@@ -18,6 +18,7 @@
     "typecheck": "pnpm --filter @sortition/web typecheck"
   },
   "devDependencies": {
+    "tsx": "^4.21.0",
     "typescript": "5.6.3"
   }
 }

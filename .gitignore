@@ -12,3 +12,5 @@ test-results/
 .env.local
 vendor/
 .worktrees/
+__pycache__/
+.pytest_cache/
