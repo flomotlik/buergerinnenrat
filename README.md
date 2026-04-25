@@ -37,6 +37,44 @@ Planungs- und Research-Repository für eine **browser-native, backend-lose Sorti
 4. Native Referenz-Benchmark (`pgoelz/citizensassemblies-replication`)
 5. Marktvalidierung: Pilot-Kommune identifizieren
 
+## Stage 1 — Versand-Liste ziehen
+
+Seit Iteration 2 (Issue #45) enthält die Web-App einen neuen Bereich "Versand-Liste
+ziehen" für den ersten Schritt eines realen Bürger:innenrats-Verfahrens: aus der
+Melderegister-Eingabe wird eine **proportionale stratifizierte Zufallsstichprobe**
+gezogen, die anschließend angeschrieben werden kann. Stage 3 (Maximin-Auswahl auf
+dem Antwortenden-Pool) bleibt unverändert nutzbar — beide Wege erreichbar über
+die Hauptnavigation.
+
+**Ablauf:**
+
+1. Melderegister-CSV hochladen (UTF-8, Win-1252 oder ISO-8859-1, automatisch erkannt)
+2. Stratifikations-Achsen wählen (Defaults `district`, `age_band`, `gender` werden
+   automatisch vorgeschlagen, wenn die Spalten existieren)
+3. Stichprobengröße N und Seed eingeben (Default-Seed = aktuelle Unix-Sekunde,
+   uint32-sicher für Mulberry32)
+4. "Ziehen" klicken — sub-Sekunde für Eingaben bis 100.000 Zeilen
+5. CSV der gezogenen Personen herunterladen (alle Original-Spalten erhalten,
+   RFC-4180-konformes Quoting) sowie signierten Audit-Snapshot
+
+**Algorithmus:** Largest-Remainder-Methode (Hamilton-Methode,
+[Wikipedia](https://en.wikipedia.org/wiki/Largest_remainders_method)) für die
+Bruchteil-Rundung pro Stratum (sum aller `n_h` = N exakt), Fisher-Yates-Shuffle
+innerhalb jedes Stratums mit Mulberry32-PRNG. Vollständig deterministisch über Seed.
+
+**Hinweis (BMG § 46):** Stratifikation kann nur über Felder erfolgen, die im
+Melderegister enthalten sind. Bildung, Migrationshintergrund, Beruf sind nicht im
+Melderegister — diese kommen erst nach Selbstauskunft hinzu. Quelle:
+[§ 46 BMG](https://www.gesetze-im-internet.de/bmg/__46.html).
+
+**Output:**
+
+- CSV der gezogenen Personen, alle Original-Spalten erhalten
+- Audit-JSON mit Seed, SHA-256 der Eingangs-CSV, Stratifikations-Achsen, Stratum-Tabelle
+  (Soll vs. Ist), Zeitstempel, Ed25519-Signatur (mit ECDSA-P256-SHA256-Fallback)
+
+Architektur-Hintergrund und Workflow-Begründung: `sortition-tool/08-product-redesign.md`.
+
 ## Sprache
 
 Dokumentation auf Deutsch (User + Primärquellen deutsch). Code — wenn er irgendwann geschrieben wird — auf Englisch.
