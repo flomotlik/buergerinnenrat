@@ -4,10 +4,11 @@ slug: engine-a-real-column-generation
 title: Engine A — echte Dual-Preis-Column-Generation statt Hybrid-Heuristik
 track: 2
 estimate_pt: 3
-deps: [archived/08, 26]
-status: todo
+depends_on: [26]
+status: open
 blocks: [27, 41]
-priority: P0 — schließt die 16% min-π-Lücke zu Reference C
+priority: critical
+priority_rationale: "P0 — schließt die 16% min-π-Lücke zu Reference C"
 ---
 
 # Engine A: echte Column Generation
@@ -43,7 +44,7 @@ Loop:
 
 Engine A implementiert echte Column Generation, die **bis zur Konvergenz iteriert** (kein hartes Iteration-Limit, nur Eps-Abbruch + Safety-Cap bei z.B. 200 CG-Iterationen). Erwartetes Resultat: min π innerhalb von 1–2 % der Reference C.
 
-## Akzeptanzkriterien
+## Acceptance Criteria
 
 - [ ] **`packages/engine-a/src/maximin-lp.ts`** korrekt: extrahiert die Dual-Preise aus den `Rows[i].Dual`-Werten der Agent-Constraints. Heute schon vorhanden, aber Reihenfolge und Sign-Konvention dokumentiert in JSDoc
 - [ ] **`packages/engine-a/src/engine.ts`** umgebaut:

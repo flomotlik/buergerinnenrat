@@ -4,10 +4,11 @@ slug: engine-a-property-tests-activate
 title: Engine A + Panel-Ops Property-Tests aktivieren (war #09 deferred)
 track: 2
 estimate_pt: 1
-deps: [archived/08, archived/22, archived/23]
-status: todo
+depends_on: []
+status: open
 blocks: [37]
 source: review-2026-04-25 (Claude #29, Codex #34, Gemini #26-01 — alle drei einig)
+priority: high
 ---
 
 # Engine A + Panel-Ops Property-Tests
@@ -27,7 +28,7 @@ Vor einem Audit-fähigen Pilot muss jemand sagen können: "Engine A hält Quoten
 
 `fast-check`-basierte Property-Test-Suite für Engine A und Panel-Ops. Teil des regulären `pnpm test`-Laufs.
 
-## Akzeptanzkriterien
+## Acceptance Criteria
 
 - [ ] `packages/engine-a/tests/properties.test.ts` mit `fast-check@^3.x`
 - [ ] Pool-Generator nutzt `packages/core/`-Mulberry32 (deterministisch, reproduzierbar)

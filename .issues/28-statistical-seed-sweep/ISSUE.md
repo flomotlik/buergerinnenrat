@@ -4,10 +4,11 @@ slug: statistical-seed-sweep
 title: Statistisch belastbare Seed-Stichprobe (≥30 Seeds, Konfidenzintervalle)
 track: 5
 estimate_pt: 1.5
-deps: [archived/19, 27]
-status: todo
+depends_on: [27]
+status: open
 blocks: [33, 37]
 source: review-2026-04-25 (Claude #28, Codex #26, Gemini #26-02 — alle drei einig)
+priority: high
 ---
 
 # Statistisch belastbare Seed-Stichprobe
@@ -22,7 +23,7 @@ Vor einem Pilot, in dem diese Zahl an die Kommune kommuniziert wird (oder gegen 
 
 Erweiterung von `scripts/compare_runs.py` und `compare_runs.py`-Output um statistisch tragfähige Aggregate. Bestehender Bericht in `docs/quality-comparison-iteration-1.md` wird durch eine n=30-Tabelle mit 95 %-CI ersetzt.
 
-## Akzeptanzkriterien
+## Acceptance Criteria
 
 - [ ] `scripts/compare_runs.py` Default-Seeds = 30; CLI-Flag `--seeds N` für Override
 - [ ] `summary.json` enthält pro `(pool, setup)`: `mean`, `median`, `stddev`, `ci_95_lo`, `ci_95_hi` für `min_pi`, `gini`, `var_pi`, `wall_time_ms`

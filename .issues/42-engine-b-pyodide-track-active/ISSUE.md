@@ -4,10 +4,11 @@ slug: engine-b-pyodide-track-active
 title: Engine B Track 4 aktivieren — kanonisches sortition-algorithms im Browser
 track: 4
 estimate_pt: 5.5
-deps: [archived/01, archived/07]
-status: todo
+depends_on: []
+status: open
 blocks: [27, 14]
-priority: P0 — schließt die Fairness-Lücke zu 0% durch Nutzung der kanonischen Implementation
+priority: critical
+priority_rationale: "P0 — schließt die Fairness-Lücke zu 0% durch Nutzung der kanonischen Implementation"
 note: ersetzt deferred Issues #12, #13, #14 als zusammenhängenden Track
 ---
 
@@ -58,7 +59,7 @@ Dieses Issue konsolidiert die ehemaligen #12, #13, #14 in einen kohärenten Trac
 - [ ] Audit-JSON `engine_meta.engine_id` reflektiert die Wahl
 - [ ] Playwright-E2E: Engine B durch Hauptflow durchklicken, RunResult-Schema-Validierung
 
-## Akzeptanzkriterien (gesamt)
+## Acceptance Criteria (gesamt)
 
 - [ ] Engine B im Browser lauffähig, lazy-loaded
 - [ ] Selber `RunResult`-JSON-Schema wie Engine A

@@ -4,10 +4,11 @@ slug: engine-a-pipage-rounding
 title: Engine A — Pipage-Rounding für deterministische Panel-Auswahl
 track: 2
 estimate_pt: 1.5
-deps: [40]
-status: todo
+depends_on: [40]
+status: open
 blocks: [27]
-priority: P1 — war in #08-Akzeptanzkriterien, nicht implementiert
+priority: high
+priority_rationale: "P1 — war in #08-Akzeptanzkriterien, nicht implementiert"
 ---
 
 # Engine A: Pipage-Rounding
@@ -26,7 +27,7 @@ Das ist algorithmisch ehrlich, aber operativ schlechter:
 
 Pipage-Rounding-Algorithmus implementieren, als Default für die Panel-Auswahl. Sampling bleibt als optionaler Modus (für Multi-Seed-Vergleichsläufe).
 
-## Akzeptanzkriterien
+## Acceptance Criteria
 
 - [ ] `packages/engine-a/src/pipage-rounding.ts`:
   - Input: LP-Marginale `π: person_id → [0, 1]` + Komitees + ihre LP-Wahrscheinlichkeiten

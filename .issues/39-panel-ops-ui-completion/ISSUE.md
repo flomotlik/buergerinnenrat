@@ -4,10 +4,11 @@ slug: panel-ops-ui-completion
 title: Reroll/Replace/Extend als UI-Aktionen — #21/#22/#23 in den Browser bringen
 track: 6
 estimate_pt: 2
-deps: [archived/11, archived/21, archived/22, archived/23]
-status: todo
+depends_on: []
+status: open
 blocks: [37]
 source: review-2026-04-25 (Claude #37)
+priority: medium
 ---
 
 # UI für Panel-Operationen
@@ -30,7 +31,7 @@ Ohne diese drei UI-Aktionen ist die App im Pilot **operativ nicht ausreichend**.
 
 Drei zusätzliche Aktionen pro Run-Result im RunPanel: "Person ersetzen", "Panel erweitern", "Neu losen mit Diff". Audit-JSON erweitert um Operation-Historie.
 
-## Akzeptanzkriterien
+## Acceptance Criteria
 
 ### UI
 

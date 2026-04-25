@@ -4,10 +4,11 @@ slug: cross-runtime-person-level-drift
 title: Cross-Runtime Person-Level Marginal-Drift (A vs C, später + B)
 track: 5
 estimate_pt: 2
-deps: [archived/15, archived/19, 26]
-status: todo
+depends_on: [26]
+status: open
 blocks: [33, 37]
 source: review-2026-04-25 (Claude #27, Codex #27, Gemini #26-02 — alle drei einig)
+priority: critical
 ---
 
 # Cross-Runtime Person-Level-Drift
@@ -22,7 +23,7 @@ Vor einem Audit, in dem die Kommune das Verfahren verteidigen muss, ist diese Fr
 
 `scripts/cross_runtime_drift.py`, das aus zwei (oder drei) RunResult-JSONs mit gleichem Pool/Seed pro-Person-Marginal-Differenzen berechnet, aggregiert nach Quoten-Kategorie, und einen Markdown-Bericht produziert.
 
-## Akzeptanzkriterien
+## Acceptance Criteria
 
 - [ ] `scripts/cross_runtime_drift.py --baseline reference-c.json --candidate engine-a.json --pool pool.csv --quotas quotas.json --out drift.md`
 - [ ] Pro `person_id`: `Δπ = π_candidate − π_baseline`; Histogramm + p50/p95/max-|Δπ|

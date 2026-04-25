@@ -27,6 +27,7 @@ Browser-native, backend-lose Sortition-Web-App für stratifizierte Zufallsauswah
 - **Die Lizenz-Aussage "Apache-2.0 ist klar" ist es nicht.** Pyodide + GPL-Library in einem ausgelieferten Browser-Bundle ist sehr wahrscheinlich combined work nach GPL §5/§6 und UrhG §69c. Der Phase-1-MVP müsste realistisch GPL-3.0 sein, Apache-2.0 erst ab vollständigem Clean-Room-TS-Port.
 - **Report 04 (Frontend-Architektur) ist als tragende Grundlage verworfen** — drei unabhängige Sachfehler (glpk.js-Lizenz, CSP vs. fetch, Pyodide-Bundle-Größe). Ersetzen, nicht patchen.
 - **Die Go/No-Go-Laufzeitschwellen sind gesetzt, nicht hergeleitet.** Native Gurobi-Referenz (`sf_e`) liegt bei 67 min für vergleichbare Pools — Browser-HiGHS-Ampeln <3 min sind unrealistisch.
+- **Die App ist ein-stufig, der reale Workflow ist zwei- bis vier-stufig.** Heute: CSV → Pool → Engine → Panel. Realität: Bevölkerung (Stage 1, stratifizierter Zufalls-Sample auf BMG-§46-Feldern) → Versand-Liste → Antwortende (Stage 2, Outreach + Selbstauskunft) → Panel (Stage 3, Maximin auf 60–300 Personen) → Reserve (Stage 4, Drop-out-Replacement). Maximin ist nur in Stage 3, der Pool dort ist klein und schnell. Stage 1/2/4 fehlen komplett im Code (`apps/web/src/csv/parse.ts:102-109`, `packages/engine-a/src/engine.ts:70-85`, `packages/engine-a/src/panel-ops.ts:27-89`). Vollständige Analyse: `sortition-tool/07-two-stage-workflow-analysis.md`. **Konsequenz:** "20.000-Wahlberechtigten-Pool" ist keine Maximin-Frage (das wäre stundenlang), sondern eine Stage-1-Frage (O(N), <100 ms). Frag bei Pool-Größen-Diskussionen immer zurück, in welcher Stage der Pool gemeint ist.
 
 ## Solver-Entscheidung (Stand v1, nicht revidiert)
 
@@ -52,6 +53,7 @@ Browser-native, backend-lose Sortition-Web-App für stratifizierte Zufallsauswah
 | S-4 | Erst-Pilot-Kommune | Nicht identifiziert — Build nicht starten, bis das steht |
 | S-5 | Geschäftsmodell: OSS + Consulting (Report 05) oder Ablehnung | Tendenz OSS + Consulting, nicht freigegeben |
 | S-6 | Zielsprache Code: TypeScript + Pyodide (Phase 1) oder reines TypeScript (Clean-Room) | Abhängig von S-1 und S-2 |
+| S-7 | Zwei-Stufen-Workflow (Stage 1 Versand-Sampler + Stage 4 Reserve) als Track Z in Iteration 2 ziehen, oder auf Iteration 3 vertagen | Offen — siehe `sortition-tool/07-two-stage-workflow-analysis.md` |
 
 ## Unmittelbare nächste Schritte (aus `06-review-consolidation.md` Teil E)
 

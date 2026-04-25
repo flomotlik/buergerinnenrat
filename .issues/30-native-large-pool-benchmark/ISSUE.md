@@ -4,10 +4,11 @@ slug: native-large-pool-benchmark
 title: Engine A + Reference C Benchmark auf 500/1000/2000-Pools
 track: 5
 estimate_pt: 1.5
-deps: [archived/15, 26]
-status: todo
+depends_on: [26]
+status: open
 blocks: [37]
 source: review-2026-04-25 (Claude #30 — Codex/Gemini implizit über statistical/timeout-handling)
+priority: high
 ---
 
 # Native-HiGHS Large-Pool-Benchmark
@@ -22,7 +23,7 @@ Bürgerräte historisch: 100–3000 Personen (Klimaschutz-Bürgerrat: 160; Bunde
 
 Systematischer Benchmark beider Engines auf realistisch großen Pools, mit Timeout-Toleranz, klassifizierten "grün/gelb/rot"-Ampeln pro Pool-Größe.
 
-## Akzeptanzkriterien
+## Acceptance Criteria
 
 - [ ] Test-Pools: `{kleinstadt-1000, kleinstadt-2000, innenstadt-2000, example_large_200}` (alle vorhanden in `tests/fixtures/`)
 - [ ] Engine A: Wall-Cap 30 s pro Lauf, 5 Seeds pro Pool. Bei Timeout: weiterlauf mit `status: timeout` in Output

@@ -4,10 +4,11 @@ slug: ci-benchmark-gate
 title: CI-Benchmark-Gate gegen Algorithmus-Regression
 track: 5
 estimate_pt: 1
-deps: [27, 28, 40]
-status: todo
+depends_on: [27, 28, 40]
+status: open
 blocks: []
-priority: P1 — schützt das System gegen unbemerkte Qualitäts-Regression
+priority: high
+priority_rationale: "P1 — schützt das System gegen unbemerkte Qualitäts-Regression"
 ---
 
 # CI Benchmark Gate
@@ -22,7 +23,7 @@ Iteration 1 hat keinen automatischen Benchmark-Lauf — `make compare` muss manu
 
 CI-Job (oder `make ci-benchmark` als Lokal-Pendant), der bei jedem Commit auf `main` einen reduzierten Benchmark fährt und bei min-π-Regression > 2 % gegen die letzte Baseline failed.
 
-## Akzeptanzkriterien
+## Acceptance Criteria
 
 - [ ] `scripts/ci_benchmark.py`: nimmt einen kleinen "CI-Pool"-Set (kleinstadt-100, example_small_20) × 10 Seeds × {engine-a, reference-c}
 - [ ] **Baseline-File** `docs/benchmarks/baseline.json` checked in: enthält pro Pool/Setup die letzte akzeptierte mean-min-π und stddev

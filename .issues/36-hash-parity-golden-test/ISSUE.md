@@ -4,10 +4,11 @@ slug: hash-parity-golden-test
 title: TS/Python input_sha256 Golden-Parity-Test
 track: 5
 estimate_pt: 0.5
-deps: [archived/11]
-status: todo
+depends_on: []
+status: open
 blocks: [27]
 source: review-2026-04-25 (Codex #33 — generelle Audit-Hash-Forderung; Codex' konkrete Separator-Behauptung war falsch)
+priority: low
 ---
 
 # Hash-Parity Golden-Test
@@ -22,7 +23,7 @@ Die Iteration-1-Tests (`tests/python/test_metrics_cross_lang.py`) prüfen nur Qu
 
 Golden-Test, der für ein Set repräsentativer Pool/Quoten-Inputs den TS- und Python-Hash byte-für-byte vergleicht. Teil von `make test`.
 
-## Akzeptanzkriterien
+## Acceptance Criteria
 
 - [ ] `tests/python/test_audit_hash_parity.py` mit ≥ 5 Fixtures:
   - Klein synthetisch (Toy-Pool n=10)

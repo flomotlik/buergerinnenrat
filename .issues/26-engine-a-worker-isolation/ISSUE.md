@@ -4,10 +4,11 @@ slug: engine-a-worker-isolation
 title: Engine A in Web Worker isolieren — UI nicht blockieren, harter Cancel
 track: 3
 estimate_pt: 1.5
-deps: [archived/08, archived/10]
-status: todo
+depends_on: []
+status: open
 blocks: [27, 30, 39]
 source: review-2026-04-25 (Claude opus-4-7 #26, Codex gpt-5-4 #28, Gemini #26-09 — alle drei einig)
+priority: high
 ---
 
 # Engine A im Web Worker isolieren
@@ -22,7 +23,7 @@ Alle drei externe Reviewer (Claude, Codex, Gemini) haben das unabhängig als Hig
 
 Engine A läuft in einem echten Web Worker. UI bleibt während des Laufs voll bedienbar. Cancel terminiert den Worker hart innerhalb 100 ms.
 
-## Akzeptanzkriterien
+## Acceptance Criteria
 
 - [ ] `apps/web/src/run/engine-worker.ts` als `new Worker(new URL('./engine-worker.ts', import.meta.url), { type: 'module' })`
 - [ ] Worker importiert `EngineA` aus `@sortition/engine-a`, lädt `highs.wasm` lazy via `locateFile`

@@ -146,6 +146,18 @@ Die Reviews machen auch sichtbar, welche der Fach-Reports belastbar sind und wel
 | **05 Produkt + Lizenz** | Marktanalyse solide. Lizenzkapitel zu kurz — deutsche UrhG-Sicht fehlt, Patent-Thema zu optimistisch behandelt. |
 | **00 Masterplan** | Integration der fünf Reports gelingt strukturell, aber die beiden "aufgelösten Konflikte" sind nicht wirklich aufgelöst — Konflikt 1 (Solver) patcht nur punktuell, Konflikt 2 (Pyodide vs. TS-Port) übernimmt die falsche pluggable-solver-Annahme. |
 
+### P0-7 (NEU 2026-04-25) — Zwei-Stufen-Workflow ist nicht abgebildet
+
+**Kern:** Die App ist ein-stufig konzipiert (CSV → Pool → Engine → Panel). Realer Bürgerrats-Workflow ist mindestens zwei-stufig: **Stage 1** Bevölkerung → Versand-Liste (stratifizierte Zufallsstichprobe, BMG §46-Felder), **Stage 3** Antwortenden-Pool → Panel (Maximin). Heute fehlen Stage 1, das Datenmodell für `response_status`, der Reserve-Listen-Workflow (Stage 4), und die Stratum-Filterung in `replaceSinglePerson`.
+
+**Code-Belege:** `apps/web/src/csv/parse.ts:102-109` (kein `is_respondent`-Feld), `packages/engine-a/src/engine.ts:70-85` (Pool = alle Personen), `packages/engine-a/src/panel-ops.ts:27-89` (Replace ohne Stratum-Filter).
+
+**Konsequenz:** Die in Iteration 2 priorisierten Lücken (#40 Engine-A-Lücke, #42 Engine B) lösen Stage 3 sauberer, aber Stage 1 + Reserve-Workflow bleiben blinde Flecken. Eine Verwaltung kann das Tool **nicht im realen Verfahren einsetzen**, ohne Stage 1 extern (Excel, R-Skript, Beratungsdienstleister) selbst zu lösen.
+
+**Vollständige Analyse:** `sortition-tool/07-two-stage-workflow-analysis.md`. Schlägt 4 neue Issues (#45–48) und Scope-Korrektur an #30/#39/#40 vor.
+
+**Offene Entscheidung:** Track Z (Workflow-Stages) in Iteration 2 einziehen (ja/nein) — wenn nein, ist Iteration 3 mit Stage 1 als P0 zu starten.
+
 ## Teil E — Nächste konkrete Schritte
 
 1. **Upstream-Verifikation `sortition-algorithms` (1 Tag).** Code-Inspektion von `core.py`, `committee_generation/`, SolverFactory. Liefert Grundlage für P0-1 und P1-3. Kein Code schreiben, nur lesen.

@@ -4,10 +4,11 @@ slug: lp-solver-tuning
 title: HiGHS LP-/MIP-Tuning für Numerik-Robustheit + Performance
 track: 2
 estimate_pt: 1.5
-deps: [40]
-status: todo
+depends_on: [40]
+status: open
 blocks: []
-priority: P1 — Hygiene, schließt Edge-Case-Numerik-Bugs
+priority: high
+priority_rationale: "P1 — Hygiene, schließt Edge-Case-Numerik-Bugs"
 ---
 
 # HiGHS LP/MIP Tuning
@@ -34,7 +35,7 @@ Das Upstream `sortition-algorithms` setzt für Leximin explizit `Method=2` (Barr
 
 Empirisch fundierte HiGHS-Settings für (a) LP-Phase und (b) MIP-Phase. Dokumentation der Wahl in `docs/lp-solver-options.md`.
 
-## Akzeptanzkriterien
+## Acceptance Criteria
 
 - [ ] **Empirische Studie**: Benchmark-Skript `scripts/lp-tuning-sweep.py` läuft Engine A auf {kleinstadt-500, kleinstadt-1000, innenstadt-1000} mit verschiedenen HiGHS-Settings:
   - Default
