@@ -65,7 +65,7 @@ export const App: Component = () => {
     <main class="mx-auto max-w-5xl px-6 py-10 space-y-8">
       <header class="space-y-4">
         <div>
-          <h1 class="text-3xl font-semibold tracking-tight">Sortition Iteration 2</h1>
+          <h1 class="text-3xl font-semibold tracking-tight">Sortition Iteration 1</h1>
           <p class="mt-2 text-sm text-slate-600">
             Browser-native Auswahl-Pipeline — statisch ausgeliefert, keine Backend-Abhängigkeit.
           </p>
