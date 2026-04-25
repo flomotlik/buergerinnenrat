@@ -1,9 +1,9 @@
-# Iteration-2 Issue-Synthese aus externem LLM-Review
+# Iteration-2 Issue-Synthese (rein technisch)
 
 **Stand:** 2026-04-25.
-**Methode:** `/issue:review --topic` mit Claude Opus 4.7, OpenAI Codex gpt-5-4 und Google Gemini 3 Pro Preview parallel. Reviews unter `reviews/iteration-2-issue-gaps/`.
+**Methode:** `/issue:review --topic` mit Claude Opus 4.7, OpenAI Codex gpt-5-4 und Google Gemini 3 Pro Preview parallel. Reviews unter `reviews/iteration-2-issue-gaps/`. Anschließende Filterung auf rein technische Issues — Compliance, Recht, Akquise, soziale Aspekte sind explizit aus dem Scope.
 
-## Verdikte
+## Verdikte (im ursprünglichen, breiten Kontext)
 
 | Reviewer | Modell | Verdikt | Critical | High | Medium |
 | --- | --- | --- | ---: | ---: | ---: |
@@ -11,113 +11,99 @@
 | OpenAI Codex | gpt-5-4 | **FAIL** | 4 | 4 | 0 |
 | Google Gemini | gemini-3-pro-preview | **FAIL** | 3 | 4 | 2 |
 
-**Konsens: alle drei sagen, der aktuelle Iteration-1-Stand ist nicht pilot-tauglich.** Die genaue Liste der Lücken konvergiert weitgehend.
+Die FAIL-Verdikte beruhten zu einem erheblichen Teil auf nicht-technischen Punkten (DSFA, BITV, i18n, Lizenz-Gutachten, Pilot-Akquise). Bei rein technischer Betrachtung bleiben drei Kern-Lücken:
 
-## Konvergente Findings (alle drei einig)
+1. **Algorithmus-Lücke**: 16 % schlechteres min π in Engine A vs Reference C.
+2. **Vergleichs-Belastbarkeit**: 5 Seeds × 2 kleine Pools ist statistisch dünn; Person-Level-Drift gar nicht gemessen.
+3. **Engineering-Hygiene**: Worker-Isolation fehlt, kein Hash-Parity-Test, keine CI-Regression-Schutz.
 
-### F1 — Worker-Isolation fehlt
+## Iteration-2-Issues (rein technisch)
 
-`apps/web/src/run/runEngine.ts:19-46` ruft `engine.run()` direkt im Main-Thread. Issue #08 hatte das ursprünglich gefordert, wurde nicht umgesetzt. Bei Pool-Größe ≥ 500 friert die UI ein, Cancel-Button wird unbedienbar. **→ Issue #26.**
+### Track A — Algorithmus-Lücke schließen
 
-### F2 — Statistische Belastbarkeit unzureichend
+#### #40 Engine A echte Column Generation
 
-5 Seeds × 2 kleine Pools ist zu dünn für eine Aussage "Engine A weicht um X % ab" (Standardfehler ~0.45σ, nicht von Rauschen unterscheidbar). **→ Issue #28.**
+Das ist der direkte Fix für die 16-%-Lücke. Die aktuelle Hybrid-Heuristik (`packages/engine-a/src/engine.ts:73-180`) ist keine korrekte Maximin-Implementierung — sie überspringt die Dual-Preis-getriebene Iteration der upstream `find_distribution_maximin`. #40 ersetzt sie durch echte Column Generation, die bis zur Konvergenz iteriert.
 
-### F3 — Cross-Runtime Person-Level-Drift unbeantwortet
+Erwartetes Ergebnis: Engine A min π innerhalb 1–2 % von Reference C.
 
-`scripts/compare_runs.py:121-154` aggregiert nur Skalare. Die wissenschaftlich fundamentale Frage "bekommen Sub-Gruppen mit Engine A substanziell andere Auswahlchancen als mit Reference C?" ist nicht messbar. **→ Issue #27.**
+#### #41 Pipage-Rounding
 
-### F4 — Property-Tests fehlen
+War in den Iteration-1-Akzeptanzkriterien (#08), wurde nicht implementiert. Aktuelle Lösung sampled aus der LP-Verteilung — korrekt im Erwartungswert, aber pro einzelnem Lauf hat das Panel unnötige Quoten-Varianz. Pipage-Rounding ist deterministisch und reproduzierbar.
 
-#09 ist deferred (`.issues/09-engine-a-property-tests/STATUS.md`). Die 11 Hand-Tests in `packages/engine-a/tests/` decken Edge-Cases nicht ab. Vor Audit-fähigem Pilot Pflicht. **→ Issue #29.**
+#### #42 Engine B Pyodide-Track aktivieren
 
-### F5 — DSFA fehlt komplett
+Konsolidiert die deferred Issues #12 (Pyodide-Bootstrap), #13 (sortition-algorithms-Integration), #14 (Engine-Swap). Engine B nutzt die kanonische `sortition-algorithms`-Library direkt im Browser via Pyodide — schließt die Fairness-Lücke definitionsgemäß auf 0 %, weil dieselbe Code-Basis läuft.
 
-P1-1 aus `06-review-consolidation.md`. Eine deutsche Kommune darf die App ohne DSFA nicht für Melderegister-Verarbeitung einsetzen. **→ Issue #31.**
+Bundle-Trade-off: Engine A nach #40 ~3 MB, Engine B mit Pyodide 30–40 MB (lazy-loaded). User wählt im UI.
 
-### F6 — BITV 2.0 nur Smoke
+### Track B — Vergleichs-Robustheit
 
-`apps/web/tests/e2e/a11y.spec.ts:3-31` ist explizit "lightweight smoke check". Echte BITV-Konformität verlangt WCAG-2.1-AA + EN 301 549 + Erklärung zur Barrierefreiheit. **→ Issue #32.**
+#### #27 Cross-Runtime Person-Level-Drift
 
-### F7 — i18n fehlt komplett
+`scripts/compare_runs.py:121-154` aggregiert nur Skalare. Die fundamentale Frage "liefern Engine A und Reference C bei identischem Pool und Seed dieselben Marginale pro Person?" ist nicht messbar. Lösung: pro `person_id` ein `Δπ`, aggregiert nach Quoten-Kategorie — identifiziert systematischen Bias gegen Sub-Gruppen.
 
-UI ist hart-kodiert deutsch. ~80–250 Strings (Codex zählte 247, Gemini 49 Schlüssel-Strings) in 6 Source-Dateien. **→ Issue #33.**
+#### #28 Statistische Seed-Stichprobe ≥30
 
-### F8 — Methodenblatt fehlt
+5 Seeds → Standardfehler ~0.45σ → Aussage "16 % schlechter" nicht von Rauschen unterscheidbar. ≥30 Seeds + paired-t-Test auf min-π-Differenz + 95-%-CI in der Tabelle.
 
-P1-4. Bürger:innen können das Verfahren nicht eingeordnet bekommen. **→ Issue #34.**
+#### #29 Engine A Property-Tests aktivieren
 
-## Findings nicht-trivial
+Pickup von #09. Die 11 Hand-Tests in `packages/engine-a/tests/` decken Edge-Cases nicht ab — insbesondere Coverage-Phase-Degeneration (NF-4) und `forceIn`/`forceOut`-Semantik in `panel-ops.ts`. fast-check-basierte Property-Suite mit 100 zufälligen Inputs pro Property.
 
-### F9 — Echte Kommunal-CSV-Adapter (Codex, Gemini einig)
+#### #30 Native Large-Pool-Benchmark
 
-`apps/web/src/csv/parse.ts` handled UTF-8/Win-1252 + Auto-Separator, aber keine Format-Presets. EWO/MESO/VOIS-Exports der Kommunen sind komplexer. **→ Issue #35.**
+`example_large_200` (n=2000) Reference C lief in Iteration 1 >20 min, kein Abschluss. Engine A nicht systematisch auf n=2000 gemessen. Dieses Issue klärt: ab welcher Pool-Größe ist welche Engine produktionsreif?
 
-### F10 — Audit-Key-Management ist Demo-Niveau (Codex, Gemini einig)
+### Track C — Engineering-Hygiene
 
-Frische Ephemeral-Keypairs pro Lauf. Für Audit-Compliance braucht's kommunal-vergebene Schlüssel. Plus: keinen Golden-Test, der TS- und Python-Hash-Implementierungen vergleicht. **→ Issue #36.**
+#### #26 Engine A Worker-Isolation
 
-### F11 — Pilot-Akquise als Prozess fehlt (Claude, Gemini einig)
+`apps/web/src/run/runEngine.ts:19-46` ruft `engine.run()` direkt im Main-Thread. Bei n ≥ 500 friert die UI ein, Cancel-Button wird unbedienbar. Issue #08 hatte das ursprünglich gefordert, wurde nicht umgesetzt.
 
-S-4 in `CLAUDE.md` offen. Ohne Owner + Deadline passiert keine Akquise. **→ Issue #37.**
+#### #36 Hash-Parity Golden-Test
 
-### F12 — Rechtsgutachten fehlt (Claude, Gemini einig)
+Codex hat einen konkreten Bug behauptet (TS/Python-Hash-Mismatch via Separator) — geprüft, ist falsch (beide nutzen leeren Concat). Aber: kein Test bewacht die Parität gegen Edge-Cases (Unicode, Float-Formatierung). #36 fügt einen Golden-Test hinzu.
 
-S-1 + S-6. GPL-3.0 ist deklariert, aber nicht juristisch fundiert. Apache-2.0-Endziel ohne Gutachten unerreichbar. **→ Issue #38.**
+Out of scope: kommunal-vergebene Schlüssel, Hardware-Token, PKI — alles nicht-technische / Iteration 3+.
 
-### F13 — UI für Replace/Extend/Reroll (Claude only, aber Pilot-Operativ-blockend)
+#### #39 Panel-Ops UI
 
-Engine-Level-Logik existiert (`packages/engine-a/src/panel-ops.ts`). UI-Schicht fehlt. Im Bürgerrats-Workflow nicht-optional. **→ Issue #39.**
+Engine-Logik (`panel-ops.ts`) und CLI (`scripts/panel_ops_cli.ts`) existieren. UI-Buttons fehlen. Im Bürgerrats-Workflow nicht-optional (Reroll, Replace bei Absage, Extend um N).
 
-### F14 — Native-HiGHS Large-Pool-Benchmark (Claude only)
+#### #43 LP-Solver-Tuning
 
-`example_large_200` (n=2000) Reference C >20 min, kein Abschluss. Pool-Größen, ab denen welche Engine produktionsreif ist, sind nicht festgestellt. **→ Issue #30.**
+Empirische Studie der HiGHS-Optionen (`solver: simplex|ipm`, `presolve`, `parallel`, `mip_rel_gap`, `primal_feasibility_tolerance`) auf Pools n=500–1000. Empfehlung pro Pool-Größenklasse. Schließt unbekannte Numerik-Edge-Cases.
 
-## Codex-Behauptung, die sich als falsch erwies
+#### #44 CI-Benchmark-Gate
 
-Codex behauptete einen konkreten Bug: TS- und Python-Implementierungen von `input_sha256` würden Pool und Quotas mit unterschiedlichen Separatoren joinen. **Geprüft im Code (`apps/web/src/run/audit.ts:68-71` vs. `scripts/verify_audit.py:113-115`)**: beide nutzen leeren String-Concat. Der konkrete Separator-Mismatch existiert nicht.
+Schützt #40 vor Regression. Reduzierter Benchmark (10 Seeds × 2 kleine Pools × 2 Engines) bei jedem Commit, fail bei min-π-Drift > 2 σ gegen Baseline.
 
-**Aber**: die generelle Codex-Aussage "es gibt keinen Golden-Test, der die beiden Hash-Implementierungen byte-für-byte vergleicht" stimmt. Edge-Cases in Unicode/Float-Formatierung könnten zu echtem Drift führen. **→ Issue #36 enthält den Golden-Test.**
+## Was nicht als Iteration-2-Issue angelegt wurde
 
-## Priorität (kürzeste Strecke zum Pilot)
+Bewusste Auslassung:
 
-Synthese aus den drei "priority_order"-Listen der Reviewer:
+### Nicht-technisch (gehört nicht in technische Iteration 2)
 
-### Sofort + parallel (externe Wartezeit absorbieren)
+- DSFA-Template, Datenflussdiagramm, VVT-Bausteine
+- BITV-2.0-Audit, Erklärung zur Barrierefreiheit, WCAG-AA-Remediation jenseits Iteration-1-Smoke
+- Methodenblatt für Bürger:innen (Verwaltungssprache, Leichte Sprache)
+- i18n DE/EN-Foundation
+- Pilot-Kommune-Akquise, LOI- und AVV-Templates
+- Rechtsgutachten (§69c UrhG, GPL/Pyodide, Patent-FTO)
+- Audit-Key-Management mit kommunal-vergebenen Schlüsseln (Hardware-Token, persistente Keys)
+- Reale Kommunal-CSV-Adapter (EWO/MESO/VOIS) — Pilot-driven
 
-1. **#38 Rechtsgutachten** — Kanzlei-Durchlauf 4–8 Wochen
-2. **#31 DSFA-Template** — externer Reviewer 2–4 Wochen
-3. **#34 Methodenblatt** — Bürgerrats-Praxis-Reviewer + Leichte-Sprache-Prüfung 2–4 Wochen
+### Iteration-3+
 
-### Engineering-Block Phase A (Vergleichsdaten)
+- Leximin-Port (#16 STATUS bleibt deferred — Forschungs-Issue, nicht Pilot-Block)
+- Performance-Optimierungen über HiGHS-Defaults hinaus
+- Service-Worker für Pyodide-Caching
+- iOS-Safari-Support
+- Bayesian Fairness Audits / Power-Analysen
 
-Reihenfolge: **#26 → #27 → #28 + #30 parallel → #29**. Etwa 7,5 PT, 2–3 Wochen Vollzeit.
+## Total
 
-### Compliance-Block Phase B
+**~21 PT rein technische Arbeit.** Bei Solo-Vollzeit 4–5 Wochen.
 
-**#33 → #32 → #36** parallel zu Phase A. Etwa 7 PT für 33+32+36, 2–3 Wochen.
-
-### Pilot-Operativ Phase C
-
-**#35 → #39 → #37**. #37 (Pilot-Akquise) ist Wartezeit-dominiert, läuft schon ab Tag 1 latent — der Akquise-Block beginnt aber erst, wenn #31, #32, #33, #34 ein verkaufbares Compliance-Pflanzenpaket bilden.
-
-### Phase D — Engine B nur nach Phase A+B+C
-
-**#12 → #13 → #14**. Engine-B-Investition macht erst Sinn, wenn (a) Pilot-Kommune steht, (b) Compliance-Paket existiert, (c) #38 zeigt, dass GPL-Pyodide-Pfad rechtlich tragfähig ist.
-
-## Was nicht als neues Issue angelegt wurde
-
-Bewusste Auslassung folgt der "Über-Engineering-Schutz"-Heuristik aus dem Review-Prompt:
-
-- **#16 Gurobi-free-Leximin-Port**: bleibt Iteration-3-Forschung. Vor Pilot kein Wert.
-- **Multi-Threading** der TS-Engine jenseits Worker: kein Issue. Aktueller Single-Thread+Worker reicht für n≤2000.
-- **Bayesian Fairness Audits / Power-Analysen**: Iteration 3.
-- **Internationale Pilot-Kommunen**: DE+AT reicht für Iteration 2.
-- **Hardware-Token / PKI**: Iteration 3+.
-- **API-Pull aus Melderegister-Systemen**: Iteration 4+.
-
-## Iteration-2-Total
-
-**30 PT Engineering + Wartezeit Rechtsgutachten/Pilot-Akquise.** Realistisch 8–12 Kalenderwochen bei Solo-Consultant-Einsatz.
-
-Engine B (Phase D, +5,5 PT) kommt nach erstem Pilot.
+Empfohlene Reihenfolge: **#26 → #40 → #27 → #28 + #30 + #29 (parallel) → #42 → #41 → #43 + #44 → #36 + #39**. Reihenfolge ist optimiert für (1) frühe Beweisbarkeit der Algorithmus-Parität, (2) parallele Hygiene-Arbeit ohne Blockaden.

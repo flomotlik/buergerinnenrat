@@ -1,5 +1,5 @@
-# STATUS: Issue 14 — deferred (depends on #13)
+# STATUS: Issue 14 — superseded by #42 (Phase 42c)
 
-**Date:** 2026-04-24
+**Date:** 2026-04-25
 
-See `.issues/12-engine-b-pyodide-bootstrap/STATUS.md` — Track 4 (Engine B, issues 12+13+14) is deferred to iteration 2 collectively.
+Siehe `.issues/12-engine-b-pyodide-bootstrap/STATUS.md` und `.issues/42-engine-b-pyodide-track-active/ISSUE.md` Phase 42c.
