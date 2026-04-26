@@ -1,4 +1,12 @@
-# Bürgerrat-Sortition
+# Bürgerinnenrat — Sortition Tool
+
+[![Deploy](https://github.com/flomotlik/buergerinnenrat/actions/workflows/deploy.yml/badge.svg)](https://github.com/flomotlik/buergerinnenrat/actions/workflows/deploy.yml)
+
+Browser-natives Werkzeug für die stratifizierte Zufallsauswahl von Personen für Bürger:innenräte (Deutschland und Österreich). Alle Daten bleiben im Browser, kein Server-Backend.
+
+**Live:** <https://flomotlik.github.io/buergerinnenrat/>
+
+## Bürgerrat-Sortition (Hintergrund)
 
 Planungs- und Research-Repository für eine **browser-native, backend-lose Sortition-Web-App** zur stratifizierten Zufallsauswahl von Teilnehmenden für Bürgerräte.
 
@@ -81,4 +89,8 @@ Dokumentation auf Deutsch (User + Primärquellen deutsch). Code — wenn er irge
 
 ## Lizenz
 
-Noch nicht festgelegt. Siehe Strategie-Entscheidung **S-1** in `CLAUDE.md`. Bis zur Entscheidung gelten diese Research-Dokumente als urheberrechtlich geschützt; Teilen nur in Absprache.
+GPL-3.0-or-later. Volltext in [LICENSE](LICENSE).
+
+Diese Wahl spiegelt die Realität, dass Browser-Bundles mit GPL-Komponenten (`highs-js` ist
+zwar MIT, aber spätere Pyodide-Integration könnte GPL-Code mitbringen) kombiniert sehr
+wahrscheinlich GPL-Pflicht erzeugen — siehe Strategie-Entscheidung **S-1** in `CLAUDE.md`.

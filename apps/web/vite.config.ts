@@ -17,6 +17,10 @@ const GIT_SHA = (() => {
 const BUILD_DATE = new Date().toISOString();
 
 export default defineConfig({
+  // Base path for asset URLs. Defaults to the GitHub Pages project path so
+  // production builds work out of the box. Local dev/preview and Playwright
+  // e2e need to opt out via VITE_BASE_PATH=/ (see playwright.config.ts).
+  base: process.env.VITE_BASE_PATH ?? '/buergerinnenrat/',
   define: {
     __GIT_SHA__: JSON.stringify(GIT_SHA),
     __BUILD_DATE__: JSON.stringify(BUILD_DATE),
