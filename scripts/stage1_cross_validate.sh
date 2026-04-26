@@ -91,6 +91,18 @@ run_case "$TMPDIR/pool-200.csv"  "district,age_band,gender,education,migration_b
 # Edge: target = 0.
 run_case "$TMPDIR/pool-1000.csv" "district,age_band,gender" 0 42 "1000-pool, target=0 (empty result)"
 
+# Umlaut robustness — verifies codepoint sort (not localeCompare).
+# Pre-fix this case would diverge between TS and Python because TS
+# String.prototype.localeCompare put 'Ä' next to 'A' in DE locale, but
+# Python's default sort uses Unicode codepoint order (where 'Ü' > 'W').
+{
+  echo "person_id,district,gender"
+  for i in 1 2 3 4 5; do echo "u${i},Wörth,male"; done
+  for i in 6 7 8 9 10; do echo "u${i},Aachen,female"; done
+  for i in 11 12 13 14 15; do echo "u${i},Übach,diverse"; done
+} > "$TMPDIR/pool-umlaut.csv"
+run_case "$TMPDIR/pool-umlaut.csv" "district,gender" 6 42 "umlaut-pool, codepoint sort verified"
+
 echo
 echo "=== Summary ==="
 echo "PASS: $PASS"

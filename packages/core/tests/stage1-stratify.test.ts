@@ -255,3 +255,45 @@ describe('stratify — output ordering', () => {
     for (const i of bIndices) expect(i).toBeLessThanOrEqual(2);
   });
 });
+
+describe('stratify — codepoint sort (Umlaut robustness)', () => {
+  it('sorts strata by codepoint, not locale (TS-Python parity for Umlauts)', () => {
+    // Bezirksnamen mit deutschen Umlauten — typischer Realfall.
+    // Codepoint order: 'A' (0x41) < 'O' (0x4F) < 'a' (0x61) < 'o' (0x6F)
+    //                  < 'ä' (0xE4) < 'ö' (0xF6) < 'ü' (0xFC).
+    // localeCompare in DE-locale ordnet "ä" zwischen "a" und "b" — Drift.
+    const rows: Record<string, string>[] = [
+      { person_id: 'p1', district: 'Wörth' },
+      { person_id: 'p2', district: 'Wörth' },
+      { person_id: 'p3', district: 'Aachen' },
+      { person_id: 'p4', district: 'Aachen' },
+      { person_id: 'p5', district: 'Übach' },
+      { person_id: 'p6', district: 'Übach' },
+    ];
+    // Codepoint-Order der Achsen-Werte: 'Aachen' < 'Wörth' < 'Übach'
+    // (weil 'Ü' = 0xDC > 'W' = 0x57, und Stratum-Key wrappt den Wert in JSON
+    //  mit gleichem Achsenname-Prefix, sodass der Wert die Reihenfolge bestimmt).
+    const r = stratify(rows, { axes: ['district'], targetN: 3, seed: 42 });
+    expect(r.strata.length).toBe(3);
+    // The keys must come out in codepoint order — assert explicitly.
+    expect(r.strata[0]!.key.district).toBe('Aachen');
+    expect(r.strata[1]!.key.district).toBe('Wörth');
+    expect(r.strata[2]!.key.district).toBe('Übach');
+  });
+
+  it('Hamilton tie-break uses codepoint order, not locale', () => {
+    // Two strata of equal size with the +1 tie. Whoever has the
+    // codepoint-smaller key gets the bonus seat. With Umlauts present this
+    // diverges from locale-sort.
+    const rows: Record<string, string>[] = [];
+    for (let i = 0; i < 5; i++) rows.push({ person_id: `a${i}`, k: 'Übach' });
+    for (let i = 0; i < 5; i++) rows.push({ person_id: `b${i}`, k: 'Aachen' });
+    // targetN=3, both N_h=5, quota=1.5 each, floors=[1,1], delta=1, tie-break
+    // by codepoint: 'Aachen' (0x41...) wins over 'Übach' (0xDC...).
+    const r = stratify(rows, { axes: ['k'], targetN: 3, seed: 1 });
+    const aachen = r.strata.find((s) => s.key.k === 'Aachen')!;
+    const uebach = r.strata.find((s) => s.key.k === 'Übach')!;
+    expect(aachen.n_h_target).toBe(2);
+    expect(uebach.n_h_target).toBe(1);
+  });
+});

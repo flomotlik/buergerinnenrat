@@ -79,8 +79,12 @@ export function largestRemainderAllocation(
       // Tie → larger N_h first.
       const sizeDiff = stratumSizes[b.idx]! - stratumSizes[a.idx]!;
       if (sizeDiff !== 0) return sizeDiff;
-      // Tie → lexicographically smaller stratum key first.
-      return stratumKeys[a.idx]!.localeCompare(stratumKeys[b.idx]!);
+      // Tie → codepoint-order smaller stratum key first.
+      // Codepoint comparison (NOT localeCompare) so that TS and Python sort
+      // identically on Umlaut-bearing keys (Bezirksname "Wörth" etc.).
+      const ka = stratumKeys[a.idx]!;
+      const kb = stratumKeys[b.idx]!;
+      return ka < kb ? -1 : ka > kb ? 1 : 0;
     });
     for (let i = 0; i < delta; i++) {
       const idx = remainders[i]!.idx;
@@ -133,9 +137,10 @@ export function stratify(
 
   const buckets = bucketize(rows, axes);
 
-  // Sort stratum keys lexicographically so allocation, shuffle, and output
-  // order are all deterministic.
-  const stratumKeys = [...buckets.keys()].sort((a, b) => a.localeCompare(b));
+  // Sort stratum keys by codepoint order (NOT localeCompare) so allocation,
+  // shuffle, and output order are deterministic AND identical between TS and
+  // Python. localeCompare differs between runtimes for Umlaut-bearing keys.
+  const stratumKeys = [...buckets.keys()].sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
   const stratumIndexLists = stratumKeys.map((k) => [...buckets.get(k)!]);
   const stratumSizes = stratumIndexLists.map((l) => l.length);
 
