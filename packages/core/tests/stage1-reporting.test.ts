@@ -4,6 +4,7 @@ import {
   coverageMetric,
   marginalAggregates,
   previewAllocation,
+  sortUnderfillsByGap,
   stage1ToMarkdownReport,
   stratify,
 } from '../src/stage1';
@@ -68,6 +69,44 @@ describe('marginalAggregates', () => {
       { key: {}, n_h_pool: 10, n_h_target: 5, n_h_actual: 5, underfilled: false },
     ];
     expect(marginalAggregates(strata, [])).toEqual([]);
+  });
+});
+
+describe('sortUnderfillsByGap', () => {
+  it('sorts strata descending by (n_h_target - n_h_actual)', () => {
+    const strata: StratumResult[] = [
+      { key: { a: 'small-gap' }, n_h_pool: 5, n_h_target: 5, n_h_actual: 4, underfilled: true },
+      { key: { a: 'big-gap' }, n_h_pool: 10, n_h_target: 10, n_h_actual: 2, underfilled: true },
+      { key: { a: 'medium-gap' }, n_h_pool: 7, n_h_target: 7, n_h_actual: 4, underfilled: true },
+    ];
+    const sorted = sortUnderfillsByGap(strata);
+    // Expected order: big-gap (8), medium-gap (3), small-gap (1).
+    expect(sorted.map((s) => s.key.a)).toEqual(['big-gap', 'medium-gap', 'small-gap']);
+  });
+
+  it('breaks ties with codepoint-ascending key (deterministic)', () => {
+    const strata: StratumResult[] = [
+      { key: { d: 'b' }, n_h_pool: 3, n_h_target: 3, n_h_actual: 1, underfilled: true },
+      { key: { d: 'a' }, n_h_pool: 3, n_h_target: 3, n_h_actual: 1, underfilled: true },
+      { key: { d: 'c' }, n_h_pool: 3, n_h_target: 3, n_h_actual: 1, underfilled: true },
+    ];
+    const sorted = sortUnderfillsByGap(strata);
+    // All three have gap=2 — codepoint order on the JSON key wins.
+    expect(sorted.map((s) => s.key.d)).toEqual(['a', 'b', 'c']);
+  });
+
+  it('returns an empty array unchanged', () => {
+    expect(sortUnderfillsByGap([])).toEqual([]);
+  });
+
+  it('does not mutate the input array', () => {
+    const strata: StratumResult[] = [
+      { key: { x: '1' }, n_h_pool: 5, n_h_target: 5, n_h_actual: 4, underfilled: true },
+      { key: { x: '2' }, n_h_pool: 10, n_h_target: 10, n_h_actual: 2, underfilled: true },
+    ];
+    const before = strata.map((s) => s.key.x);
+    sortUnderfillsByGap(strata);
+    expect(strata.map((s) => s.key.x)).toEqual(before);
   });
 });
 

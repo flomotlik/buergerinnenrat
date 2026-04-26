@@ -79,6 +79,35 @@ export function marginalAggregates(
 }
 
 // ---------------------------------------------------------------------------
+// Underfill sorting
+// ---------------------------------------------------------------------------
+
+/**
+ * Sort strata by descending allocation gap (n_h_target - n_h_actual).
+ *
+ * The largest gap (most-underfilled stratum) appears first. Ties are broken
+ * by codepoint-ascending stratum-key ordering (deterministic, matches the
+ * existing `stratum_sort` audit field). Returns a new array — input is not
+ * mutated.
+ *
+ * Note: this function does NOT filter. If callers want only underfilled
+ * strata they should pre-filter (e.g. `strata.filter(s => s.underfilled)`)
+ * before calling. Strata with `n_h_target <= n_h_actual` will simply have
+ * a non-positive gap and end up at the bottom of the result.
+ */
+export function sortUnderfillsByGap(strata: StratumResult[]): StratumResult[] {
+  return [...strata].sort((a, b) => {
+    const gapA = a.n_h_target - a.n_h_actual;
+    const gapB = b.n_h_target - b.n_h_actual;
+    if (gapB !== gapA) return gapB - gapA;
+    // Tie-break on codepoint-ascending key for determinism.
+    const keyA = JSON.stringify(a.key);
+    const keyB = JSON.stringify(b.key);
+    return keyA < keyB ? -1 : keyA > keyB ? 1 : 0;
+  });
+}
+
+// ---------------------------------------------------------------------------
 // Coverage metric
 // ---------------------------------------------------------------------------
 

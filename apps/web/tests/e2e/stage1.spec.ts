@@ -90,3 +90,45 @@ test('stage 1: upload → defaults → ziehen → download', async ({ page, brow
   // Sanity log to surface browser id in test output.
   console.log(`stage1 e2e ok on ${browserName}`);
 });
+
+test('stage 1: Stichprobengröße-Input ist via Label erreichbar (a11y)', async ({ page }) => {
+  await page.goto('/');
+  await page.getByTestId('tab-stage1').click();
+  await page.locator('[data-testid="stage1-csv-upload"]').setInputFiles({
+    name: 'pool.csv',
+    mimeType: 'text/csv',
+    buffer: readFileSync(FIXTURE),
+  });
+  // The label/for binding should make `getByLabel` resolve to the same input
+  // node that data-testid does — this verifies K (label association).
+  const byLabel = page.getByLabel('Stichprobengröße N');
+  await expect(byLabel).toBeVisible();
+  await byLabel.fill('25');
+  await expect(page.getByTestId('stage1-target-n')).toHaveValue('25');
+});
+
+test('stage 1: Stale Result wird gecleart wenn N nach Run geändert wird (H)', async ({ page }) => {
+  await page.goto('/');
+  await page.getByTestId('tab-stage1').click();
+  await page.locator('[data-testid="stage1-csv-upload"]').setInputFiles({
+    name: 'pool.csv',
+    mimeType: 'text/csv',
+    buffer: readFileSync(FIXTURE),
+  });
+  await expect(page.getByTestId('stage1-pool-summary')).toContainText('500');
+
+  await page.getByTestId('stage1-target-n').fill('40');
+  // Seed must be confirmed (Task 6) before run is enabled. The button only
+  // appears when the seed is unconfirmed; click it to enable the run.
+  const confirmButton = page.getByTestId('stage1-seed-confirm');
+  if (await confirmButton.count()) {
+    await confirmButton.click();
+  }
+
+  await page.getByTestId('stage1-run').click();
+  await expect(page.getByTestId('stage1-result')).toBeVisible({ timeout: 5_000 });
+
+  // Now change N — the result should disappear (stale clear).
+  await page.getByTestId('stage1-target-n').fill('80');
+  await expect(page.getByTestId('stage1-result')).toBeHidden();
+});

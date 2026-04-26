@@ -5,6 +5,7 @@ export {
   marginalAggregates,
   coverageMetric,
   previewAllocation,
+  sortUnderfillsByGap,
   stage1ToMarkdownReport,
 } from './reporting';
 export type {

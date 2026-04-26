@@ -1,4 +1,4 @@
-import { Component, createMemo, createSignal, For, Show } from 'solid-js';
+import { Component, createEffect, createMemo, createSignal, For, on, Show } from 'solid-js';
 import { autoGuessMapping, parseCsvFile } from '../csv/parse';
 import type { ParsedCsv } from '../csv/parse';
 import { downloadBlob } from '../run/audit';
@@ -10,6 +10,7 @@ import {
   coverageMetric,
   marginalAggregates,
   previewAllocation,
+  sortUnderfillsByGap,
   stage1ToMarkdownReport,
 } from '@sortition/core';
 import type {
@@ -101,10 +102,22 @@ export const Stage1Panel: Component = () => {
   const underfills = createMemo(() => {
     const o = output();
     if (!o) return [];
-    return o.result.strata
-      .filter((s) => s.underfilled)
-      .sort((a, b) => b.n_h_target - a.n_h_target - (a.n_h_target - a.n_h_actual - (b.n_h_target - b.n_h_actual)));
+    return sortUnderfillsByGap(o.result.strata.filter((s) => s.underfilled));
   });
+
+  // Clear stale result when any input parameter changes after a successful
+  // run. `defer: true` prevents mount-time fire which would wipe state on
+  // first render. Only setOutput(null) when output() is non-null to avoid
+  // unnecessary re-renders.
+  createEffect(
+    on(
+      [targetN, selectedAxes, seed, parsed],
+      () => {
+        if (output() !== null) setOutput(null);
+      },
+      { defer: true },
+    ),
+  );
 
   async function handleFile(f: File) {
     setError(null);
@@ -260,8 +273,9 @@ export const Stage1Panel: Component = () => {
         <section class="space-y-3">
           <h2 class="text-xl font-semibold mb-1">3. Stichprobengröße und Seed</h2>
           <div class="flex items-center gap-3">
-            <label class="text-sm w-44">Stichprobengröße N</label>
+            <label class="text-sm w-44" for="stage1-target-n">Stichprobengröße N</label>
             <input
+              id="stage1-target-n"
               type="number"
               min="1"
               class="border rounded px-2 py-1 w-32 text-sm tabular-nums"
@@ -275,8 +289,9 @@ export const Stage1Panel: Component = () => {
             />
           </div>
           <div class="flex items-center gap-3">
-            <label class="text-sm w-44">Seed (deterministisch)</label>
+            <label class="text-sm w-44" for="stage1-seed">Seed (deterministisch)</label>
             <input
+              id="stage1-seed"
               type="number"
               class="border rounded px-2 py-1 w-44 text-sm tabular-nums"
               data-testid="stage1-seed"
