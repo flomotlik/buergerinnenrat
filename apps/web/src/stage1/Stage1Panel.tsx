@@ -7,6 +7,7 @@ import type { RunStage1Output } from './runStage1';
 import { AxisPicker } from './AxisPicker';
 import { AxisBreakdown } from './AxisBreakdown';
 import { AuditFooter } from './AuditFooter';
+import TrustStrip from './TrustStrip';
 import { CsvPreview } from '../csv/CsvPreview';
 import {
   coverageMetric,
@@ -232,6 +233,10 @@ export const Stage1Panel: Component = () => {
         </p>
       </header>
 
+      {/* Trust-signal strip (issue #54): three cards visible before the
+          upload so the operator sees the "why trust this" context first. */}
+      <TrustStrip />
+
       {/* Step 1: file upload */}
       <section>
         <h2 class="text-xl font-semibold mb-3">1. Melderegister-CSV hochladen</h2>
@@ -287,6 +292,10 @@ export const Stage1Panel: Component = () => {
               class="underline"
             >
               § 46 BMG
+            </a>
+            {' | '}
+            <a href="#/docs/bmg46" class="underline">
+              Mehr im Glossar zu § 46 BMG
             </a>
           </p>
         </aside>
