@@ -83,6 +83,27 @@ jobs:
       - name: Install Playwright browsers
         run: pnpm --filter @sortition/web exec playwright install --with-deps chromium
 
+      - name: Wait for live URL to propagate
+        env:
+          LIVE_BASE_URL: https://flomotlik.github.io/buergerinnenrat/
+        # actions/deploy-pages reports success the moment the artifact is
+        # published, but the GH Pages CDN can take 1-3 minutes to start
+        # serving the new artifact (especially on first-time activation).
+        # Poll until HTTP 200 with a 5-minute ceiling to avoid masking real
+        # outages.
+        run: |
+          for i in $(seq 1 30); do
+            code=$(curl -sS -o /dev/null -w "%{http_code}" "$LIVE_BASE_URL" || echo "000")
+            echo "Attempt $i: HTTP $code"
+            if [ "$code" = "200" ]; then
+              echo "Live URL is up."
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "Live URL did not return 200 within 5 minutes."
+          exit 1
+
       - name: Run live smoke tests
         env:
           LIVE_BASE_URL: https://flomotlik.github.io/buergerinnenrat/
