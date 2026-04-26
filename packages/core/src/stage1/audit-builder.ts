@@ -75,8 +75,13 @@ export async function buildStage1Audit(args: BuildStage1AuditArgs): Promise<Stag
   }));
 
   return {
-    schema_version: '0.1',
+    schema_version: '0.2',
     operation: 'stage1-versand',
+    algorithm_version: 'stage1@1.0.0',
+    prng: 'mulberry32',
+    tie_break_rule: 'largest-remainder, then largest n_h, then codepoint-smaller key',
+    key_encoding: 'json-compact-array-of-pairs',
+    stratum_sort: 'codepoint-ascending',
     seed: args.seed,
     seed_source: args.seedSource,
     input_csv_sha256: inputHash,
@@ -86,6 +91,7 @@ export async function buildStage1Audit(args: BuildStage1AuditArgs): Promise<Stag
     target_n: args.targetN,
     actual_n: args.result.selected.length,
     stratification_axes: args.axes,
+    selected_indices: [...args.result.selected],
     strata,
     warnings: args.result.warnings,
     timestamp_iso: new Date().toISOString(),

@@ -4,8 +4,13 @@ import { canonicalStage1Json, type Stage1AuditDoc } from '@sortition/core';
 
 function makeDoc(): Stage1AuditDoc {
   return {
-    schema_version: '0.1',
+    schema_version: '0.2',
     operation: 'stage1-versand',
+    algorithm_version: 'stage1@1.0.0',
+    prng: 'mulberry32',
+    tie_break_rule: 'largest-remainder, then largest n_h, then codepoint-smaller key',
+    key_encoding: 'json-compact-array-of-pairs',
+    stratum_sort: 'codepoint-ascending',
     seed: 42,
     seed_source: 'user',
     input_csv_sha256: 'a'.repeat(64),
@@ -15,6 +20,7 @@ function makeDoc(): Stage1AuditDoc {
     target_n: 4,
     actual_n: 4,
     stratification_axes: ['district'],
+    selected_indices: [0, 1, 5, 6],
     strata: [
       { key: { district: 'a' }, n_h_pool: 5, n_h_target: 2, n_h_actual: 2, underfilled: false },
       { key: { district: 'b' }, n_h_pool: 5, n_h_target: 2, n_h_actual: 2, underfilled: false },

@@ -82,7 +82,8 @@ describe('canonicalStage1Json', () => {
     });
     const json = canonicalStage1Json(doc);
     // The first top-level key in the canonical output must be the
-    // alphabetically smallest key — `actual_n`.
+    // alphabetically smallest key — `actual_n` (still smallest after the
+    // schema additions: 'algorithm_version', 'duration_ms', etc. all > 'a_').
     expect(json.startsWith('{"actual_n":')).toBe(true);
   });
 });
@@ -181,7 +182,7 @@ describe('buildStage1Audit', () => {
     expect(docAuto.seed_source).toBe('unix-time-default');
   });
 
-  it('sets schema_version=0.1 and operation=stage1-versand', async () => {
+  it('sets schema_version=0.2, operation=stage1-versand, and algorithm provenance fields', async () => {
     const rows = makeRows(20, ['a', 'b']);
     const result = stratify(rows, { axes: ['district'], targetN: 4, seed: 1 });
     const doc = await buildStage1Audit({
@@ -196,8 +197,32 @@ describe('buildStage1Audit', () => {
       result,
       durationMs: 1,
     });
-    expect(doc.schema_version).toBe('0.1');
+    expect(doc.schema_version).toBe('0.2');
     expect(doc.operation).toBe('stage1-versand');
+    expect(doc.algorithm_version).toBe('stage1@1.0.0');
+    expect(doc.prng).toBe('mulberry32');
+    expect(doc.tie_break_rule).toContain('largest-remainder');
+    expect(doc.key_encoding).toBe('json-compact-array-of-pairs');
+    expect(doc.stratum_sort).toBe('codepoint-ascending');
+  });
+
+  it('binds the audit to the actual selection via selected_indices', async () => {
+    const rows = makeRows(20, ['a', 'b']);
+    const result = stratify(rows, { axes: ['district'], targetN: 4, seed: 1 });
+    const doc = await buildStage1Audit({
+      inputBytes: enc.encode('x'),
+      filename: 'f.csv',
+      sizeBytes: 1,
+      axes: ['district'],
+      targetN: 4,
+      seed: 1,
+      seedSource: 'user',
+      poolSize: 20,
+      result,
+      durationMs: 1,
+    });
+    expect(doc.selected_indices).toEqual(result.selected);
+    expect(doc.selected_indices).not.toBe(result.selected); // defensive copy
   });
 
   it('emits an ISO 8601 UTC timestamp', async () => {

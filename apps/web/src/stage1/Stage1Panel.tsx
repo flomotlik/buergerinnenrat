@@ -224,6 +224,17 @@ export const Stage1Panel: Component = () => {
               ({seedSource() === 'user' ? 'manuell' : 'Default'})
             </span>
           </div>
+          <aside
+            class="text-xs text-slate-600 bg-amber-50 border border-amber-200 rounded p-3"
+            data-testid="stage1-seed-hint"
+          >
+            <strong>Hinweis zum Seed:</strong> Wählen Sie den Seed-Wert{' '}
+            <em>gemeinsam in der Verfahrens-Sitzung</em> (z.B. eine Zahl, die alle
+            Anwesenden vereinbaren — Lottozahlen, Datum, Würfelwurf). Er steht im
+            Audit-Protokoll und macht den Lauf reproduzierbar. Bewusst
+            öffentlich-vor-Lauf wählen verhindert, dass die Auswahl unbemerkt
+            durch Probieren verschiedener Seeds beeinflusst werden kann.
+          </aside>
           <div>
             <button
               type="button"

@@ -42,7 +42,13 @@ Verglichen werden: `selected[]`-Indizes, vollständige Strata-Tabelle, Warnungen
 - Mittlere relative Abweichung Beobachtet/Erwartet: **5,19 %**
 - Stratum-Level Selektion-Summen: **alle exakt** = N_TRIALS · n_h_target (perfekt erwartungstreu, weil Hamilton-Allocation deterministisch ist)
 
-**Bewertung:** Unter Unbiasedness erwarten wir bei 946 unabhängigen Tests im Mittel ~0,06 Verletzungen der 4-Sigma-Grenze (P(|z|>4) ≈ 6.3·10⁻⁵). Das beobachtete Maximum von |z|=3,72 ist konsistent mit zufälliger Variation. **Kein Hinweis auf systematischen Bias.**
+**Bewertung:**
+
+- Mit 946 Personen-Tests **muss** Multiplicity korrigiert werden. Die Wahrscheinlichkeit, **mindestens ein** |z|>3,72 unter H₀ zu sehen, ist **1 − (1 − 2·Φ(−3,72))^946 ≈ 18 %** — also nicht überraschend.
+- Die belastbare Aussage ist: Bonferroni-korrigiert für 946 Tests ist die kritische Schwelle nicht 4σ, sondern **Φ⁻¹(1 − 0,025/946) ≈ 4,29σ**. Das beobachtete Max |z|=3,72 unterschreitet **auch die korrigierte Schwelle deutlich** — kein Hinweis auf systematischen Bias.
+- **Detektions-Stärke (Power) für N_TRIALS=2000:** Bei p≈0,10 ist eine systematische Bias-Verschiebung von |Δp| ≥ 2,7 % mit ~80 % Wahrscheinlichkeit erkennbar. Kleinere Verschiebungen würden mehr Trials benötigen.
+
+**Konsequenz:** Kein systematischer Bias detektiert; das ist bei dieser Test-Stärke aussagekräftig für Bias-Größen ab ~2,7 %.
 
 ## Was die Tests ausschließen
 

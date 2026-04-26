@@ -36,7 +36,7 @@ Alle Stratum-Schlüssel werden **lexikographisch sortiert** (Codepoint-Order). D
 
 **Warum lex-Sortierung?** Determinismus. Hash-basierte Map-Iteration ist in JS und Python implementations-spezifisch. Lex-Order ist eindeutig und in beiden Sprachen identisch (für ASCII-only Achsenwerte).
 
-**Warnung für nicht-ASCII Werte:** TS `String.prototype.localeCompare` ist locale-abhängig, Python `sorted()` ist Codepoint-basiert. Für deutsche Achsenwerte (z.B. Bezirksnamen mit "ä", "ö", "ü") können die Reihenfolgen voneinander abweichen. Heute werden alle Achsenwerte in den Test-Fixtures ASCII-only gehalten; bei realen Daten sollte vor Stage 1 normalisiert werden (NFD oder Transliteration). **Bekannte Limitation, dokumentiert in #45 Out of Scope.**
+**Codepoint-Sort statt localeCompare:** TS-Implementation nutzt explizit Codepoint-Vergleich (`a < b ? -1 : a > b ? 1 : 0`), nicht `String.prototype.localeCompare`. Damit sind TS- und Python-Sort byte-identisch auch für deutsche Bezirksnamen mit "ä", "ö", "ü". Verifiziert im Cross-Validation-Test "umlaut-pool, codepoint sort verified" und in Unit-Tests `stage1-stratify.test.ts §codepoint sort (Umlaut robustness)`.
 
 ### Schritt 3 — Largest-Remainder-Allokation (Hamilton-Methode)
 
@@ -74,7 +74,7 @@ Pro Stratum: `floor_h = floor(quota_h)`. Im Beispiel: `floor = 8`.
 - Tie-Break: Reste 0.5 vs 0.5 — größeres N_h gewinnt, also Stratum 3 (N_h=4)? Aber das hat Rest 0.0. Unter den 0.5-Resten ist N_h gleich (3 und 3) — also lex-kleinerer Schlüssel gewinnt.
 - Allocation: [2, 1, 2] ODER [1, 2, 2] je nach Schlüssel-Order. Summe = 5. ✓
 
-**Warum Hamilton statt z.B. Sainte-Laguë?** Hamilton ist die einfachste Methode mit garantiertem `sum(n_h) = target_N` und ist die DACH-Standard-Praxis in der amtlichen Statistik. Sainte-Laguë und d'Hondt haben andere Bias-Eigenschaften, die hier nicht gewollt sind (würden große Strata bevorzugen).
+**Warum Hamilton statt z.B. Sainte-Laguë?** Hamilton (Largest-Remainder) ist die kanonische Wahl für **proportionale Stichproben-Allokation** in Stratified Sampling — beschrieben in Cochran, *Sampling Techniques* (3. Auflage), Kapitel 5.5. Eigenschaften: garantiert `sum(n_h) = target_N` exakt, jedes Stratum erhält entweder `floor(quota)` oder `ceil(quota)` Plätze (keine "outlier"-Allocations). Sainte-Laguë und d'Hondt sind primär **Sitzverteilungs-Methoden** für Wahlsysteme — beide bevorzugen größere Strata systematisch und sind hier nicht angemessen. Der bekannte Nachteil von Hamilton (Alabama-Paradox: Allocation kann sinken bei wachsendem `target_N`) tritt hier nicht auf, da `target_N` pro Lauf fix ist.
 
 ### Schritt 4 — Pro Stratum ziehen (Fisher-Yates mit Mulberry32)
 
@@ -134,9 +134,9 @@ Das produziert eine **menschen-lesbare CSV-Reihenfolge** (Bezirk 01 vor Bezirk 0
 
 1. **Kein Soft-Constraint-Modus.** Die Allocation ist hart-proportional, kein Toleranz-Korridor. Bei bestimmten Zahlenkonstellationen kann Stratum-Underfill auftreten, der als Warnung im Audit auftaucht.
 2. **Keine Redistribution bei Underfill.** Wenn Stratum X 3 Plätze sollte aber nur 2 hat, wird der eine fehlende Platz **nicht** an ein anderes Stratum weitergegeben. Begründung: Determinismus-Erhalt + die Verwaltung sollte Underfills sehen, nicht weg-glätten.
-3. **Locale-Sortierung von Stratum-Schlüsseln.** TS `localeCompare()` und Python `sorted()` unterscheiden sich bei Nicht-ASCII-Achsenwerten. Heute werden alle Test-Fixtures ASCII-only gehalten. Reale Eingangsdaten mit deutschen Umlauten in Bezirksnamen sollten vor Stage 1 transliteriert werden.
-4. **Kein disjunktes Ziehen aus mehreren Wellen.** Wenn man "300 mehr Briefe disjunkt zur ersten 300er-Welle" braucht, ist das Issue #48 (Nachhol-Operation 3a), nicht in Stage-1-Scope.
-5. **Kein Kreuz-Stratum-Constraint.** Z.B. "mindestens 5 Personen aus jeder Kombination Bezirk × Altersband" geht **nicht** mit Hamilton. Falls gewünscht, wäre Iterative Proportional Fitting (IPF) der nächste Schritt — nicht in Iteration 2.
+3. **Kein disjunktes Ziehen aus mehreren Wellen.** Wenn man "300 mehr Briefe disjunkt zur ersten 300er-Welle" braucht, ist das Issue #48 (Nachhol-Operation 3a), nicht in Stage-1-Scope.
+4. **Kein Kreuz-Stratum-Constraint.** Z.B. "mindestens 5 Personen aus jeder Kombination Bezirk × Altersband" geht **nicht** mit Hamilton. Falls gewünscht, wäre Iterative Proportional Fitting (IPF) der nächste Schritt — nicht in Iteration 2.
+5. **Mulberry32 ist deterministischer PRNG, nicht kryptographisch.** 4,29 Mrd Outcomes pro Eingabe-Konfiguration. Das ist mehr als ausreichend für statistisch unbiased Auswahl. Theoretisches Adversarial-Risiko: ein Operator mit alleinigem Zugriff könnte vor der eigentlichen Auslosung verschiedene Seeds offline durchprobieren, bis ein "günstiges" Ergebnis kommt, dann den günstigen Seed signieren. **Soziale Mitigation:** Seed wird in der Verfahrens-Sitzung **gemeinsam und öffentlich vor dem Lauf** gewählt — UI-Hinweis dokumentiert das.
 
 ## Verifikation auf einem Beispiel
 

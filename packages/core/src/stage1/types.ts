@@ -52,8 +52,30 @@ export type Stage1SeedSource = 'user' | 'unix-time-default';
 
 /** Stage 1 audit JSON document. Signature fields are filled in by the web layer. */
 export interface Stage1AuditDoc {
-  schema_version: '0.1';
+  /** Schema version of the audit document itself. Bump on breaking shape changes. */
+  schema_version: '0.2';
   operation: 'stage1-versand';
+  /**
+   * Algorithm version: identifier of the algorithm + tie-break + key-encoding
+   * convention used to produce this output. Bump if any of those change so
+   * that older audit docs cannot be silently re-played with the new code.
+   */
+  algorithm_version: 'stage1@1.0.0';
+  /** PRNG identifier — currently always 'mulberry32'. */
+  prng: 'mulberry32';
+  /**
+   * Hamilton tie-break rule, recorded so future verifiers know how to
+   * reproduce. Order matters: largest remainder, then largest N_h, then
+   * codepoint-smaller stratum key.
+   */
+  tie_break_rule: 'largest-remainder, then largest n_h, then codepoint-smaller key';
+  /**
+   * Stratum key encoding format. Future verifiers need to know how
+   * `(axis, value)` pairs are folded into a comparable string.
+   */
+  key_encoding: 'json-compact-array-of-pairs';
+  /** Stratum sort order (used for the `selected[]` output as well). */
+  stratum_sort: 'codepoint-ascending';
   seed: number;
   seed_source: Stage1SeedSource;
   /** SHA-256 (lowercase hex) of the raw bytes of the uploaded CSV. */
@@ -65,6 +87,14 @@ export interface Stage1AuditDoc {
   /** Actual number of people drawn (= `selected.length`; can be < target_n on underfill). */
   actual_n: number;
   stratification_axes: string[];
+  /**
+   * Selected row indices (0-based, into the original input rows AS PARSED).
+   * Order: lex stratum order, then ascending original-index within stratum
+   * (matches StratifyResult.selected). Binding the audit signature to the
+   * actual selection — without this field, a signed audit could be paired
+   * with a different output CSV.
+   */
+  selected_indices: number[];
   /** Per-stratum table, sorted by lexicographic stratum key. */
   strata: Array<{
     key: Record<string, string>;
