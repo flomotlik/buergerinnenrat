@@ -29,6 +29,7 @@ const FIXTURE = resolve(
   '../../../../tests/fixtures/synthetic-pools/kleinstadt-bezirkshauptort-n500-s42-t070.csv',
 );
 const ITER_DIR = resolve(HERE, '../../../../.issues/56-ui-visual-redesign/iteration');
+const FINAL_DIR = resolve(HERE, '../../../../.issues/56-ui-visual-redesign/after-screenshots');
 
 const VIEWPORTS = [
   { name: 'desktop', width: 1280, height: 800 },
@@ -72,6 +73,77 @@ const STEPS: StepDef[] = [
   // Sub-page sample (algorithmus has lots of text + a toy example SVG).
   { name: '05-docs-algorithmus', hash: '#/docs/algorithmus', anchorTestId: 'docs-page-algorithmus' },
 ];
+
+// ----------------------------------------------------------------------- *
+// Final post-redesign suite — mirrors the names in `before-screenshots/` so
+// reviewers can diff vorher (committed alongside the issue) vs nachher.
+// ----------------------------------------------------------------------- *
+interface FinalShot {
+  name: string;
+  hash: string;
+  /** Test-ID anchor to wait for. */
+  anchorTestId: string;
+  runStage1?: boolean;
+  /** If set, after upload + N + seed-confirm, also click run and wait for result. */
+  runStage1ToResult?: boolean;
+}
+
+const FINAL_SHOTS: FinalShot[] = [
+  // Mirror the before-screenshots/ filenames.
+  { name: '01-stage3-default', hash: '#/stage3', anchorTestId: 'main-nav' },
+  { name: '02-stage1-empty', hash: '#/stage1', anchorTestId: 'stage1-trust-strip' },
+  { name: '03-docs-hub', hash: '#/docs', anchorTestId: 'docs-hub' },
+  {
+    name: '04-docs-algo',
+    hash: '#/docs/algorithmus',
+    anchorTestId: 'docs-page-algorithmus',
+  },
+  // Bonus shots to capture the full Stage-1 result flow.
+  {
+    name: '05-stage1-with-result',
+    hash: '#/stage1',
+    anchorTestId: 'stage1-panel',
+    runStage1ToResult: true,
+  },
+];
+
+for (const shot of FINAL_SHOTS) {
+  for (const vp of VIEWPORTS) {
+    test(`final-${shot.name}-${vp.name}`, async ({ browser }) => {
+      const ctx = await browser.newContext({
+        viewport: { width: vp.width, height: vp.height },
+        deviceScaleFactor: 2,
+      });
+      const page = await ctx.newPage();
+      await page.goto(shot.hash || '/');
+      await page.waitForLoadState('networkidle');
+      await page
+        .getByTestId(shot.anchorTestId)
+        .waitFor({ state: 'visible', timeout: 10_000 });
+
+      if (shot.runStage1ToResult) {
+        await page.locator('[data-testid="stage1-csv-upload"]').setInputFiles({
+          name: 'pool.csv',
+          mimeType: 'text/csv',
+          buffer: readFileSync(FIXTURE),
+        });
+        await page.getByTestId('stage1-pool-summary').waitFor({ state: 'visible' });
+        await page.getByTestId('stage1-target-n').fill('50');
+        await page.getByTestId('stage1-seed-confirm').click();
+        await page.getByTestId('stage1-run').click();
+        await page.getByTestId('stage1-result').waitFor({ state: 'visible' });
+        await page.waitForTimeout(200);
+      }
+
+      await page.waitForTimeout(150);
+      await page.screenshot({
+        path: resolve(FINAL_DIR, `${shot.name}-${vp.name}.png`),
+        fullPage: true,
+      });
+      await ctx.close();
+    });
+  }
+}
 
 for (const step of STEPS) {
   for (const state of (['before', 'after'] as const satisfies readonly State[])) {
