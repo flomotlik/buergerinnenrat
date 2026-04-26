@@ -11,6 +11,7 @@ const Verifikation = lazy(() => import('./Verifikation'));
 const Glossar = lazy(() => import('./Glossar'));
 const Bmg46 = lazy(() => import('./Bmg46'));
 const Limitationen = lazy(() => import('./Limitationen'));
+const Beispiele = lazy(() => import('./Beispiele'));
 
 interface Props {
   docsRoute: () => DocsRoute;
@@ -53,6 +54,20 @@ const TILES: ReadonlyArray<TileDef> = [
         <line x1="8" y1="6" x2="16" y2="6" />
         <line x1="6" y1="8" x2="11" y2="16" />
         <line x1="18" y1="8" x2="13" y2="16" />
+      </svg>
+    ),
+  },
+  {
+    slug: 'beispiele',
+    title: 'Beispiel-Daten',
+    description: 'CSV-Dateien zum Download — den ganzen Workflow direkt ausprobieren.',
+    // File icon with download arrow — signals "data file / download".
+    icon: (
+      <svg {...SVG_BASE} class={ICON_CLASS}>
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+        <polyline points="14 2 14 8 20 8" />
+        <line x1="12" y1="18" x2="12" y2="12" />
+        <polyline points="9 15 12 18 15 15" />
       </svg>
     ),
   },
@@ -136,6 +151,7 @@ const TITLES: Record<Exclude<DocsRoute, 'hub'>, string> = {
   glossar: 'Glossar',
   bmg46: '§ 46 BMG',
   limitationen: 'Limitationen',
+  beispiele: 'Beispiel-Daten',
 };
 
 /** Map a non-hub route to its component. */
@@ -153,6 +169,8 @@ function renderSubpage(route: Exclude<DocsRoute, 'hub'>) {
       return <Bmg46 />;
     case 'limitationen':
       return <Limitationen />;
+    case 'beispiele':
+      return <Beispiele />;
   }
 }
 

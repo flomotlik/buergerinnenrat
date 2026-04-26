@@ -57,7 +57,8 @@ export type DocsRoute =
   | 'verifikation'
   | 'glossar'
   | 'bmg46'
-  | 'limitationen';
+  | 'limitationen'
+  | 'beispiele';
 
 const DOCS_ROUTES: ReadonlySet<DocsRoute> = new Set<DocsRoute>([
   'hub',
@@ -67,6 +68,7 @@ const DOCS_ROUTES: ReadonlySet<DocsRoute> = new Set<DocsRoute>([
   'glossar',
   'bmg46',
   'limitationen',
+  'beispiele',
 ]);
 
 interface ParsedHash {
