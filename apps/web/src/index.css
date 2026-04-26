@@ -14,10 +14,15 @@
   body > div > nav,
   [data-testid='tab-stage1'],
   [data-testid='tab-stage3'],
+  [data-testid='tab-docs'],
   [data-testid='stage1-bmg-hint'],
   [data-testid='stage1-seed-hint'],
   [data-testid='stage1-preview'],
-  [data-testid='stage1-run'] {
+  [data-testid='stage1-run'],
+  [data-testid='stage1-trust-strip'],
+  [data-testid^='docs-tile-'],
+  [data-testid='docs-back-to-hub'],
+  [data-testid^='copy-snippet-'] {
     display: none !important;
   }
 
@@ -47,6 +52,35 @@
   }
   .stage1-report svg {
     page-break-inside: avoid;
+  }
+
+  /* ---- Docs subpages — print-friendly defaults ---- */
+  /* Strip the docs layout chrome (background, shadows) and tighten the
+     typography so a printed audit packet stays under 11 pt. */
+  [data-testid^='docs-page-'],
+  [data-testid^='docs-page-'] * {
+    background: transparent !important;
+    color: #000 !important;
+    box-shadow: none !important;
+  }
+  [data-testid^='docs-page-'] {
+    font-size: 10pt;
+  }
+  [data-testid^='docs-page-'] h1,
+  [data-testid^='docs-page-'] h2,
+  [data-testid^='docs-page-'] h3 {
+    page-break-after: avoid;
+  }
+  [data-testid^='docs-page-'] svg,
+  [data-testid^='docs-page-'] table {
+    page-break-inside: avoid;
+  }
+  /* Force collapsible algorithm details open so the print carries them. */
+  [data-testid^='docs-page-'] details {
+    display: block !important;
+  }
+  [data-testid^='docs-page-'] details > *:not(summary) {
+    display: block !important;
   }
 }
 
