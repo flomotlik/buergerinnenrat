@@ -73,7 +73,7 @@ export const App: Component = () => {
         <nav class="flex gap-2 border-b border-slate-200" data-testid="main-nav">
           <button
             type="button"
-            class="px-3 py-1.5 text-sm border-b-2 -mb-px"
+            class="px-3 py-1.5 text-sm border-b-2 -mb-px text-left"
             classList={{
               'border-slate-900 font-semibold text-slate-900': mode() === 'stage1',
               'border-transparent text-slate-500 hover:text-slate-700': mode() !== 'stage1',
@@ -81,11 +81,14 @@ export const App: Component = () => {
             onClick={() => setMode('stage1')}
             data-testid="tab-stage1"
           >
-            Versand-Liste ziehen
+            <span class="block">Stage 1 / Versand-Liste</span>
+            <span class="block text-xs font-normal text-slate-500">
+              Aus Melderegister
+            </span>
           </button>
           <button
             type="button"
-            class="px-3 py-1.5 text-sm border-b-2 -mb-px"
+            class="px-3 py-1.5 text-sm border-b-2 -mb-px text-left"
             classList={{
               'border-slate-900 font-semibold text-slate-900': mode() === 'stage3',
               'border-transparent text-slate-500 hover:text-slate-700': mode() !== 'stage3',
@@ -93,7 +96,10 @@ export const App: Component = () => {
             onClick={() => setMode('stage3')}
             data-testid="tab-stage3"
           >
-            Panel ziehen
+            <span class="block">Stage 3 / Panel ziehen</span>
+            <span class="block text-xs font-normal text-slate-500">
+              Aus Antwortenden
+            </span>
           </button>
         </nav>
       </header>

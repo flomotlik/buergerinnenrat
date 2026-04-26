@@ -173,3 +173,80 @@ test('stage 1: Run-Button bleibt disabled bis Seed bestätigt oder editiert wurd
   await expect(page.getByTestId('stage1-seed-source')).toContainText('manuell');
   await expect(page.getByTestId('stage1-run')).toBeEnabled();
 });
+
+test('stage 1: Run-Button ist sticky positioniert (D)', async ({ page }) => {
+  await page.goto('/');
+  await page.getByTestId('tab-stage1').click();
+  await page.locator('[data-testid="stage1-csv-upload"]').setInputFiles({
+    name: 'pool.csv',
+    mimeType: 'text/csv',
+    buffer: readFileSync(FIXTURE),
+  });
+  await page.getByTestId('stage1-target-n').fill('30');
+  // Run button itself stays inline; the wrapping container has the sticky
+  // class. Asserting CSS on the wrapper avoids tying the test to a Tailwind
+  // utility class change.
+  const wrapper = page.locator('[data-testid="stage1-run"]').locator('..');
+  await expect(wrapper).toHaveCSS('position', 'sticky');
+});
+
+test('stage 1: SVG-Bars haben title-Children und Pattern-Defs (E, a11y)', async ({ page }) => {
+  await page.goto('/');
+  await page.getByTestId('tab-stage1').click();
+  await page.locator('[data-testid="stage1-csv-upload"]').setInputFiles({
+    name: 'pool.csv',
+    mimeType: 'text/csv',
+    buffer: readFileSync(FIXTURE),
+  });
+  await page.getByTestId('stage1-target-n').fill('40');
+  await page.getByTestId('stage1-seed-confirm').click();
+  await page.getByTestId('stage1-run').click();
+  await expect(page.getByTestId('stage1-result')).toBeVisible({ timeout: 5_000 });
+
+  // Pattern <defs> entry exists for at least one axis (district is in the
+  // fixture's recommended set). Pre-run preview and post-run result each
+  // render their own AxisBreakdown for district, with mode-suffixed IDs to
+  // avoid SVG <defs> collisions.
+  await expect(page.locator('#stripes-district-result')).toHaveCount(1);
+  // At least one Soll bar uses the result-mode pattern fill.
+  await expect(
+    page.locator('rect[fill="url(#stripes-district-result)"]').first(),
+  ).toBeVisible();
+  // At least one rect carries a <title> describing Soll or Ist.
+  const firstTitle = await page
+    .locator('[data-testid="stage1-axis-breakdown-district"] rect title')
+    .first()
+    .textContent();
+  expect(firstTitle ?? '').toMatch(/Soll:|Ist:/);
+  // SVG <desc> aggregate summary present.
+  const desc = await page
+    .locator('[data-testid="stage1-axis-breakdown-district"] svg desc')
+    .first()
+    .textContent();
+  expect(desc ?? '').toContain('Merkmal district');
+});
+
+test('stage 1: CSV-Vorschau-Tabelle erscheint nach Upload (I)', async ({ page }) => {
+  await page.goto('/');
+  await page.getByTestId('tab-stage1').click();
+  await page.locator('[data-testid="stage1-csv-upload"]').setInputFiles({
+    name: 'pool.csv',
+    mimeType: 'text/csv',
+    buffer: readFileSync(FIXTURE),
+  });
+  // Stage 1 uses the new shared <CsvPreview>; default 5 data rows.
+  await expect(page.getByTestId('csv-preview-table')).toBeVisible();
+  const dataRows = page
+    .locator('[data-testid="csv-preview-table"] tbody tr');
+  expect(await dataRows.count()).toBe(5);
+});
+
+test('stage 1: Tabs zeigen Untertitel + Schritt-Header (F)', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.getByTestId('tab-stage1')).toContainText('Aus Melderegister');
+  await expect(page.getByTestId('tab-stage3')).toContainText('Aus Antwortenden');
+  await page.getByTestId('tab-stage1').click();
+  await expect(page.getByTestId('stage1-step-header')).toContainText(
+    'Schritt 1 von 3',
+  );
+});

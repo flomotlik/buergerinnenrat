@@ -7,6 +7,7 @@ import type { RunStage1Output } from './runStage1';
 import { AxisPicker } from './AxisPicker';
 import { AxisBreakdown } from './AxisBreakdown';
 import { AuditFooter } from './AuditFooter';
+import { CsvPreview } from '../csv/CsvPreview';
 import {
   coverageMetric,
   marginalAggregates,
@@ -222,6 +223,15 @@ export const Stage1Panel: Component = () => {
 
   return (
     <div class="space-y-6" data-testid="stage1-panel">
+      {/* Workflow context for the operator (issue #53 F): the page is one
+          step of a three-stage process; the prefix orients the operator
+          before the upload section. */}
+      <header data-testid="stage1-step-header">
+        <p class="text-xs uppercase tracking-wide text-slate-500">
+          Schritt 1 von 3 — Versand-Liste ziehen
+        </p>
+      </header>
+
       {/* Step 1: file upload */}
       <section>
         <h2 class="text-xl font-semibold mb-3">1. Melderegister-CSV hochladen</h2>
@@ -236,11 +246,18 @@ export const Stage1Panel: Component = () => {
         />
         <Show when={parsed()}>
           {(p) => (
-            <p class="mt-2 text-sm text-slate-700" data-testid="stage1-pool-summary">
-              {p().rows.length} Zeilen geladen ({p().headers.length} Spalten,{' '}
-              {p().separator === '\t' ? 'TAB' : p().separator}-getrennt, Encoding{' '}
-              <code>{p().encoding}</code>).
-            </p>
+            <>
+              <p class="mt-2 text-sm text-slate-700" data-testid="stage1-pool-summary">
+                {p().rows.length} Zeilen geladen ({p().headers.length} Spalten,{' '}
+                {p().separator === '\t' ? 'TAB' : p().separator}-getrennt, Encoding{' '}
+                <code>{p().encoding}</code>).
+              </p>
+              {/* CSV preview (issue #53 I): first 5 rows so the operator can
+                  visually confirm the upload before configuring axes. */}
+              <div class="mt-3">
+                <CsvPreview headers={p().headers} rows={p().rows} />
+              </div>
+            </>
           )}
         </Show>
         <Show when={error()}>
@@ -389,20 +406,106 @@ export const Stage1Panel: Component = () => {
                   (preview().result?.underfillStrata ?? 0) > 0
                 }
               >
-                <div class="text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded p-2">
+                <div class="text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded p-2 space-y-2">
                   <Show when={(preview().result?.zeroAllocationStrata ?? 0) > 0}>
-                    <p>
-                      <strong>{preview().result?.zeroAllocationStrata}</strong>{' '}
-                      Bevölkerungsgruppen bekommen nach proportionaler Allokation{' '}
-                      <strong>0 Personen</strong>. Sind das Gruppen, die bewusst
-                      leer bleiben sollen, oder zu viele/zu feine Merkmale?
-                    </p>
+                    {(() => {
+                      const zeros = (preview().result?.rows ?? []).filter(
+                        (r) => r.n_h_target === 0,
+                      );
+                      const head = zeros.slice(0, 5);
+                      const tail = zeros.slice(5);
+                      return (
+                        <div data-testid="stage1-preview-zero-list">
+                          <p>
+                            <strong>{zeros.length}</strong>{' '}
+                            Bevölkerungsgruppen bekommen nach proportionaler
+                            Allokation <strong>0 Personen</strong>. Sind das
+                            Gruppen, die bewusst leer bleiben sollen, oder
+                            zu viele/zu feine Merkmale?
+                          </p>
+                          <ul class="font-mono mt-1 space-y-0.5">
+                            <For each={head}>
+                              {(r) => (
+                                <li>
+                                  {Object.entries(r.key)
+                                    .map(([k, v]) => `${k}=${v}`)
+                                    .join(', ')}
+                                  : Pool {r.n_h_pool}, Soll {r.n_h_target}
+                                </li>
+                              )}
+                            </For>
+                          </ul>
+                          <Show when={tail.length > 0}>
+                            <details class="mt-1">
+                              <summary class="cursor-pointer underline">
+                                weitere {tail.length} anzeigen
+                              </summary>
+                              <ul class="font-mono mt-1 space-y-0.5">
+                                <For each={tail}>
+                                  {(r) => (
+                                    <li>
+                                      {Object.entries(r.key)
+                                        .map(([k, v]) => `${k}=${v}`)
+                                        .join(', ')}
+                                      : Pool {r.n_h_pool}, Soll {r.n_h_target}
+                                    </li>
+                                  )}
+                                </For>
+                              </ul>
+                            </details>
+                          </Show>
+                        </div>
+                      );
+                    })()}
                   </Show>
                   <Show when={(preview().result?.underfillStrata ?? 0) > 0}>
-                    <p>
-                      <strong>{preview().result?.underfillStrata}</strong>{' '}
-                      Bevölkerungsgruppen werden unterbesetzt sein (Pool zu klein für Soll).
-                    </p>
+                    {(() => {
+                      const unders = (preview().result?.rows ?? []).filter(
+                        (r) => r.wouldUnderfill,
+                      );
+                      const head = unders.slice(0, 5);
+                      const tail = unders.slice(5);
+                      return (
+                        <div data-testid="stage1-preview-underfill-list">
+                          <p>
+                            <strong>{unders.length}</strong>{' '}
+                            Bevölkerungsgruppen werden unterbesetzt sein (Pool
+                            zu klein für Soll).
+                          </p>
+                          <ul class="font-mono mt-1 space-y-0.5">
+                            <For each={head}>
+                              {(r) => (
+                                <li>
+                                  {Object.entries(r.key)
+                                    .map(([k, v]) => `${k}=${v}`)
+                                    .join(', ')}
+                                  : Pool {r.n_h_pool}, Soll {r.n_h_target}
+                                </li>
+                              )}
+                            </For>
+                          </ul>
+                          <Show when={tail.length > 0}>
+                            <details class="mt-1">
+                              <summary class="cursor-pointer underline">
+                                weitere {tail.length} anzeigen
+                              </summary>
+                              <ul class="font-mono mt-1 space-y-0.5">
+                                <For each={tail}>
+                                  {(r) => (
+                                    <li>
+                                      {Object.entries(r.key)
+                                        .map(([k, v]) => `${k}=${v}`)
+                                        .join(', ')}
+                                      : Pool {r.n_h_pool}, Soll {r.n_h_target}
+                                    </li>
+                                  )}
+                                </For>
+                              </ul>
+                            </details>
+                          </Show>
+                        </div>
+                      );
+                    })()}
                   </Show>
                 </div>
               </Show>
@@ -415,7 +518,14 @@ export const Stage1Panel: Component = () => {
               </Show>
             </div>
           </Show>
-          <div>
+          {/* Sticky run-button footer (issue #53 D, variant 1). The wrapper
+              uses position:sticky so the button stays anchored to the viewport
+              bottom while the user scrolls the preview. The negative margin
+              + padding pair compensates the parent section padding so the
+              white background spans the full section width. Print drops
+              sticky and renders statically so the button does not float at
+              the bottom of every printed page. */}
+          <div class="sticky bottom-0 -mx-4 px-4 pt-2 pb-2 bg-white border-t z-10 print:static print:border-0 print:p-0 print:bg-transparent">
             <button
               type="button"
               class="px-4 py-1.5 bg-slate-900 text-white rounded text-sm disabled:opacity-50"
