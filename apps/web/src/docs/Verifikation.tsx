@@ -1,5 +1,6 @@
 import { createSignal, For } from 'solid-js';
 import type { Component } from 'solid-js';
+import Term from './Term';
 
 interface Snippet {
   id: string;
@@ -61,11 +62,10 @@ const Verifikation: Component = () => {
       <section class="space-y-3">
         <p>
           Jeder Stage-1-Lauf produziert ein signiertes{' '}
-          {/* TODO Task 16: replace with Term slug "audit-json" */}
-          Audit-JSON. Mit der nativen Python-Referenz lässt sich der Lauf
-          byte-exakt nachrechnen — das ist der Auditor:innen-Pfad: was im
-          Browser passiert, kann auf einem unabhängigen Rechner ohne diese
-          App reproduziert werden.
+          <Term slug="audit-json">Audit-JSON</Term>. Mit der nativen
+          Python-Referenz lässt sich der Lauf byte-exakt nachrechnen — das
+          ist der Auditor:innen-Pfad: was im Browser passiert, kann auf
+          einem unabhängigen Rechner ohne diese App reproduziert werden.
         </p>
       </section>
 
@@ -77,10 +77,8 @@ const Verifikation: Component = () => {
             <p class="text-sm mt-1">
               Im Stage-1-Ergebnis-Bereich auf{' '}
               <em>„Audit-JSON herunterladen"</em> klicken. Das JSON enthält
-              den{' '}
-              {/* TODO Task 16: replace with Term slug "seed" */}
-              Seed, die Achsen, die gezogenen Personen-Indizes und die
-              Signatur.
+              den <Term slug="seed">Seed</Term>, die Achsen, die gezogenen
+              Personen-Indizes und die Signatur.
             </p>
           </li>
           <li>
@@ -101,8 +99,7 @@ const Verifikation: Component = () => {
               <code>scripts/stage1_reference.py</code> übergeben. Anschließend{' '}
               <code>selected_indices</code> aus beiden JSONs sortieren und
               vergleichen — sie müssen{' '}
-              {/* TODO Task 16: replace with Term slug "byte-identisch" */}
-              byte-identisch sein.
+              <Term slug="byte-identisch">byte-identisch</Term> sein.
             </p>
           </li>
         </ol>

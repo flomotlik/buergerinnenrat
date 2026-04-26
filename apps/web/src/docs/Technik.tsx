@@ -2,6 +2,7 @@ import { For, Show } from 'solid-js';
 import type { Component } from 'solid-js';
 import { TECH_MANIFEST } from '../generated/tech-manifest';
 import type { TechEntry } from '../generated/tech-manifest';
+import Term from './Term';
 
 const SPECIAL_NAMES = new Set([
   'Hamilton Apportionment',
@@ -183,10 +184,9 @@ const Technik: Component = () => {
                 </p>
                 <p class="text-xs">
                   <strong>Warum hier:</strong> deterministisch, reproduzierbar
-                  aus dem Seed; klein genug, um in jedem Audit-Schreiben zitiert
-                  zu werden.{' '}
-                  {/* TODO Task 16: replace with Term slug "mulberry32" */}
-                  <strong>Achtung:</strong> Mulberry32 ist <em>kein</em>{' '}
+                  aus dem Seed; klein genug, um in jedem Audit-Schreiben
+                  zitiert zu werden. <strong>Achtung:</strong>{' '}
+                  <Term slug="mulberry32">Mulberry32</Term> ist <em>kein</em>{' '}
                   crypto-grade RNG — siehe Limitationen-Seite. Mitigation:
                   Seed gemeinsam vor dem Lauf vereinbaren.
                 </p>
@@ -197,8 +197,8 @@ const Technik: Component = () => {
             {(e) => (
               <div class="border rounded p-3 bg-white space-y-1">
                 <div class="font-semibold">
-                  {/* TODO Task 16: replace with Term slug "signatur" */}
-                  Ed25519/ECDSA-Signatur via Web Crypto API
+                  <Term slug="signatur">Ed25519/ECDSA-Signatur</Term> via Web
+                  Crypto API
                 </div>
                 <p class="text-xs">
                   Quelle:{' '}
@@ -214,10 +214,11 @@ const Technik: Component = () => {
                 </p>
                 <p class="text-xs">
                   <strong>Warum hier:</strong>{' '}
-                  {/* TODO Task 16: replace with Term slug "audit-json" */}
-                  Audit-Protokoll-Integrität ohne Custom-Krypto. Browser-API,
-                  kein zusätzlicher Code im Bundle.{' '}
-                  {/* TODO Task 16: replace with Term slug "fisher-yates" */}
+                  <Term slug="audit-json">Audit-Protokoll</Term>-Integrität
+                  ohne Custom-Krypto. Browser-API, kein zusätzlicher Code im
+                  Bundle. Wird auf den{' '}
+                  <Term slug="fisher-yates">Fisher-Yates</Term>-Output
+                  angewendet.
                 </p>
               </div>
             )}

@@ -1,0 +1,136 @@
+[
+  {
+    "slug": "stratum",
+    "term": "Bevölkerungsgruppe (Stratum)",
+    "kurz": "Eine Untergruppe der Bevölkerung, definiert durch eine Kombination von Merkmalen (z. B. Bezirk A / weiblich / 30-49 Jahre). Stratifizierte Auswahl zieht aus jeder Gruppe proportional zu ihrer Größe.",
+    "see_also": ["soll", "ist", "axes"]
+  },
+  {
+    "slug": "soll",
+    "term": "Soll (n_h_target)",
+    "kurz": "Die proportional berechnete Zielgröße einer Bevölkerungsgruppe. Pool/Gesamt × Stichprobengröße = Soll. Wird per Hamilton-Methode auf eine Ganzzahl gerundet.",
+    "see_also": ["ist", "hamilton", "quote"]
+  },
+  {
+    "slug": "ist",
+    "term": "Ist (n_h_actual)",
+    "kurz": "Die nach dem Lauf tatsächlich gezogene Anzahl Personen in einer Bevölkerungsgruppe. Idealerweise gleich Soll; weniger heißt unterbesetzt.",
+    "see_also": ["soll", "unterbesetzt"]
+  },
+  {
+    "slug": "pool",
+    "term": "Pool",
+    "kurz": "Die Gesamtmenge der Personen, aus der gezogen wird (z. B. die importierte Melderegister-CSV). Pro Bevölkerungsgruppe gibt es einen eigenen Pool-Wert."
+  },
+  {
+    "slug": "hamilton",
+    "term": "Hamilton-Methode (Largest-Remainder)",
+    "kurz": "Quoten-Allokations-Verfahren von 1792. Berechnet pro Gruppe den Soll-Bruch, vergibt zuerst die Ganzzahl-Anteile (Floor) und verteilt die übrigen Sitze an die größten Brüche (Remainder).",
+    "see_also": ["floor", "remainder", "quote"],
+    "external_link": {
+      "label": "Wikipedia: Largest remainders method",
+      "url": "https://en.wikipedia.org/wiki/Largest_remainders_method"
+    }
+  },
+  {
+    "slug": "fisher-yates",
+    "term": "Fisher-Yates-Shuffle",
+    "kurz": "Algorithmus für eine uniforme Zufalls-Permutation in O(n) Zeit. Nimmt einen Pool und liefert in deterministischer Reihenfolge — abhängig von der PRNG-Sequenz — eine zufällige Reihenfolge zurück.",
+    "see_also": ["mulberry32", "seed"],
+    "external_link": {
+      "label": "Wikipedia: Fisher–Yates shuffle",
+      "url": "https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle"
+    }
+  },
+  {
+    "slug": "mulberry32",
+    "term": "Mulberry32 (PRNG)",
+    "kurz": "Pseudo-Zufallszahlen-Generator. Klein, schnell, deterministisch — gleicher Seed liefert immer die gleiche Sequenz. KEIN crypto-grade RNG: bei bekanntem Seed sind die Outputs vorhersagbar (siehe Limitationen).",
+    "see_also": ["seed", "fisher-yates"],
+    "external_link": {
+      "label": "bryc/code: Mulberry32",
+      "url": "https://github.com/bryc/code/blob/master/jshash/PRNGs.md#mulberry32"
+    }
+  },
+  {
+    "slug": "seed",
+    "term": "Seed",
+    "kurz": "Startwert für den Pseudo-Zufallszahlen-Generator. Gleicher Seed → gleicher Lauf. Wird vor dem Lauf öffentlich vereinbart (Lottozahlen, Würfelwurf, Datum) und steht im Audit-Protokoll.",
+    "see_also": ["mulberry32", "audit-json"]
+  },
+  {
+    "slug": "audit-json",
+    "term": "Audit-JSON",
+    "kurz": "Maschinenlesbares Protokoll eines Stage-1-Laufs. Enthält Seed, Achsen, Stichprobengröße, gezogene Personen-Indizes, Hash der Eingangs-CSV und eine Signatur. Reicht aus, um den Lauf extern nachzurechnen.",
+    "see_also": ["signatur", "byte-identisch"]
+  },
+  {
+    "slug": "signatur",
+    "term": "Ed25519/ECDSA-Signatur",
+    "kurz": "Kryptografische Signatur des Audit-JSON. Erstellt im Browser via Web Crypto API. Schlägt fehl, sobald auch nur ein Byte des Dokuments verändert wurde.",
+    "see_also": ["audit-json"]
+  },
+  {
+    "slug": "unterbesetzt",
+    "term": "Unterbesetzt (Underfill)",
+    "kurz": "Eine Bevölkerungsgruppe ist unterbesetzt, wenn der Pool zu klein ist, um das Soll zu erfüllen. Beispiel: Soll 5, Pool nur 3 → Ist max. 3. In der Praxis: alle verfügbaren Personen anschreiben.",
+    "see_also": ["soll", "ist"]
+  },
+  {
+    "slug": "quote",
+    "term": "Quote (Soll-Bruch)",
+    "kurz": "Pool/Gesamt × Stichprobengröße — die proportionale Soll-Zahl als Bruch (z. B. 1.8). Hamilton zerlegt sie in Floor (1) und Remainder (0.8).",
+    "see_also": ["floor", "remainder", "hamilton"]
+  },
+  {
+    "slug": "floor",
+    "term": "Floor (Ganzzahl-Anteil)",
+    "kurz": "Der ganzzahlige Anteil der Quote. Beispiel: Quote 1.8 → Floor 1. Hamilton vergibt zuerst alle Floors, danach werden die übrigen Sitze nach Remainder-Größe verteilt.",
+    "see_also": ["quote", "remainder", "hamilton"]
+  },
+  {
+    "slug": "remainder",
+    "term": "Remainder (Bruch-Anteil)",
+    "kurz": "Der Nachkomma-Anteil der Quote. Beispiel: Quote 1.8 → Remainder 0.8. Die Bevölkerungsgruppen mit den größten Remaindern bekommen die übrigen Sitze.",
+    "see_also": ["quote", "floor", "hamilton"]
+  },
+  {
+    "slug": "coverage",
+    "term": "Gruppen-Abdeckung (Coverage)",
+    "kurz": "Anteil der Bevölkerungsgruppen, in denen mindestens eine Person gezogen wurde. Gut: 100 %; weniger heißt: einige Strata sind komplett leer geblieben (Pool zu klein oder Stichprobe zu klein für die Strata-Anzahl).",
+    "see_also": ["unterbesetzt", "stratum"]
+  },
+  {
+    "slug": "bmg46",
+    "term": "§ 46 BMG (Bundesmeldegesetz)",
+    "kurz": "Deutscher Paragraph, der abschließend regelt, welche Felder Kommunen aus dem Melderegister für Sortition-Verfahren herausgeben dürfen. Bildung, Migrationshintergrund, Beruf sind NICHT enthalten — diese kommen erst in der Selbstauskunft (Stage 2).",
+    "external_link": {
+      "label": "§ 46 BMG bei gesetze-im-internet.de",
+      "url": "https://www.gesetze-im-internet.de/bmg/__46.html"
+    }
+  },
+  {
+    "slug": "versand-liste",
+    "term": "Versand-Liste",
+    "kurz": "Output von Stage 1 — die Liste der Personen, die einen Brief mit Einladung zum Verfahren bekommen sollen. Enthält in der Regel mehr Personen als das spätere Panel, weil nicht alle antworten.",
+    "see_also": ["melderegister"]
+  },
+  {
+    "slug": "melderegister",
+    "term": "Melderegister",
+    "kurz": "Kommunale Datenbank aller Einwohner:innen. Quelle für die stratifizierte Zufallsauswahl in Stage 1. Welche Felder herausgegeben werden dürfen, regelt § 46 BMG.",
+    "see_also": ["bmg46", "versand-liste"]
+  },
+  {
+    "slug": "axes",
+    "term": "Achsen / Stratifikations-Merkmale",
+    "kurz": "Die Spalten der CSV, nach denen stratifiziert wird (z. B. Bezirk, Geschlecht, Altersgruppe). Die Cross-Product-Kombination aller Achsen-Werte ergibt die Bevölkerungsgruppen (Strata).",
+    "see_also": ["stratum"]
+  },
+  {
+    "slug": "byte-identisch",
+    "term": "Byte-identisch (Reproduktion)",
+    "kurz": "Zwei Outputs sind byte-identisch, wenn sie auf der untersten Ebene (jedes einzelne Byte) übereinstimmen. Der Stage-1-Lauf ist so konstruiert, dass die TypeScript-Implementierung und die Python-Referenz bei gleichem Seed + Eingang byte-identische selected_indices liefern.",
+    "see_also": ["audit-json", "seed"]
+  }
+]

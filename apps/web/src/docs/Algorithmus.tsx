@@ -1,5 +1,6 @@
 import type { Component } from 'solid-js';
 import HamiltonSvg from './HamiltonSvg';
+import Term from './Term';
 
 /**
  * In-app explanation of the Stage 1 sortition algorithm. Plain-language
@@ -19,13 +20,15 @@ const Algorithmus: Component = () => {
         </p>
         <p>
           Das Verfahren nutzt zwei klassische Bausteine: die{' '}
-          {/* TODO Task 16: replace with Term slug "hamilton" */}
-          <strong>Hamilton-Methode</strong> (Largest-Remainder, 1792) für die
-          Quoten-Verteilung und den{' '}
-          {/* TODO Task 16: replace with Term slug "fisher-yates" */}
-          <strong>Fisher-Yates-Shuffle</strong> für die Auswahl innerhalb jeder
-          Gruppe. Beide sind über 100 Jahre alt, transparent und in jedem
-          Statistik-Lehrbuch dokumentiert.
+          <Term slug="hamilton">
+            <strong>Hamilton-Methode</strong>
+          </Term>{' '}
+          (Largest-Remainder, 1792) für die Quoten-Verteilung und den{' '}
+          <Term slug="fisher-yates">
+            <strong>Fisher-Yates-Shuffle</strong>
+          </Term>{' '}
+          für die Auswahl innerhalb jeder Gruppe. Beide sind über 100 Jahre
+          alt, transparent und in jedem Statistik-Lehrbuch dokumentiert.
         </p>
       </section>
 
@@ -38,14 +41,12 @@ const Algorithmus: Component = () => {
         </p>
         <HamiltonSvg />
         <p class="text-xs text-slate-600">
-          Pro Gruppe (
-          {/* TODO Task 16: replace with Term slug "stratum" */}
-          Stratum) berechnet das Verfahren die Soll-Zahl{' '}
-          (Pool/Gesamt × Ziel), nimmt den Ganzzahl-Anteil (
-          {/* TODO Task 16: replace with Term slug "floor" */}
-          Floor) und verteilt die übrigen Sitze nach den größten
-          Brüchen ({/* TODO Task 16: replace with Term slug "remainder" */}
-          Remainder). Bonus-Boxen sind amber markiert.
+          Pro Gruppe (<Term slug="stratum">Stratum</Term>) berechnet das
+          Verfahren die Soll-Zahl (Pool/Gesamt × Ziel), nimmt den
+          Ganzzahl-Anteil (<Term slug="floor">Floor</Term>) und verteilt die
+          übrigen Sitze nach den größten Brüchen (
+          <Term slug="remainder">Remainder</Term>). Bonus-Boxen sind amber
+          markiert.
         </p>
       </section>
 
@@ -92,11 +93,8 @@ const Algorithmus: Component = () => {
             <li>
               <strong>Fisher-Yates-Shuffle</strong> — Pro Stratum werden n
               Personen aus dem Pool gezogen. Der Shuffle ist deterministisch
-              gesteuert über{' '}
-              {/* TODO Task 16: replace with Term slug "mulberry32" */}
-              Mulberry32 mit dem in der Sitzung vereinbarten{' '}
-              {/* TODO Task 16: replace with Term slug "seed" */}
-              Seed.
+              gesteuert über <Term slug="mulberry32">Mulberry32</Term> mit
+              dem in der Sitzung vereinbarten <Term slug="seed">Seed</Term>.
             </li>
             <li>
               <strong>Output</strong> — Versand-Liste als CSV plus signiertes
