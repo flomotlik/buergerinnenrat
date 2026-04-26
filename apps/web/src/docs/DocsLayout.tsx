@@ -28,7 +28,7 @@ const DocsLayout: Component<Props> = (props) => {
           {/* Back link as a btn-ghost-ish primary affordance: arrow + text. */}
           <button
             type="button"
-            class="inline-flex items-center gap-1.5 text-sm font-medium text-slate-600 hover:text-brand-accent-strong transition"
+            class="inline-flex items-center gap-1.5 text-sm font-medium text-slate-600 hover:text-brand-accent-strong transition py-3 px-1 -mx-1 min-h-[44px]"
             onClick={() => props.back?.()}
             data-testid="docs-back-to-hub"
           >
