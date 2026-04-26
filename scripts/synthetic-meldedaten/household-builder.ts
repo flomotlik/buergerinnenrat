@@ -6,7 +6,6 @@
 
 import { Mulberry32 } from '../../packages/core/src/pool/mulberry32';
 import type {
-  AgeBandKey,
   ClusterId,
   HouseholdDistribution,
   KgOverride,
@@ -106,18 +105,6 @@ function pickHouseholdSurname(
   return pickName(rng, pools[cluster].nachnamen);
 }
 
-function ageToBand(age: number): AgeBandKey {
-  if (age < 10) return '0-9';
-  if (age < 20) return '10-19';
-  if (age < 30) return '20-29';
-  if (age < 40) return '30-39';
-  if (age < 50) return '40-49';
-  if (age < 60) return '50-59';
-  if (age < 70) return '60-69';
-  if (age < 80) return '70-79';
-  return '80+';
-}
-
 function pickAgeInRange(
   rng: Mulberry32,
   minAge: number,
@@ -207,7 +194,7 @@ function buildPaar(ctx: BuildCtx): Person[] {
     cluster: ctx.cluster,
     householdSurname: ctx.surname,
     gender: 'maennlich',
-    ageBand: ageToBand(husbandAge),
+    geburtsjahr: ctx.refYear - husbandAge,
     sprengel: ctx.params.sprengel,
     katastralgemeinde: ctx.params.katastralgemeinde,
     haushaltsnummer: ctx.params.haushaltsnummer,
@@ -225,7 +212,7 @@ function buildPaar(ctx: BuildCtx): Person[] {
     cluster: wifeCluster,
     householdSurname: ctx.surname,
     gender: 'weiblich',
-    ageBand: ageToBand(wifeAge),
+    geburtsjahr: ctx.refYear - wifeAge,
     sprengel: ctx.params.sprengel,
     katastralgemeinde: ctx.params.katastralgemeinde,
     haushaltsnummer: ctx.params.haushaltsnummer,
@@ -248,7 +235,7 @@ function buildFamilie(ctx: BuildCtx, size: number): Person[] {
     cluster: ctx.cluster,
     householdSurname: ctx.surname,
     gender: 'maennlich',
-    ageBand: ageToBand(fatherAge),
+    geburtsjahr: ctx.refYear - fatherAge,
     sprengel: ctx.params.sprengel,
     katastralgemeinde: ctx.params.katastralgemeinde,
     haushaltsnummer: ctx.params.haushaltsnummer,
@@ -267,7 +254,7 @@ function buildFamilie(ctx: BuildCtx, size: number): Person[] {
       cluster: motherCluster,
       householdSurname: ctx.surname,
       gender: 'weiblich',
-      ageBand: ageToBand(motherAge),
+      geburtsjahr: ctx.refYear - motherAge,
       sprengel: ctx.params.sprengel,
       katastralgemeinde: ctx.params.katastralgemeinde,
       haushaltsnummer: ctx.params.haushaltsnummer,
@@ -293,7 +280,7 @@ function buildFamilie(ctx: BuildCtx, size: number): Person[] {
         pools: ctx.params.pools,
         cluster: ctx.cluster,
         householdSurname: ctx.surname,
-        ageBand: ageToBand(childAge),
+        geburtsjahr: ctx.refYear - childAge,
         sprengel: ctx.params.sprengel,
         katastralgemeinde: ctx.params.katastralgemeinde,
         haushaltsnummer: ctx.params.haushaltsnummer,
@@ -321,7 +308,7 @@ function buildDreigeneration(ctx: BuildCtx, size: number): Person[] {
         pools: ctx.params.pools,
         cluster: ctx.cluster,
         householdSurname: ctx.surname,
-        ageBand: ageToBand(gpAge),
+        geburtsjahr: ctx.refYear - gpAge,
         sprengel: ctx.params.sprengel,
         katastralgemeinde: ctx.params.katastralgemeinde,
         haushaltsnummer: ctx.params.haushaltsnummer,
@@ -351,7 +338,7 @@ function buildWg(ctx: BuildCtx, size: number): Person[] {
         pools: ctx.params.pools,
         cluster,
         householdSurname: surname,
-        ageBand: ageToBand(age),
+        geburtsjahr: ctx.refYear - age,
         sprengel: ctx.params.sprengel,
         katastralgemeinde: ctx.params.katastralgemeinde,
         haushaltsnummer: ctx.params.haushaltsnummer,

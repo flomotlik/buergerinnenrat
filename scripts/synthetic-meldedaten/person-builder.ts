@@ -149,6 +149,12 @@ export interface BuildPersonParams {
   /** Surname shared across the household (already in male form). */
   householdSurname: string;
   ageBand?: AgeBandKey;
+  /**
+   * Explicit birth year override. When set, takes precedence over ageBand —
+   * household-builder uses this to enforce parent-child age constraints
+   * exactly, without re-randomization inside the band.
+   */
+  geburtsjahr?: number;
   gender?: 'weiblich' | 'maennlich' | 'divers';
   sprengel: string;
   katastralgemeinde: string;
@@ -160,8 +166,13 @@ export interface BuildPersonParams {
 export function buildPerson(rng: Mulberry32, params: BuildPersonParams): Person {
   const refYear = params.referenceYear ?? 2026;
   const gender = params.gender ?? pickGender(rng, params.profile.genderDistribution);
-  const ageBand = params.ageBand ?? pickAgeBand(rng, params.profile.ageDistribution);
-  const geburtsjahr = pickGeburtsjahrFromBand(rng, ageBand, refYear);
+  let geburtsjahr: number;
+  if (params.geburtsjahr !== undefined) {
+    geburtsjahr = params.geburtsjahr;
+  } else {
+    const ageBand = params.ageBand ?? pickAgeBand(rng, params.profile.ageDistribution);
+    geburtsjahr = pickGeburtsjahrFromBand(rng, ageBand, refYear);
+  }
 
   const pool = params.pools[params.cluster];
   const vornameList =

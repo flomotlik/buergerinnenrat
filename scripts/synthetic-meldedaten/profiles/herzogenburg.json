@@ -1,0 +1,76 @@
+{
+  "name": "herzogenburg",
+  "idPrefix": "hzbg",
+  "totalPopulation": 8000,
+  "cityName": "Herzogenburg",
+  "bundesland": "Niederösterreich",
+  "katastralgemeinden": [
+    { "id": "Adletzberg", "name": "Adletzberg", "populationShare": 0.01 },
+    { "id": "Angern", "name": "Angern", "populationShare": 0.01 },
+    { "id": "Ederding", "name": "Ederding", "populationShare": 0.01 },
+    { "id": "Einöd", "name": "Einöd", "populationShare": 0.01 },
+    { "id": "Gutenbrunn", "name": "Gutenbrunn", "populationShare": 0.025 },
+    { "id": "Hameten", "name": "Hameten", "populationShare": 0.01 },
+    { "id": "Herzogenburg", "name": "Herzogenburg", "populationShare": 0.59 },
+    { "id": "Oberndorf-in-der-Ebene", "name": "Oberndorf in der Ebene", "populationShare": 0.10 },
+    { "id": "Oberwinden", "name": "Oberwinden", "populationShare": 0.03 },
+    { "id": "Ossarn", "name": "Ossarn", "populationShare": 0.05 },
+    { "id": "Pottschal", "name": "Pottschal", "populationShare": 0.01 },
+    { "id": "St-Andrae-an-der-Traisen", "name": "St. Andrä an der Traisen", "populationShare": 0.07 },
+    { "id": "Unterwinden", "name": "Unterwinden", "populationShare": 0.03 },
+    { "id": "Wielandsthal", "name": "Wielandsthal", "populationShare": 0.04 }
+  ],
+  "sprengel": [
+    { "id": "H-Altstadt", "name": "Herzogenburg-Altstadt", "katastralgemeindeId": "Herzogenburg" },
+    { "id": "H-Altst-Umg-N", "name": "Herzogenburg-Altst.-Umg-N", "katastralgemeindeId": "Herzogenburg" },
+    { "id": "H-Altst-Umg-S", "name": "Herzogenburg-Altst.-Umg-S", "katastralgemeindeId": "Herzogenburg" },
+    { "id": "Oberndorf-NO", "name": "Oberndorf Nord+Ost", "katastralgemeindeId": "Oberndorf-in-der-Ebene" },
+    { "id": "Oberndorf-SW", "name": "Oberndorf Südwest", "katastralgemeindeId": "Oberndorf-in-der-Ebene" },
+    { "id": "Ederding-Wielandsthal", "name": "Ederding-Wielandsthal", "katastralgemeindeId": "Wielandsthal" },
+    { "id": "Oberwinden-Ossarn", "name": "Oberwinden-Ossarn", "katastralgemeindeId": "Ossarn" },
+    { "id": "St-Andra", "name": "St. Andrä", "katastralgemeindeId": "St-Andrae-an-der-Traisen" },
+    { "id": "Gutenbrunn", "name": "Gutenbrunn", "katastralgemeindeId": "Gutenbrunn" }
+  ],
+  "ageDistribution": {
+    "0-9": 0.09,
+    "10-19": 0.10,
+    "20-29": 0.11,
+    "30-39": 0.13,
+    "40-49": 0.14,
+    "50-59": 0.15,
+    "60-69": 0.13,
+    "70-79": 0.10,
+    "80+": 0.05
+  },
+  "genderDistribution": {
+    "weiblich": 0.508,
+    "maennlich": 0.491,
+    "divers": 0.001
+  },
+  "citizenshipDistribution": {
+    "austria": 0.875,
+    "eu_other": 0.069,
+    "third_country": 0.056,
+    "eu_countries": ["DE", "RO", "HU", "PL", "SK", "CZ", "IT", "HR", "SI", "BG"],
+    "third_country_countries": ["TR", "RS", "BA", "UA", "MK", "XK"]
+  },
+  "nameClusterMix": {
+    "at-de": 0.85,
+    "tr": 0.05,
+    "ex-yu": 0.03,
+    "osteuropa": 0.03,
+    "sonstige": 0.04
+  },
+  "householdDistribution": {
+    "1": 0.382,
+    "2": 0.278,
+    "3": 0.14,
+    "4": 0.13,
+    "5": 0.045,
+    "6": 0.025
+  },
+  "familiesWithChildren": 0.40,
+  "threeGenerationShare": 0.01,
+  "crossClusterMixProbability": 0.12,
+  "perKgOverrides": {}
+}
