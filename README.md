@@ -6,6 +6,22 @@ Browser-natives Werkzeug für die stratifizierte Zufallsauswahl von Personen fü
 
 **Live:** <https://flomotlik.github.io/buergerinnenrat/>
 
+## Beispiel-Daten ausprobieren
+
+Du willst das Tool ohne eigene Melderegister-Datei testen? Auf der Live-Seite
+findest du unter
+[Doku → Beispiel-Daten](https://flomotlik.github.io/buergerinnenrat/#/docs/beispiele)
+vier vor-generierte synthetische CSV-Dateien:
+
+- `herzogenburg-melderegister-8000.csv` — Vollbevölkerung einer kleineren NÖ-Gemeinde
+  nach Vorbild Herzogenburg (für Stage 1)
+- `herzogenburg-versand-300.csv` — stratifizierte Versand-Stichprobe von 300 Personen
+- `herzogenburg-antwortende-60.csv` — 60 Personen mit Selbstauskunfts-Feldern (für Stage 3)
+- `kleinstadt-3000.csv` — kleineres Profil zum schnellen Testen
+
+Alle Daten sind synthetisch erzeugt — keine echten Personen.
+Generator + Reproduzier-Anleitung: `scripts/synthetic-meldedaten/`.
+
 ## Bürgerrat-Sortition (Hintergrund)
 
 Planungs- und Research-Repository für eine **browser-native, backend-lose Sortition-Web-App** zur stratifizierten Zufallsauswahl von Teilnehmenden für Bürgerräte.
