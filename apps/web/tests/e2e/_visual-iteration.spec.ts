@@ -69,6 +69,8 @@ const STEPS: StepDef[] = [
     runStage1: true,
   },
   { name: '05-docs-hub', hash: '#/docs', anchorTestId: 'docs-hub' },
+  // Sub-page sample (algorithmus has lots of text + a toy example SVG).
+  { name: '05-docs-algorithmus', hash: '#/docs/algorithmus', anchorTestId: 'docs-page-algorithmus' },
 ];
 
 for (const step of STEPS) {

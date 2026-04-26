@@ -1,5 +1,5 @@
 import { For, lazy, Show, Suspense } from 'solid-js';
-import type { Component } from 'solid-js';
+import type { Component, JSX } from 'solid-js';
 import type { DocsRoute } from '../App';
 import DocsLayout from './DocsLayout';
 
@@ -21,38 +21,111 @@ interface TileDef {
   slug: Exclude<DocsRoute, 'hub'>;
   title: string;
   description: string;
+  // Per-tile inline-SVG icon. Rendered ~28×28 above the title in
+  // brand-accent. Each icon is chosen so the tile is recognisable at a
+  // glance without reading the title (e.g. § for the BMG section).
+  icon: JSX.Element;
 }
+
+const ICON_CLASS = 'h-7 w-7 text-brand-accent';
+const SVG_BASE = {
+  xmlns: 'http://www.w3.org/2000/svg',
+  viewBox: '0 0 24 24',
+  fill: 'none',
+  stroke: 'currentColor',
+  'stroke-width': 2,
+  'stroke-linecap': 'round',
+  'stroke-linejoin': 'round',
+  'aria-hidden': true,
+} as const;
 
 const TILES: ReadonlyArray<TileDef> = [
   {
     slug: 'algorithmus',
     title: 'Algorithmus',
     description: 'Wie wird gezogen? Schritt für Schritt mit Toy-Beispiel.',
+    // Three connected nodes: signals "schritt-für-schritt" / pipeline.
+    icon: (
+      <svg {...SVG_BASE} class={ICON_CLASS}>
+        <circle cx="6" cy="6" r="2" />
+        <circle cx="18" cy="6" r="2" />
+        <circle cx="12" cy="18" r="2" />
+        <line x1="8" y1="6" x2="16" y2="6" />
+        <line x1="6" y1="8" x2="11" y2="16" />
+        <line x1="18" y1="8" x2="13" y2="16" />
+      </svg>
+    ),
   },
   {
     slug: 'technik',
     title: 'Technik',
     description: 'Welche Bibliotheken, in welcher Version, mit welcher Lizenz.',
+    // Code brackets — signals "Tech / Implementation".
+    icon: (
+      <svg {...SVG_BASE} class={ICON_CLASS}>
+        <polyline points="16 18 22 12 16 6" />
+        <polyline points="8 6 2 12 8 18" />
+      </svg>
+    ),
   },
   {
     slug: 'verifikation',
     title: 'Verifikation',
     description: 'Lauf nachrechnen mit der Python-Referenz.',
+    // Shield with check inside — signals "verified / proof".
+    icon: (
+      <svg {...SVG_BASE} class={ICON_CLASS}>
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+        <path d="m9 12 2 2 4-4" />
+      </svg>
+    ),
   },
   {
     slug: 'glossar',
     title: 'Glossar',
     description: 'Begriffe nachschlagen.',
+    // Open book — signals "reference / dictionary".
+    icon: (
+      <svg {...SVG_BASE} class={ICON_CLASS}>
+        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+      </svg>
+    ),
   },
   {
     slug: 'bmg46',
     title: '§ 46 BMG',
     description: 'Welche Felder sind im Melderegister erlaubt.',
+    // Section symbol "§" inside a circle — signals legal/paragraph.
+    icon: (
+      <svg {...SVG_BASE} class={ICON_CLASS}>
+        <circle cx="12" cy="12" r="10" />
+        <text
+          x="12"
+          y="16"
+          text-anchor="middle"
+          font-size="13"
+          font-weight="bold"
+          stroke="none"
+          fill="currentColor"
+        >
+          §
+        </text>
+      </svg>
+    ),
   },
   {
     slug: 'limitationen',
     title: 'Limitationen',
     description: 'Was dieses Tool bewusst nicht tut.',
+    // Triangle with exclamation — signals "watch out / caveats".
+    icon: (
+      <svg {...SVG_BASE} class={ICON_CLASS}>
+        <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+        <line x1="12" x2="12" y1="9" y2="13" />
+        <line x1="12" x2="12.01" y1="17" y2="17" />
+      </svg>
+    ),
   },
 ];
 
@@ -99,10 +172,12 @@ const DocsHub: Component<Props> = (props) => {
     <Show
       when={props.docsRoute() !== 'hub'}
       fallback={
-        <section class="space-y-4" data-testid="docs-hub">
+        <section class="space-y-6" data-testid="docs-hub">
           <header>
-            <h2 class="text-2xl font-semibold tracking-tight">Dokumentation</h2>
-            <p class="text-sm text-slate-600 mt-1">
+            <h2 class="text-2xl font-semibold tracking-tight text-brand">
+              Dokumentation
+            </h2>
+            <p class="text-sm text-slate-600 mt-2 max-w-2xl">
               Erklärungen zum Algorithmus, der eingesetzten Technik, dem
               Reproduktions-Pfad und den rechtlichen Grundlagen.
             </p>
@@ -112,12 +187,19 @@ const DocsHub: Component<Props> = (props) => {
               {(tile) => (
                 <button
                   type="button"
-                  class="border rounded p-4 bg-white hover:bg-slate-50 text-left space-y-1"
+                  class="card card-hover text-left flex flex-col items-start gap-3 cursor-pointer"
                   onClick={() => openTile(tile.slug)}
                   data-testid={`docs-tile-${tile.slug}`}
                 >
-                  <div class="font-semibold text-slate-900">{tile.title}</div>
-                  <div class="text-xs text-slate-600">{tile.description}</div>
+                  {tile.icon}
+                  <div>
+                    <div class="text-lg font-semibold text-slate-900">
+                      {tile.title}
+                    </div>
+                    <div class="text-sm text-slate-600 mt-1">
+                      {tile.description}
+                    </div>
+                  </div>
                 </button>
               )}
             </For>
