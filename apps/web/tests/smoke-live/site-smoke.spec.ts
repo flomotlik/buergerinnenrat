@@ -46,4 +46,21 @@ test.describe('Live Site Smoke', () => {
     // The Hamilton toy-example SVG from issue #54.
     await expect(page.getByTestId('hamilton-svg')).toBeVisible();
   });
+
+  test('Doku-Beispiele lädt mit Download-Link', async ({ page }) => {
+    // Issue #57 — verify the downloadable example file is present and the
+    // server delivers a 200 for the underlying static asset.
+    await page.goto('./');
+    await page.getByTestId('tab-docs').click();
+    await page.getByTestId('docs-tile-beispiele').click();
+    await expect(page.getByTestId('docs-page-beispiele')).toBeVisible();
+    const link = page.getByTestId('download-herzogenburg-melderegister-8000');
+    const href = await link.getAttribute('href');
+    expect(href).not.toBeNull();
+    expect(href!).toMatch(/beispiele\/herzogenburg-melderegister-8000\.csv$/);
+    // HEAD-check the static asset (lightweight: no actual download).
+    const url = new URL(href!, page.url()).toString();
+    const resp = await page.request.head(url);
+    expect(resp.status()).toBe(200);
+  });
 });
