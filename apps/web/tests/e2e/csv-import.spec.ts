@@ -11,7 +11,7 @@ const FIXTURE = resolve(
 
 test('imports a synthetic pool fixture and shows preview', async ({ page }) => {
   await page.goto('/');
-  await expect(page.getByRole('heading', { name: 'Sortition Iteration 1' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Bürger:innenrat' })).toBeVisible();
 
   // Use the file input rather than drag-and-drop for reliability.
   const input = page.locator('input[type="file"]').first();

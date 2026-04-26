@@ -59,11 +59,13 @@ const STEPS: StepDef[] = [
   { name: '02-tabs', hash: '#/stage1', anchorTestId: 'main-nav' },
   // Trust strip: lives at the top of Stage 1 BEFORE upload (under step header)
   { name: '03-trust-strip', hash: '#/stage1', anchorTestId: 'stage1-trust-strip' },
-  // Stage-1 form view with CSV loaded so inputs and dropzone are visible
+  // Stage-1 form view with CSV loaded so inputs and dropzone are visible.
+  // Anchor is the panel itself (always rendered); the runStage1 hook then
+  // uploads + waits for pool-summary before screenshotting.
   {
     name: '04-stage1-form',
     hash: '#/stage1',
-    anchorTestId: 'stage1-pool-summary',
+    anchorTestId: 'stage1-panel',
     runStage1: true,
   },
   { name: '05-docs-hub', hash: '#/docs', anchorTestId: 'docs-hub' },
