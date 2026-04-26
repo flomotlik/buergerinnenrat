@@ -6,11 +6,13 @@
   "license": "GPL-3.0-or-later",
   "scripts": {
     "dev": "vite",
+    "prebuild": "cd ../.. && pnpm prebuild",
     "build": "vite build",
     "preview": "vite preview --host 127.0.0.1",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
+    "test:smoke-live": "playwright test --config=playwright-live.config.ts",
     "typecheck": "tsc --noEmit",
     "lint": "eslint . && prettier --check \"src/**/*.{ts,tsx,css}\""
   },

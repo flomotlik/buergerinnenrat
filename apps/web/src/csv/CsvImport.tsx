@@ -82,6 +82,13 @@ export const CsvImport: Component<CsvImportProps> = (props) => {
               Encoding <code>{p().encoding}</code>
             </div>
 
+            {/* TODO(#53-followup): refactor inline preview to use shared
+                <CsvPreview> component once we can decouple the mapping
+                <select> row from the data preview rows without breaking
+                csv-import.spec.ts which asserts on this exact `csv-preview`
+                table testid. The Stage-3 mapping UI is interleaved with the
+                preview rows here; lift the mapping into its own row above
+                and the body becomes a drop-in <CsvPreview>. */}
             <table class="w-full text-xs border-collapse" data-testid="csv-preview">
               <thead>
                 <tr>

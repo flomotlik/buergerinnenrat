@@ -11,6 +11,8 @@
   ],
   "scripts": {
     "dev": "pnpm --filter @sortition/web dev",
+    "tech-manifest": "tsx scripts/build-tech-manifest.ts",
+    "prebuild": "pnpm tech-manifest && git diff --exit-code -- apps/web/src/generated/tech-manifest.ts || (echo '[ERROR] tech-manifest.ts is out of date. Run: pnpm tech-manifest && commit the result.' && exit 1)",
     "build": "pnpm --filter @sortition/web build",
     "test": "pnpm --filter @sortition/web test",
     "test:e2e": "pnpm --filter @sortition/web test:e2e",
