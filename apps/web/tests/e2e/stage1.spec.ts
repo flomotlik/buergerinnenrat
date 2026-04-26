@@ -42,11 +42,28 @@ test('stage 1: upload → defaults → ziehen → download', async ({ page, brow
   // Set the target sample size.
   await page.getByTestId('stage1-target-n').fill('50');
 
+  // Pre-run preview should appear once N is set with axes selected.
+  // It contains an axis breakdown for each selected axis (preview mode).
+  await expect(page.getByTestId('stage1-preview')).toBeVisible();
+  await expect(page.getByTestId('stage1-axis-breakdown-district')).toBeVisible();
+
   // Click "ziehen" — Stage 1 is sub-second, no progress bar needed.
   await page.getByTestId('stage1-run').click();
 
   // Result section appears.
   await expect(page.getByTestId('stage1-result')).toBeVisible({ timeout: 5_000 });
+
+  // Top summary cards: total drawn, coverage, underfill.
+  await expect(page.getByTestId('stage1-summary-cards')).toBeVisible();
+  await expect(page.getByTestId('stage1-coverage-card')).toBeVisible();
+  await expect(page.getByTestId('stage1-underfill-card')).toBeVisible();
+
+  // Per-axis breakdowns are present in the result.
+  await expect(page.getByTestId('stage1-axis-breakdowns')).toBeVisible();
+
+  // Detailed strata table is collapsed by default — toggle to expand.
+  await expect(page.getByTestId('stage1-strata-toggle')).toBeVisible();
+  await page.getByTestId('stage1-strata-toggle').click();
   await expect(page.getByTestId('stage1-strata-table')).toBeVisible();
 
   // CSV download.
@@ -63,6 +80,12 @@ test('stage 1: upload → defaults → ziehen → download', async ({ page, brow
   await page.getByTestId('stage1-download-audit').click();
   const auditDownload = await auditDownloadPromise;
   expect(auditDownload.suggestedFilename()).toMatch(/^versand-audit-.*\.json$/);
+
+  // Markdown report download.
+  const mdDownloadPromise = page.waitForEvent('download');
+  await page.getByTestId('stage1-download-md').click();
+  const mdDownload = await mdDownloadPromise;
+  expect(mdDownload.suggestedFilename()).toMatch(/^versand-bericht-.*\.md$/);
 
   // Sanity log to surface browser id in test output.
   console.log(`stage1 e2e ok on ${browserName}`);

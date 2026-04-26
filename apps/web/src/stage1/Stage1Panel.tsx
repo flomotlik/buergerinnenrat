@@ -1,11 +1,23 @@
-import { Component, createSignal, For, Show } from 'solid-js';
+import { Component, createMemo, createSignal, For, Show } from 'solid-js';
 import { autoGuessMapping, parseCsvFile } from '../csv/parse';
 import type { ParsedCsv } from '../csv/parse';
 import { downloadBlob } from '../run/audit';
 import { runStage1 } from './runStage1';
 import type { RunStage1Output } from './runStage1';
 import { AxisPicker } from './AxisPicker';
-import type { Stage1SeedSource } from '@sortition/core';
+import { AxisBreakdown } from './AxisBreakdown';
+import {
+  coverageMetric,
+  marginalAggregates,
+  previewAllocation,
+  stage1ToMarkdownReport,
+} from '@sortition/core';
+import type {
+  AllocationPreview,
+  CoverageMetric as CoverageStat,
+  MarginalsForAxis,
+  Stage1SeedSource,
+} from '@sortition/core';
 
 /** Default seed factory: Unix-seconds is uint32-safe for Mulberry32 until 2106. */
 function defaultSeed(): number {
@@ -40,6 +52,59 @@ export const Stage1Panel: Component = () => {
   const [running, setRunning] = createSignal(false);
   const [output, setOutput] = createSignal<RunStage1Output | null>(null);
   const [error, setError] = createSignal<string | null>(null);
+  const [strataExpanded, setStrataExpanded] = createSignal(false);
+
+  // Cheap pre-run preview: cross-product allocation without RNG / shuffle.
+  // Recomputed reactively when CSV, axes, or N change. We keep it inside a
+  // try/catch so an invalid (e.g. N > pool) state surfaces inline.
+  const preview = createMemo<{ result: AllocationPreview | null; error: string | null }>(() => {
+    const p = parsed();
+    const n = targetN();
+    if (!p || n === null || n <= 0) return { result: null, error: null };
+    try {
+      return { result: previewAllocation(p.rows, selectedAxes(), n), error: null };
+    } catch (e) {
+      return { result: null, error: e instanceof Error ? e.message : String(e) };
+    }
+  });
+
+  /** Pre-run marginal aggregates: built off the preview (Soll only, no Ist). */
+  const previewMarginals = createMemo<MarginalsForAxis[]>(() => {
+    const pv = preview().result;
+    if (!pv) return [];
+    // Convert PreviewRow[] → StratumResult-shape for marginalAggregates().
+    const stratumLike = pv.rows.map((r) => ({
+      key: r.key,
+      n_h_pool: r.n_h_pool,
+      n_h_target: r.n_h_target,
+      n_h_actual: 0, // unknown pre-draw
+      underfilled: r.wouldUnderfill,
+    }));
+    return marginalAggregates(stratumLike, selectedAxes());
+  });
+
+  /** Post-run marginals (with both Soll and Ist). */
+  const resultMarginals = createMemo<MarginalsForAxis[]>(() => {
+    const o = output();
+    if (!o) return [];
+    return marginalAggregates(o.result.strata, selectedAxes());
+  });
+
+  /** Post-run coverage metric. */
+  const coverage = createMemo<CoverageStat | null>(() => {
+    const o = output();
+    if (!o) return null;
+    return coverageMetric(o.result.strata);
+  });
+
+  /** Underfilled strata ranked by (target - actual) descending — biggest gaps first. */
+  const underfills = createMemo(() => {
+    const o = output();
+    if (!o) return [];
+    return o.result.strata
+      .filter((s) => s.underfilled)
+      .sort((a, b) => b.n_h_target - a.n_h_target - (a.n_h_target - a.n_h_actual - (b.n_h_target - b.n_h_actual)));
+  });
 
   async function handleFile(f: File) {
     setError(null);
@@ -113,6 +178,13 @@ export const Stage1Panel: Component = () => {
       JSON.stringify(out.signedAudit.doc, null, 2),
       'application/json',
     );
+  }
+
+  function exportMarkdownReport() {
+    const out = output();
+    if (!out) return;
+    const md = stage1ToMarkdownReport(out.signedAudit.doc);
+    downloadBlob(`versand-bericht-${seed()}.md`, md, 'text/markdown;charset=utf-8');
   }
 
   return (
@@ -235,6 +307,57 @@ export const Stage1Panel: Component = () => {
             öffentlich-vor-Lauf wählen verhindert, dass die Auswahl unbemerkt
             durch Probieren verschiedener Seeds beeinflusst werden kann.
           </aside>
+          <Show when={preview().error}>
+            <p class="text-sm text-red-700" data-testid="stage1-preview-error">
+              {preview().error}
+            </p>
+          </Show>
+          <Show when={preview().result !== null}>
+            <div
+              class="border rounded p-3 bg-slate-50 space-y-3"
+              data-testid="stage1-preview"
+            >
+              <div class="flex items-baseline justify-between">
+                <h3 class="text-sm font-semibold">
+                  Vorschau (vor dem Lauf)
+                </h3>
+                <span class="text-xs text-slate-500">
+                  {preview().result?.rows.length ?? 0} Strata, Soll-Summe{' '}
+                  {preview().result?.totalTarget ?? 0}
+                </span>
+              </div>
+              <Show
+                when={
+                  (preview().result?.zeroAllocationStrata ?? 0) > 0 ||
+                  (preview().result?.underfillStrata ?? 0) > 0
+                }
+              >
+                <div class="text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded p-2">
+                  <Show when={(preview().result?.zeroAllocationStrata ?? 0) > 0}>
+                    <p>
+                      <strong>{preview().result?.zeroAllocationStrata}</strong>{' '}
+                      Strata bekommen nach proportionaler Allokation{' '}
+                      <strong>0 Personen</strong>. Sind das Strata, die bewusst
+                      leer bleiben sollen, oder zu viele/zu feine Achsen?
+                    </p>
+                  </Show>
+                  <Show when={(preview().result?.underfillStrata ?? 0) > 0}>
+                    <p>
+                      <strong>{preview().result?.underfillStrata}</strong> Strata
+                      werden unterbesetzt sein (Pool zu klein für Soll).
+                    </p>
+                  </Show>
+                </div>
+              </Show>
+              <Show when={previewMarginals().length > 0}>
+                <div class="space-y-2">
+                  <For each={previewMarginals()}>
+                    {(m) => <AxisBreakdown marginals={m} previewMode />}
+                  </For>
+                </div>
+              </Show>
+            </div>
+          </Show>
           <div>
             <button
               type="button"
@@ -251,17 +374,102 @@ export const Stage1Panel: Component = () => {
 
       <Show when={output()}>
         {(out) => (
-          <section class="space-y-4" data-testid="stage1-result">
+          <section class="space-y-4 stage1-report" data-testid="stage1-result">
             <h2 class="text-xl font-semibold">4. Ergebnis</h2>
-            <p class="text-sm">
-              {out().result.selected.length} von {parsed()?.rows.length ?? 0} Personen
-              gezogen — Laufzeit{' '}
-              <span class="tabular-nums">{Math.round(out().durationMs)} ms</span>.
+
+            {/* Top-line summary cards: total drawn, coverage, underfill count. */}
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3" data-testid="stage1-summary-cards">
+              <div class="border rounded p-3 bg-white">
+                <div class="text-xs text-slate-500 uppercase tracking-wide">
+                  Gezogen
+                </div>
+                <div class="text-2xl font-semibold tabular-nums">
+                  {out().result.selected.length}
+                </div>
+                <div class="text-xs text-slate-500">
+                  von {parsed()?.rows.length ?? 0} im Pool
+                </div>
+              </div>
+              <Show when={coverage()}>
+                {(c) => (
+                  <div
+                    class="border rounded p-3 bg-white"
+                    data-testid="stage1-coverage-card"
+                  >
+                    <div class="text-xs text-slate-500 uppercase tracking-wide">
+                      Stratum-Abdeckung
+                    </div>
+                    <div class="text-2xl font-semibold tabular-nums">
+                      {c().coveredStrata}{' '}
+                      <span class="text-base text-slate-500">
+                        / {c().totalStrata}
+                      </span>
+                    </div>
+                    <div class="text-xs text-slate-500">
+                      {Number.isNaN(c().coverageRatio)
+                        ? '–'
+                        : `${(c().coverageRatio * 100).toFixed(1)} % der Strata mind. 1 Person`}
+                    </div>
+                  </div>
+                )}
+              </Show>
+              <div
+                class={`border rounded p-3 ${
+                  (coverage()?.underfilledStrata ?? 0) > 0
+                    ? 'bg-amber-50 border-amber-300'
+                    : 'bg-white'
+                }`}
+                data-testid="stage1-underfill-card"
+              >
+                <div class="text-xs text-slate-500 uppercase tracking-wide">
+                  Unterbesetzt
+                </div>
+                <div class="text-2xl font-semibold tabular-nums">
+                  {coverage()?.underfilledStrata ?? 0}
+                </div>
+                <div class="text-xs text-slate-500">
+                  Strata mit weniger Personen als angefragt
+                </div>
+              </div>
+            </div>
+
+            <p class="text-xs text-slate-500">
+              Laufzeit:{' '}
+              <span class="tabular-nums">{Math.round(out().durationMs)} ms</span>
+              {' · '}Seed: <span class="font-mono">{out().signedAudit.doc.seed}</span>
             </p>
 
-            <Show when={out().result.warnings.length > 0}>
+            <Show when={underfills().length > 0}>
+              <section
+                class="border-l-4 border-amber-500 bg-amber-50 p-3 rounded space-y-2"
+                data-testid="stage1-underfill-list"
+              >
+                <h3 class="font-semibold text-amber-900 text-sm">
+                  Unterbesetzte Strata
+                </h3>
+                <p class="text-xs text-amber-900">
+                  Diese Strata bekamen weniger Personen als die proportionale
+                  Allokation vorgesehen hat — Pool zu klein. Im echten Verfahren
+                  bedeutet das: bei diesen Gruppen wurden alle verfügbaren
+                  Personen angeschrieben.
+                </p>
+                <ul class="text-xs text-amber-900 space-y-1">
+                  <For each={underfills()}>
+                    {(s) => (
+                      <li class="font-mono">
+                        {Object.entries(s.key).map(([k, v]) => `${k}=${v}`).join(', ')}{' '}
+                        — Soll {s.n_h_target}, Ist {s.n_h_actual} (Pool nur{' '}
+                        {s.n_h_pool})
+                      </li>
+                    )}
+                  </For>
+                </ul>
+              </section>
+            </Show>
+
+            <Show when={out().result.warnings.length > 0 && underfills().length === 0}>
               <div class="border-l-4 border-red-600 bg-red-50 p-3 text-sm rounded">
-                <p class="font-semibold text-red-800">Warnungen:</p>
+                <p class="font-semibold text-red-800">Weitere Warnungen:</p>
                 <ul class="list-disc pl-5 text-red-800">
                   <For each={out().result.warnings}>{(w) => <li>{w}</li>}</For>
                 </ul>
@@ -276,8 +484,28 @@ export const Stage1Panel: Component = () => {
               </div>
             </Show>
 
-            <div class="border rounded">
-              <h3 class="text-sm font-semibold p-2 bg-slate-100">Stratum-Tabelle</h3>
+            <Show when={resultMarginals().length > 0}>
+              <section class="space-y-2" data-testid="stage1-axis-breakdowns">
+                <h3 class="text-sm font-semibold">Verteilung pro Achse</h3>
+                <For each={resultMarginals()}>
+                  {(m) => <AxisBreakdown marginals={m} />}
+                </For>
+              </section>
+            </Show>
+
+            {/* Detailed cross-product strata table — collapsible to keep the
+                results view readable for groups; "alle Detail-Strata" reveals it. */}
+            <details
+              class="border rounded"
+              open={strataExpanded()}
+              onToggle={(e) => setStrataExpanded((e.currentTarget as HTMLDetailsElement).open)}
+            >
+              <summary
+                class="text-sm font-semibold p-2 bg-slate-100 cursor-pointer select-none"
+                data-testid="stage1-strata-toggle"
+              >
+                Stratum-Detail (Kreuzkategorien-Tabelle, {out().result.strata.length} Zeilen)
+              </summary>
               <table class="w-full text-xs" data-testid="stage1-strata-table">
                 <thead class="bg-slate-50">
                   <tr>
@@ -310,9 +538,9 @@ export const Stage1Panel: Component = () => {
                   </For>
                 </tbody>
               </table>
-            </div>
+            </details>
 
-            <div class="flex gap-2">
+            <div class="flex flex-wrap gap-2 print:hidden">
               <button
                 type="button"
                 class="px-3 py-1.5 border bg-white text-sm rounded"
@@ -327,7 +555,23 @@ export const Stage1Panel: Component = () => {
                 onClick={exportAuditJson}
                 data-testid="stage1-download-audit"
               >
-                Audit herunterladen
+                Audit-JSON herunterladen
+              </button>
+              <button
+                type="button"
+                class="px-3 py-1.5 border bg-white text-sm rounded"
+                onClick={exportMarkdownReport}
+                data-testid="stage1-download-md"
+              >
+                Bericht (Markdown) herunterladen
+              </button>
+              <button
+                type="button"
+                class="px-3 py-1.5 border bg-white text-sm rounded"
+                onClick={() => window.print()}
+                data-testid="stage1-print"
+              >
+                Drucken
               </button>
             </div>
           </section>

@@ -1,3 +1,52 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ----------------------------------------------------------------------- *
+ * Print styles for Stage 1 group reporting
+ *
+ * Goal: when the Verfahrens-Sitzung wants a paper protocol of the result,
+ * the page must be readable without any chrome (tab nav, buttons, hints).
+ * ----------------------------------------------------------------------- */
+
+@media print {
+  /* Drop site chrome that's not part of the result. */
+  body > div > nav,
+  [data-testid='tab-stage1'],
+  [data-testid='tab-stage3'],
+  [data-testid='stage1-bmg-hint'],
+  [data-testid='stage1-seed-hint'],
+  [data-testid='stage1-preview'],
+  [data-testid='stage1-run'] {
+    display: none !important;
+  }
+
+  /* Remove background fills so printer ink isn't wasted. */
+  .stage1-report,
+  .stage1-report * {
+    background: transparent !important;
+    color: #000 !important;
+    box-shadow: none !important;
+  }
+
+  /* Force the strata details to render expanded on print. */
+  .stage1-report details {
+    display: block !important;
+  }
+  .stage1-report details > *:not(summary) {
+    display: block !important;
+  }
+
+  /* Tighten typography for paper. */
+  .stage1-report {
+    font-size: 10pt;
+  }
+  .stage1-report h2,
+  .stage1-report h3 {
+    page-break-after: avoid;
+  }
+  .stage1-report svg {
+    page-break-inside: avoid;
+  }
+}
+
