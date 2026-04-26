@@ -28,6 +28,22 @@ export const TECH_MANIFEST: TechEntry[] = [
     "sourceUrl": "https://playwright.dev/"
   },
   {
+    "name": "@tailwindcss/forms",
+    "version": "0.5.11",
+    "license": "MIT",
+    "kind": "build",
+    "purpose": "Form-Style-Plugin (class-Strategy) für konsistente Eingabefelder.",
+    "sourceUrl": "https://github.com/tailwindlabs/tailwindcss-forms"
+  },
+  {
+    "name": "@tailwindcss/typography",
+    "version": "0.5.19",
+    "license": "MIT",
+    "kind": "build",
+    "purpose": "Typography-Plugin für die Doku-Sub-Pages (prose-Stil).",
+    "sourceUrl": "https://github.com/tailwindlabs/tailwindcss-typography"
+  },
+  {
     "name": "@types/node",
     "version": "22.19.17",
     "license": "MIT",

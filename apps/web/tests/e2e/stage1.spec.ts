@@ -241,10 +241,19 @@ test('stage 1: CSV-Vorschau-Tabelle erscheint nach Upload (I)', async ({ page })
   expect(await dataRows.count()).toBe(5);
 });
 
-test('stage 1: Tabs zeigen Untertitel + Schritt-Header (F)', async ({ page }) => {
+test('stage 1: Tabs tragen Untertitel als Tooltip + Schritt-Header (F)', async ({ page }) => {
   await page.goto('/');
-  await expect(page.getByTestId('tab-stage1')).toContainText('Aus Melderegister');
-  await expect(page.getByTestId('tab-stage3')).toContainText('Aus Antwortenden');
+  // After the pill-tab redesign (#56) the subtitles moved from visible DOM
+  // to title attributes (still available to screen readers / on hover) so
+  // mobile no longer wraps. Assert against the title attribute now.
+  await expect(page.getByTestId('tab-stage1')).toHaveAttribute(
+    'title',
+    /Melderegister/,
+  );
+  await expect(page.getByTestId('tab-stage3')).toHaveAttribute(
+    'title',
+    /Antwortenden/,
+  );
   await page.getByTestId('tab-stage1').click();
   await expect(page.getByTestId('stage1-step-header')).toContainText(
     'Schritt 1 von 3',

@@ -3,6 +3,160 @@
 @tailwind utilities;
 
 /* ----------------------------------------------------------------------- *
+ * Base layer — body defaults, smooth scroll, Inter stylistic set
+ * ----------------------------------------------------------------------- */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    /* cv11 = Inter stylistic set for legible 1/I/l differentiation. */
+    font-feature-settings:
+      'cv11',
+      'ss01',
+      'ss03';
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Larger touch surface for buttons by default — overridden by .btn-*
+     component classes for the explicit primary/secondary buttons. */
+  button {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+/* ----------------------------------------------------------------------- *
+ * Component layer — reusable visual primitives. Used across App.tsx,
+ * Stage1Panel.tsx, TrustStrip.tsx, DocsHub.tsx, DocsLayout.tsx etc.
+ * ----------------------------------------------------------------------- */
+@layer components {
+  /* ---- Buttons ---- */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2
+      rounded-lg bg-brand-accent px-6 py-3
+      text-base font-semibold text-white
+      shadow-sm
+      transition
+      hover:bg-brand-accent-strong
+      focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent focus-visible:ring-offset-2
+      disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2
+      rounded-lg bg-slate-100 px-4 py-2.5
+      text-sm font-medium text-slate-800
+      border border-slate-200
+      transition
+      hover:bg-slate-200
+      focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent focus-visible:ring-offset-2
+      disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center gap-2
+      rounded-md px-3 py-2
+      text-sm font-medium text-slate-700
+      transition
+      hover:bg-slate-100 hover:text-slate-900
+      focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent focus-visible:ring-offset-2;
+  }
+
+  /* ---- Cards ---- */
+  .card {
+    @apply rounded-lg border border-slate-200 bg-white p-4 shadow-card;
+  }
+
+  .card-hover {
+    @apply transition-all duration-150
+      hover:-translate-y-0.5 hover:shadow-card-hover hover:border-slate-300;
+  }
+
+  /* ---- Tab Pills (top navigation) ---- */
+  .pill-tab {
+    @apply inline-flex items-center gap-2
+      rounded-full px-5 py-3
+      text-sm font-medium
+      transition
+      whitespace-nowrap
+      min-h-[44px]
+      focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent focus-visible:ring-offset-2;
+  }
+
+  .pill-tab-active {
+    @apply bg-brand text-brand-fg shadow-sm;
+  }
+
+  .pill-tab-inactive {
+    @apply bg-slate-100 text-slate-700 hover:bg-slate-200 hover:text-slate-900;
+  }
+
+  /* ---- Status Pills (in tables / inline) ---- */
+  .status-pill {
+    @apply inline-flex items-center gap-1
+      rounded-full px-2.5 py-0.5
+      text-xs font-medium;
+  }
+  .status-pill-warn {
+    @apply status-pill bg-amber-100 text-amber-900 border border-amber-200;
+  }
+  .status-pill-ok {
+    @apply status-pill bg-green-100 text-green-900 border border-green-200;
+  }
+
+  /* ---- Form Inputs ---- */
+  .input-base {
+    @apply block w-full
+      rounded-md border border-slate-300 bg-white
+      px-3 py-2.5
+      text-sm text-slate-900
+      shadow-sm
+      transition
+      placeholder:text-slate-400
+      focus:border-brand-accent focus:outline-none focus:ring-2 focus:ring-brand-accent focus:ring-offset-1
+      disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-500;
+    /* Ensure ≥44px touch target. */
+    min-height: 44px;
+  }
+
+  .input-label {
+    @apply block text-sm font-medium text-slate-700 mb-1.5;
+  }
+
+  /* ---- Drop-Zone (CSV upload visual style) ---- */
+  .dropzone {
+    @apply relative flex flex-col items-center justify-center gap-3
+      rounded-lg border-2 border-dashed border-slate-300 bg-white
+      px-6 py-10
+      text-center
+      cursor-pointer
+      transition
+      hover:border-brand-accent hover:bg-brand-muted
+      focus-within:border-brand-accent focus-within:bg-brand-muted;
+  }
+
+  .dropzone-icon {
+    @apply h-10 w-10 text-brand-accent;
+  }
+
+  .dropzone-label {
+    @apply text-base font-medium text-slate-800;
+  }
+
+  .dropzone-hint {
+    @apply text-xs text-slate-500;
+  }
+
+  /* ---- Prose wrapper for docs subpages ---- */
+  .prose-app {
+    @apply prose prose-slate max-w-3xl
+      prose-headings:font-semibold
+      prose-a:text-brand-accent prose-a:no-underline hover:prose-a:underline;
+  }
+}
+
+/* ----------------------------------------------------------------------- *
  * Print styles for Stage 1 group reporting
  *
  * Goal: when the Verfahrens-Sitzung wants a paper protocol of the result,
@@ -83,4 +237,3 @@
     display: block !important;
   }
 }
-

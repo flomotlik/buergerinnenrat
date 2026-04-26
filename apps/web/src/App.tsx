@@ -161,62 +161,106 @@ export const App: Component = () => {
   }
 
   return (
-    <main class="mx-auto max-w-5xl px-6 py-10 space-y-8">
-      <header class="space-y-4">
-        <div>
-          <h1 class="text-3xl font-semibold tracking-tight">Sortition Iteration 1</h1>
-          <p class="mt-2 text-sm text-slate-600">
-            Browser-native Auswahl-Pipeline — statisch ausgeliefert, keine Backend-Abhängigkeit.
-          </p>
+    <main class="mx-auto max-w-5xl px-4 sm:px-6 py-8 sm:py-10 space-y-8">
+      <header class="space-y-5 pb-6 border-b border-slate-200">
+        {/* Brand block: logo + headings. Mobile stacks vertically; ≥sm goes
+            horizontal so the logo sits next to the title on desktop. */}
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+          {/* Inline-SVG logo: assembly icon (one filled circle surrounded by
+              six smaller circles). Same shape as favicon for brand recognition. */}
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="h-12 w-12 text-brand-accent shrink-0"
+            aria-hidden="true"
+          >
+            <circle cx="12" cy="12" r="4" fill="currentColor" />
+            <circle cx="12" cy="3" r="1.5" />
+            <circle cx="20" cy="7.5" r="1.5" />
+            <circle cx="20" cy="16.5" r="1.5" />
+            <circle cx="12" cy="21" r="1.5" />
+            <circle cx="4" cy="16.5" r="1.5" />
+            <circle cx="4" cy="7.5" r="1.5" />
+          </svg>
+          <div>
+            <h1 class="text-3xl sm:text-4xl font-bold tracking-tight text-brand">
+              Bürger:innenrat
+            </h1>
+            <p class="mt-1 text-base text-slate-600">
+              Versand-Liste &amp; Panel-Auswahl
+            </p>
+          </div>
         </div>
-        <nav class="flex gap-2 border-b border-slate-200" data-testid="main-nav">
-          <button
-            type="button"
-            class="px-3 py-1.5 text-sm border-b-2 -mb-px text-left"
-            classList={{
-              'border-slate-900 font-semibold text-slate-900': mode() === 'stage1',
-              'border-transparent text-slate-500 hover:text-slate-700': mode() !== 'stage1',
-            }}
-            onClick={() => navigateMode('stage1')}
-            data-testid="tab-stage1"
-          >
-            <span class="block">Stage 1 / Versand-Liste</span>
-            <span class="block text-xs font-normal text-slate-500">
-              Aus Melderegister
-            </span>
-          </button>
-          <button
-            type="button"
-            class="px-3 py-1.5 text-sm border-b-2 -mb-px text-left"
-            classList={{
-              'border-slate-900 font-semibold text-slate-900': mode() === 'docs',
-              'border-transparent text-slate-500 hover:text-slate-700': mode() !== 'docs',
-            }}
-            onClick={() => navigateMode('docs')}
-            data-testid="tab-docs"
-          >
-            <span class="block">Dokumentation</span>
-            <span class="block text-xs font-normal text-slate-500">
-              Algorithmus, Technik, Verifikation
-            </span>
-          </button>
-          <button
-            type="button"
-            class="px-3 py-1.5 text-sm border-b-2 -mb-px text-left"
-            classList={{
-              'border-slate-900 font-semibold text-slate-900': mode() === 'stage3',
-              'border-transparent text-slate-500 hover:text-slate-700': mode() !== 'stage3',
-            }}
-            onClick={() => navigateMode('stage3')}
-            data-testid="tab-stage3"
-          >
-            <span class="block">Stage 3 / Panel ziehen</span>
-            <span class="block text-xs font-normal text-slate-500">
-              Aus Antwortenden
-            </span>
-          </button>
-        </nav>
+        <p class="text-base text-slate-700 max-w-2xl leading-relaxed">
+          Open-Source-Werkzeug für Verwaltungen — stratifizierte Auswahl ohne Backend,
+          ohne Datenversand.
+        </p>
       </header>
+
+      {/* Top navigation: pill-button tab bar. On mobile the bar becomes a
+          horizontal scroll container (overflow-x-auto + scroll-snap) so the
+          pills stay on a single line instead of wrapping. Subtitles moved
+          out of the visual DOM into title attributes so they remain available
+          for screen readers / hover tooltips on desktop. */}
+      <nav
+        class="flex gap-2 overflow-x-auto pb-2 sm:pb-0 [scroll-snap-type:x_mandatory] -mx-4 px-4 sm:mx-0 sm:px-0"
+        role="tablist"
+        data-testid="main-nav"
+      >
+        <button
+          type="button"
+          role="tab"
+          aria-current={mode() === 'stage1' ? 'page' : undefined}
+          aria-selected={mode() === 'stage1'}
+          title="Stage 1 — Versand-Liste aus Melderegister"
+          class="pill-tab [scroll-snap-align:start]"
+          classList={{
+            'pill-tab-active': mode() === 'stage1',
+            'pill-tab-inactive': mode() !== 'stage1',
+          }}
+          onClick={() => navigateMode('stage1')}
+          data-testid="tab-stage1"
+        >
+          Stage 1 / Versand-Liste
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-current={mode() === 'docs' ? 'page' : undefined}
+          aria-selected={mode() === 'docs'}
+          title="Dokumentation — Algorithmus, Technik, Verifikation"
+          class="pill-tab [scroll-snap-align:start]"
+          classList={{
+            'pill-tab-active': mode() === 'docs',
+            'pill-tab-inactive': mode() !== 'docs',
+          }}
+          onClick={() => navigateMode('docs')}
+          data-testid="tab-docs"
+        >
+          Dokumentation
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-current={mode() === 'stage3' ? 'page' : undefined}
+          aria-selected={mode() === 'stage3'}
+          title="Stage 3 — Panel ziehen aus Antwortenden"
+          class="pill-tab [scroll-snap-align:start]"
+          classList={{
+            'pill-tab-active': mode() === 'stage3',
+            'pill-tab-inactive': mode() !== 'stage3',
+          }}
+          onClick={() => navigateMode('stage3')}
+          data-testid="tab-stage3"
+        >
+          Stage 3 / Panel ziehen
+        </button>
+      </nav>
 
       <Show when={mode() === 'stage1'}>
         <Stage1Panel />

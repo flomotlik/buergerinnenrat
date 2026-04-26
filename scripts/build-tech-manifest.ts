@@ -51,6 +51,16 @@ const PURPOSE_MAP: Record<
     purpose: 'Utility-CSS-Framework für das Layout.',
     sourceUrl: 'https://tailwindcss.com/',
   },
+  '@tailwindcss/typography': {
+    kind: 'build',
+    purpose: 'Typography-Plugin für die Doku-Sub-Pages (prose-Stil).',
+    sourceUrl: 'https://github.com/tailwindlabs/tailwindcss-typography',
+  },
+  '@tailwindcss/forms': {
+    kind: 'build',
+    purpose: 'Form-Style-Plugin (class-Strategy) für konsistente Eingabefelder.',
+    sourceUrl: 'https://github.com/tailwindlabs/tailwindcss-forms',
+  },
   papaparse: {
     kind: 'runtime',
     purpose: 'CSV-Parser im Browser (Melderegister-Import).',
