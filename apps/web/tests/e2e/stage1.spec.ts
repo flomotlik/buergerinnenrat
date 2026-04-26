@@ -47,6 +47,13 @@ test('stage 1: upload → defaults → ziehen → download', async ({ page, brow
   await expect(page.getByTestId('stage1-preview')).toBeVisible();
   await expect(page.getByTestId('stage1-axis-breakdown-district')).toBeVisible();
 
+  // Seed-confirmation gate (issue #53 C, variant 1): the run button is
+  // disabled until the user explicitly confirms the auto-default or types
+  // a new value. We accept the default here.
+  await expect(page.getByTestId('stage1-run')).toBeDisabled();
+  await page.getByTestId('stage1-seed-confirm').click();
+  await expect(page.getByTestId('stage1-run')).toBeEnabled();
+
   // Click "ziehen" — Stage 1 is sub-second, no progress bar needed.
   await page.getByTestId('stage1-run').click();
 
@@ -65,6 +72,14 @@ test('stage 1: upload → defaults → ziehen → download', async ({ page, brow
   await expect(page.getByTestId('stage1-strata-toggle')).toBeVisible();
   await page.getByTestId('stage1-strata-toggle').click();
   await expect(page.getByTestId('stage1-strata-table')).toBeVisible();
+
+  // Audit/provenance footer (B) must be visible in the result view, with
+  // the SHA-256 hash and signature algorithm exposed. Full values are in
+  // the JSON download; the footer just shows abbreviated tokens.
+  await expect(page.getByTestId('stage1-audit-footer')).toBeVisible();
+  await expect(page.getByTestId('stage1-audit-footer')).toContainText('Protokoll / Audit');
+  await expect(page.getByTestId('stage1-audit-footer')).toContainText('SHA-256');
+  await expect(page.getByTestId('audit-footer-sig-algo')).not.toContainText('noch nicht signiert');
 
   // CSV download.
   const csvDownloadPromise = page.waitForEvent('download');
@@ -118,12 +133,8 @@ test('stage 1: Stale Result wird gecleart wenn N nach Run geändert wird (H)', a
   await expect(page.getByTestId('stage1-pool-summary')).toContainText('500');
 
   await page.getByTestId('stage1-target-n').fill('40');
-  // Seed must be confirmed (Task 6) before run is enabled. The button only
-  // appears when the seed is unconfirmed; click it to enable the run.
-  const confirmButton = page.getByTestId('stage1-seed-confirm');
-  if (await confirmButton.count()) {
-    await confirmButton.click();
-  }
+  // Seed must be confirmed (issue #53 C) before run is enabled.
+  await page.getByTestId('stage1-seed-confirm').click();
 
   await page.getByTestId('stage1-run').click();
   await expect(page.getByTestId('stage1-result')).toBeVisible({ timeout: 5_000 });
@@ -131,4 +142,34 @@ test('stage 1: Stale Result wird gecleart wenn N nach Run geändert wird (H)', a
   // Now change N — the result should disappear (stale clear).
   await page.getByTestId('stage1-target-n').fill('80');
   await expect(page.getByTestId('stage1-result')).toBeHidden();
+});
+
+test('stage 1: Run-Button bleibt disabled bis Seed bestätigt oder editiert wurde (C)', async ({ page }) => {
+  await page.goto('/');
+  await page.getByTestId('tab-stage1').click();
+  await page.locator('[data-testid="stage1-csv-upload"]').setInputFiles({
+    name: 'pool.csv',
+    mimeType: 'text/csv',
+    buffer: readFileSync(FIXTURE),
+  });
+  await page.getByTestId('stage1-target-n').fill('30');
+
+  // Initial state: seed shows the "bitte vereinbaren" warning, run is disabled.
+  await expect(page.getByTestId('stage1-seed-source')).toContainText('bitte gemeinsam vereinbaren');
+  await expect(page.getByTestId('stage1-run')).toBeDisabled();
+
+  // Path A: clicking "Default-Seed übernehmen" enables the button.
+  await page.getByTestId('stage1-seed-confirm').click();
+  await expect(page.getByTestId('stage1-seed-source')).toContainText('bestätigt');
+  await expect(page.getByTestId('stage1-run')).toBeEnabled();
+  // Confirm button disappears once confirmation is given.
+  await expect(page.getByTestId('stage1-seed-confirm')).toHaveCount(0);
+
+  // Path B: requesting a fresh default re-disables until next confirmation;
+  // editing the seed value counts as confirmation directly.
+  await page.getByText('Neuer Default-Seed').click();
+  await expect(page.getByTestId('stage1-run')).toBeDisabled();
+  await page.getByTestId('stage1-seed').fill('123456');
+  await expect(page.getByTestId('stage1-seed-source')).toContainText('manuell');
+  await expect(page.getByTestId('stage1-run')).toBeEnabled();
 });

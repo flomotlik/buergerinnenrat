@@ -38,7 +38,7 @@ export const AxisBreakdown: Component<Props> = (props) => {
       data-testid={`stage1-axis-breakdown-${props.marginals.axis}`}
     >
       <h3 class="text-sm font-semibold mb-2">
-        Achse: <span class="font-mono">{props.marginals.axis}</span>{' '}
+        Merkmal: <span class="font-mono">{props.marginals.axis}</span>{' '}
         <span class="text-xs text-slate-500 font-normal">
           ({props.marginals.buckets.length} Werte, gesamt Soll{' '}
           {props.marginals.totalTarget}
@@ -52,7 +52,7 @@ export const AxisBreakdown: Component<Props> = (props) => {
             height={svgHeight()}
             class="text-xs"
             role="img"
-            aria-label={`Verteilung der Achse ${props.marginals.axis}`}
+            aria-label={`Verteilung des Merkmals ${props.marginals.axis}`}
           >
             <For each={props.marginals.buckets}>
               {(b, i) => {

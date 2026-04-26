@@ -197,12 +197,15 @@ describe('stage1ToMarkdownReport', () => {
     const md = stage1ToMarkdownReport(audit);
     expect(md).toContain('# Versand-Auswahl — Bericht');
     expect(md).toContain('## Parameter');
-    expect(md).toContain('## Stratum-Abdeckung');
-    expect(md).toContain('## Verteilung pro Achse');
+    expect(md).toContain('## Gruppen-Abdeckung');
+    expect(md).toContain('## Verteilung pro Merkmal');
     expect(md).toContain('### district');
     expect(md).toContain('### gender');
-    expect(md).toContain('## Stratum-Detail');
+    expect(md).toContain('## Detail-Tabelle (Bevölkerungsgruppen, Cross-Product)');
     expect(md).toContain('## Signatur');
+    // Auditor-facing parenthetical "Stratum" must be present in the
+    // detail table header for traceability per CONTEXT.md glossary.
+    expect(md).toContain('Bevölkerungsgruppe (Stratum)');
     // No PII (person IDs) in the report — only aggregate counts.
     expect(md).not.toContain('p0');
   });
@@ -249,6 +252,6 @@ describe('stage1ToMarkdownReport', () => {
     });
     const md = stage1ToMarkdownReport(audit);
     expect(md).toContain('(keine — einfache Zufallsstichprobe)');
-    expect(md).not.toContain('## Verteilung pro Achse'); // no axes => skip
+    expect(md).not.toContain('## Verteilung pro Merkmal'); // no axes => skip
   });
 });

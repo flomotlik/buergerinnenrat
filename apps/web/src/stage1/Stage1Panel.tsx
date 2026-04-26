@@ -6,6 +6,7 @@ import { runStage1 } from './runStage1';
 import type { RunStage1Output } from './runStage1';
 import { AxisPicker } from './AxisPicker';
 import { AxisBreakdown } from './AxisBreakdown';
+import { AuditFooter } from './AuditFooter';
 import {
   coverageMetric,
   marginalAggregates,
@@ -50,6 +51,12 @@ export const Stage1Panel: Component = () => {
   const [targetN, setTargetN] = createSignal<number | null>(null);
   const [seed, setSeed] = createSignal<number>(defaultSeed());
   const [seedSource, setSeedSource] = createSignal<Stage1SeedSource>('unix-time-default');
+  // Issue #53 C (variant 1): seed value is pre-filled with a default so the
+  // user is never blocked by an empty input, but the run button stays
+  // disabled until the user either explicitly confirms the default or types
+  // a new value. This forces a deliberate act ("öffentlich vor Lauf wählen")
+  // without nagging with a forced first-time entry.
+  const [seedConfirmed, setSeedConfirmed] = createSignal(false);
   const [running, setRunning] = createSignal(false);
   const [output, setOutput] = createSignal<RunStage1Output | null>(null);
   const [error, setError] = createSignal<string | null>(null);
@@ -142,15 +149,28 @@ export const Stage1Panel: Component = () => {
   function changeSeed(value: number) {
     setSeed(value);
     setSeedSource('user');
+    // Editing the seed counts as confirmation — user has made a choice.
+    setSeedConfirmed(true);
   }
 
   function newDefaultSeed() {
     setSeed(defaultSeed());
     setSeedSource('unix-time-default');
+    // A fresh default needs a new explicit confirmation.
+    setSeedConfirmed(false);
+  }
+
+  function confirmDefaultSeed() {
+    // User has explicitly accepted the auto-generated default seed.
+    setSeedConfirmed(true);
   }
 
   const canRun = () =>
-    parsed() !== null && targetN() !== null && (targetN() ?? 0) > 0 && !running();
+    parsed() !== null &&
+    targetN() !== null &&
+    (targetN() ?? 0) > 0 &&
+    !running() &&
+    seedConfirmed();
 
   async function start() {
     const p = parsed();
@@ -288,7 +308,7 @@ export const Stage1Panel: Component = () => {
               disabled={running()}
             />
           </div>
-          <div class="flex items-center gap-3">
+          <div class="flex flex-wrap items-center gap-3">
             <label class="text-sm w-44" for="stage1-seed">Seed (deterministisch)</label>
             <input
               id="stage1-seed"
@@ -299,6 +319,17 @@ export const Stage1Panel: Component = () => {
               onInput={(e) => changeSeed(Number(e.currentTarget.value))}
               disabled={running()}
             />
+            <Show when={!seedConfirmed()}>
+              <button
+                type="button"
+                class="px-2 py-1 text-xs border border-amber-400 bg-amber-100 text-amber-900 rounded hover:bg-amber-200"
+                onClick={confirmDefaultSeed}
+                disabled={running()}
+                data-testid="stage1-seed-confirm"
+              >
+                Default-Seed übernehmen
+              </button>
+            </Show>
             <button
               type="button"
               class="text-xs underline text-slate-500"
@@ -307,8 +338,19 @@ export const Stage1Panel: Component = () => {
             >
               Neuer Default-Seed (Unix-Sekunde)
             </button>
-            <span class="text-xs text-slate-500" data-testid="stage1-seed-source">
-              ({seedSource() === 'user' ? 'manuell' : 'Default'})
+            <span
+              class={
+                seedConfirmed()
+                  ? 'text-xs text-slate-500'
+                  : 'text-xs font-medium text-amber-800'
+              }
+              data-testid="stage1-seed-source"
+            >
+              {!seedConfirmed()
+                ? '(Default — bitte gemeinsam vereinbaren oder bestätigen)'
+                : seedSource() === 'user'
+                  ? '(manuell)'
+                  : '(bestätigt)'}
             </span>
           </div>
           <aside
@@ -337,7 +379,7 @@ export const Stage1Panel: Component = () => {
                   Vorschau (vor dem Lauf)
                 </h3>
                 <span class="text-xs text-slate-500">
-                  {preview().result?.rows.length ?? 0} Strata, Soll-Summe{' '}
+                  {preview().result?.rows.length ?? 0} Bevölkerungsgruppen, Soll-Summe{' '}
                   {preview().result?.totalTarget ?? 0}
                 </span>
               </div>
@@ -351,15 +393,15 @@ export const Stage1Panel: Component = () => {
                   <Show when={(preview().result?.zeroAllocationStrata ?? 0) > 0}>
                     <p>
                       <strong>{preview().result?.zeroAllocationStrata}</strong>{' '}
-                      Strata bekommen nach proportionaler Allokation{' '}
-                      <strong>0 Personen</strong>. Sind das Strata, die bewusst
-                      leer bleiben sollen, oder zu viele/zu feine Achsen?
+                      Bevölkerungsgruppen bekommen nach proportionaler Allokation{' '}
+                      <strong>0 Personen</strong>. Sind das Gruppen, die bewusst
+                      leer bleiben sollen, oder zu viele/zu feine Merkmale?
                     </p>
                   </Show>
                   <Show when={(preview().result?.underfillStrata ?? 0) > 0}>
                     <p>
-                      <strong>{preview().result?.underfillStrata}</strong> Strata
-                      werden unterbesetzt sein (Pool zu klein für Soll).
+                      <strong>{preview().result?.underfillStrata}</strong>{' '}
+                      Bevölkerungsgruppen werden unterbesetzt sein (Pool zu klein für Soll).
                     </p>
                   </Show>
                 </div>
@@ -412,7 +454,7 @@ export const Stage1Panel: Component = () => {
                     data-testid="stage1-coverage-card"
                   >
                     <div class="text-xs text-slate-500 uppercase tracking-wide">
-                      Stratum-Abdeckung
+                      Gruppen-Abdeckung
                     </div>
                     <div class="text-2xl font-semibold tabular-nums">
                       {c().coveredStrata}{' '}
@@ -423,7 +465,7 @@ export const Stage1Panel: Component = () => {
                     <div class="text-xs text-slate-500">
                       {Number.isNaN(c().coverageRatio)
                         ? '–'
-                        : `${(c().coverageRatio * 100).toFixed(1)} % der Strata mind. 1 Person`}
+                        : `${(c().coverageRatio * 100).toFixed(1)} % der Bevölkerungsgruppen mit mind. 1 gezogener Person`}
                     </div>
                   </div>
                 )}
@@ -443,7 +485,7 @@ export const Stage1Panel: Component = () => {
                   {coverage()?.underfilledStrata ?? 0}
                 </div>
                 <div class="text-xs text-slate-500">
-                  Strata mit weniger Personen als angefragt
+                  Bevölkerungsgruppen mit weniger Personen als angefragt
                 </div>
               </div>
             </div>
@@ -460,13 +502,13 @@ export const Stage1Panel: Component = () => {
                 data-testid="stage1-underfill-list"
               >
                 <h3 class="font-semibold text-amber-900 text-sm">
-                  Unterbesetzte Strata
+                  Unterbesetzte Bevölkerungsgruppen
                 </h3>
                 <p class="text-xs text-amber-900">
-                  Diese Strata bekamen weniger Personen als die proportionale
-                  Allokation vorgesehen hat — Pool zu klein. Im echten Verfahren
-                  bedeutet das: bei diesen Gruppen wurden alle verfügbaren
-                  Personen angeschrieben.
+                  Diese Bevölkerungsgruppen bekamen weniger Personen als die
+                  proportionale Allokation vorgesehen hat — Pool zu klein. Im
+                  echten Verfahren bedeutet das: bei diesen Gruppen wurden alle
+                  verfügbaren Personen angeschrieben.
                 </p>
                 <ul class="text-xs text-amber-900 space-y-1">
                   <For each={underfills()}>
@@ -501,7 +543,7 @@ export const Stage1Panel: Component = () => {
 
             <Show when={resultMarginals().length > 0}>
               <section class="space-y-2" data-testid="stage1-axis-breakdowns">
-                <h3 class="text-sm font-semibold">Verteilung pro Achse</h3>
+                <h3 class="text-sm font-semibold">Verteilung pro Merkmal</h3>
                 <For each={resultMarginals()}>
                   {(m) => <AxisBreakdown marginals={m} />}
                 </For>
@@ -509,7 +551,10 @@ export const Stage1Panel: Component = () => {
             </Show>
 
             {/* Detailed cross-product strata table — collapsible to keep the
-                results view readable for groups; "alle Detail-Strata" reveals it. */}
+                results view readable for groups; "alle Detail-Strata" reveals it.
+                UI-facing strings use plain-language German per CONTEXT.md
+                glossary (Bevölkerungsgruppe instead of Stratum); statistics
+                terms appear in parentheses for auditors. */}
             <details
               class="border rounded"
               open={strataExpanded()}
@@ -519,12 +564,12 @@ export const Stage1Panel: Component = () => {
                 class="text-sm font-semibold p-2 bg-slate-100 cursor-pointer select-none"
                 data-testid="stage1-strata-toggle"
               >
-                Stratum-Detail (Kreuzkategorien-Tabelle, {out().result.strata.length} Zeilen)
+                Detail-Tabelle (Bevölkerungsgruppen, {out().result.strata.length} Zeilen)
               </summary>
               <table class="w-full text-xs" data-testid="stage1-strata-table">
                 <thead class="bg-slate-50">
                   <tr>
-                    <th class="text-left p-1">Stratum</th>
+                    <th class="text-left p-1">Bevölkerungsgruppe (Stratum)</th>
                     <th class="text-right p-1">Pool</th>
                     <th class="text-right p-1">Soll</th>
                     <th class="text-right p-1">Ist</th>
@@ -554,6 +599,10 @@ export const Stage1Panel: Component = () => {
                 </tbody>
               </table>
             </details>
+
+            {/* Visible audit/provenance footer (B). Stays on print so the
+                signed report carries the full trail. */}
+            <AuditFooter doc={out().signedAudit.doc} />
 
             <div class="flex flex-wrap gap-2 print:hidden">
               <button

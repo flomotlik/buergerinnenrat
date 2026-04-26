@@ -2,6 +2,11 @@
 // metric, allocation preview (without doing the actual draw), and Markdown
 // report builder. All pure functions — testable from Node (Vitest) without
 // any DOM or Solid imports.
+//
+// UI-facing strings use plain-language German per CONTEXT.md glossary
+// (Bevölkerungsgruppe instead of Stratum, Merkmal instead of Achse);
+// statistics terms appear in parentheses for auditors. Audit-JSON schema
+// fields stay unchanged — that is a machine format.
 
 import { bucketize, largestRemainderAllocation } from './stratify';
 import type { Stage1AuditDoc, StratumResult } from './types';
@@ -254,15 +259,15 @@ export function stage1ToMarkdownReport(audit: Stage1AuditDoc): string {
   lines.push(`- **Pool-Größe:** ${audit.pool_size}`);
   lines.push(`- **Ziel-Stichprobengröße:** ${audit.target_n}`);
   lines.push(`- **Tatsächlich gezogen:** ${audit.actual_n}`);
-  lines.push(`- **Stratifikations-Achsen:** ${audit.stratification_axes.length === 0 ? '(keine — einfache Zufallsstichprobe)' : audit.stratification_axes.join(', ')}`);
+  lines.push(`- **Aufteilungs-Merkmale (Stratifikations-Achsen):** ${audit.stratification_axes.length === 0 ? '(keine — einfache Zufallsstichprobe)' : audit.stratification_axes.join(', ')}`);
   lines.push(`- **Seed:** \`${audit.seed}\` (${audit.seed_source === 'user' ? 'manuell vorgegeben' : 'Default Unix-Sekunde'})`);
   lines.push(`- **Laufzeit:** ${audit.duration_ms} ms`);
   lines.push('');
 
-  lines.push('## Stratum-Abdeckung');
+  lines.push('## Gruppen-Abdeckung');
   lines.push('');
   const covPct = Number.isNaN(cov.coverageRatio) ? 0 : Math.round(cov.coverageRatio * 1000) / 10;
-  lines.push(`**${cov.coveredStrata} von ${cov.totalStrata} Strata abgedeckt** (${covPct} %).`);
+  lines.push(`**${cov.coveredStrata} von ${cov.totalStrata} Bevölkerungsgruppen abgedeckt** (${covPct} %).`);
   if (cov.underfilledStrata > 0) {
     lines.push('');
     lines.push(`Davon **${cov.underfilledStrata} unterbesetzt** (Pool zu klein für die proportionale Soll-Allokation).`);
@@ -270,7 +275,7 @@ export function stage1ToMarkdownReport(audit: Stage1AuditDoc): string {
   lines.push('');
 
   if (margs.length > 0) {
-    lines.push('## Verteilung pro Achse (Marginale)');
+    lines.push('## Verteilung pro Merkmal (Marginale)');
     lines.push('');
     for (const m of margs) {
       lines.push(`### ${m.axis}`);
@@ -286,9 +291,9 @@ export function stage1ToMarkdownReport(audit: Stage1AuditDoc): string {
     }
   }
 
-  lines.push('## Stratum-Detail (Cross-Product-Tabelle)');
+  lines.push('## Detail-Tabelle (Bevölkerungsgruppen, Cross-Product)');
   lines.push('');
-  lines.push('| Stratum | Pool | Soll | Ist | Status |');
+  lines.push('| Bevölkerungsgruppe (Stratum) | Pool | Soll | Ist | Status |');
   lines.push('| --- | ---: | ---: | ---: | --- |');
   for (const s of audit.strata) {
     const stratumLabel = Object.keys(s.key).length === 0

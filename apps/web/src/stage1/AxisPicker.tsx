@@ -24,7 +24,7 @@ export const AxisPicker: Component<AxisPickerProps> = (props) => {
 
   return (
     <fieldset class="space-y-1" data-testid="stage1-axis-picker">
-      <legend class="text-sm font-semibold mb-2">Stratifikations-Achsen</legend>
+      <legend class="text-sm font-semibold mb-2">Aufteilungs-Merkmale (Stratifikations-Achsen)</legend>
       <For each={props.headers}>
         {(h) => (
           <label class="flex items-center gap-2 text-sm">
