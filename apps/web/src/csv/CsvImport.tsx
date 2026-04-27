@@ -1,4 +1,5 @@
-import { Component, createSignal, For, Show } from 'solid-js';
+import type { Component } from 'solid-js';
+import { createSignal, For, Show } from 'solid-js';
 import { autoGuessMapping, parseCsvFile, SEMANTIC_FIELDS, validateMapping } from './parse';
 import type { ColumnMapping, ParsedCsv, SemanticField } from './parse';
 
@@ -75,12 +76,8 @@ export const CsvImport: Component<CsvImportProps> = (props) => {
           <polyline points="17 8 12 3 7 8" />
           <line x1="12" x2="12" y1="3" y2="15" />
         </svg>
-        <span class="dropzone-label">
-          CSV hochladen oder hier ablegen
-        </span>
-        <span class="dropzone-hint">
-          CSV mit Header-Zeile, UTF-8 oder Latin-1
-        </span>
+        <span class="dropzone-label">CSV hochladen oder hier ablegen</span>
+        <span class="dropzone-hint">CSV mit Header-Zeile, UTF-8 oder Latin-1</span>
         <input
           type="file"
           accept=".csv,.txt,text/csv,text/plain"
@@ -93,15 +90,18 @@ export const CsvImport: Component<CsvImportProps> = (props) => {
       </label>
 
       <Show when={error()}>
-        <p class="text-sm text-red-700" data-testid="csv-error">{error()}</p>
+        <p class="text-sm text-red-700" data-testid="csv-error">
+          {error()}
+        </p>
       </Show>
 
       <Show when={parsed()}>
         {(p) => (
           <div class="space-y-4">
             <div class="text-sm text-slate-700">
-              {p().rows.length} Zeilen, Trenner <code>{p().separator === '\t' ? 'TAB' : p().separator}</code>,
-              Encoding <code>{p().encoding}</code>
+              {p().rows.length} Zeilen, Trenner{' '}
+              <code>{p().separator === '\t' ? 'TAB' : p().separator}</code>, Encoding{' '}
+              <code>{p().encoding}</code>
             </div>
 
             {/* TODO(#53-followup): refactor inline preview to use shared
@@ -114,7 +114,9 @@ export const CsvImport: Component<CsvImportProps> = (props) => {
             <table class="w-full text-xs border-collapse" data-testid="csv-preview">
               <thead>
                 <tr>
-                  <For each={p().headers}>{(h) => <th class="border px-2 py-1 bg-slate-100 text-left">{h}</th>}</For>
+                  <For each={p().headers}>
+                    {(h) => <th class="border px-2 py-1 bg-slate-100 text-left">{h}</th>}
+                  </For>
                 </tr>
                 <tr>
                   <For each={p().headers}>
@@ -123,13 +125,13 @@ export const CsvImport: Component<CsvImportProps> = (props) => {
                         <select
                           class="w-full text-xs"
                           value={mapping()[h] ?? '__ignore__'}
-                          onChange={(e) => setColumn(h, e.currentTarget.value as SemanticField | '__ignore__')}
+                          onChange={(e) =>
+                            setColumn(h, e.currentTarget.value as SemanticField | '__ignore__')
+                          }
                           data-testid={`csv-map-${h}`}
                         >
                           <option value="__ignore__">(ignorieren)</option>
-                          <For each={SEMANTIC_FIELDS}>
-                            {(f) => <option value={f}>{f}</option>}
-                          </For>
+                          <For each={SEMANTIC_FIELDS}>{(f) => <option value={f}>{f}</option>}</For>
                         </select>
                       </td>
                     )}
@@ -159,7 +161,8 @@ export const CsvImport: Component<CsvImportProps> = (props) => {
                   </Show>
                   <Show when={v().ok}>
                     <p class="text-green-700" data-testid="csv-validation-ok">
-                      Mapping ok — {p().rows.length} Personen, {Object.values(mapping()).filter((m) => m !== '__ignore__').length} Felder.
+                      Mapping ok — {p().rows.length} Personen,{' '}
+                      {Object.values(mapping()).filter((m) => m !== '__ignore__').length} Felder.
                     </p>
                   </Show>
                 </div>

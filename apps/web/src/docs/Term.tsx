@@ -12,9 +12,7 @@ export interface GlossarEntry {
 }
 
 const ENTRIES = glossar as GlossarEntry[];
-const LOOKUP: Map<string, GlossarEntry> = new Map(
-  ENTRIES.map((e) => [e.slug, e]),
-);
+const LOOKUP: Map<string, GlossarEntry> = new Map(ENTRIES.map((e) => [e.slug, e]));
 
 /** Public lookup helper used by tests and other docs components. */
 export function findEntry(slug: string): GlossarEntry | undefined {
@@ -85,10 +83,7 @@ const Term: Component<Props> = (props) => {
         >
           <span class="block font-semibold">{entry.term}</span>
           <span class="block mt-1">{entry.kurz}</span>
-          <a
-            class="block mt-2 underline text-sky-300"
-            href={`#/docs/glossar/${entry.slug}`}
-          >
+          <a class="block mt-2 underline text-sky-300" href={`#/docs/glossar/${entry.slug}`}>
             → im Glossar nachschlagen
           </a>
         </span>

@@ -16,8 +16,7 @@ const Glossar: Component = () => {
     const f = filter().trim().toLowerCase();
     if (!f) return SORTED;
     return SORTED.filter(
-      (e) =>
-        e.term.toLowerCase().includes(f) || e.kurz.toLowerCase().includes(f),
+      (e) => e.term.toLowerCase().includes(f) || e.kurz.toLowerCase().includes(f),
     );
   });
 
@@ -39,8 +38,8 @@ const Glossar: Component = () => {
   return (
     <div class="space-y-4" data-testid="docs-page-glossar">
       <p>
-        Begriffe in alphabetischer Reihenfolge. Über das Filterfeld kann nach
-        Term oder Definition gesucht werden.
+        Begriffe in alphabetischer Reihenfolge. Über das Filterfeld kann nach Term oder Definition
+        gesucht werden.
       </p>
       <div>
         <input
@@ -60,10 +59,7 @@ const Glossar: Component = () => {
           <For each={visible()}>
             {(entry) => (
               <div data-testid={`glossar-entry-${entry.slug}`}>
-                <dt
-                  id={entry.slug}
-                  class="font-semibold text-base scroll-mt-4"
-                >
+                <dt id={entry.slug} class="font-semibold text-base scroll-mt-4">
                   {entry.term}
                 </dt>
                 <dd class="text-sm text-slate-700 mt-1">
@@ -75,10 +71,7 @@ const Glossar: Component = () => {
                         {(ref, i) => (
                           <>
                             <Show when={i() > 0}>, </Show>
-                            <a
-                              class="underline"
-                              href={`#/docs/glossar/${ref}`}
-                            >
+                            <a class="underline" href={`#/docs/glossar/${ref}`}>
                               {ref}
                             </a>
                           </>

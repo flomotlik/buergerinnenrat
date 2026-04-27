@@ -109,10 +109,7 @@ const TrustStrip: Component = () => {
   }
 
   return (
-    <div
-      class="grid grid-cols-1 md:grid-cols-3 gap-4"
-      data-testid="stage1-trust-strip"
-    >
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4" data-testid="stage1-trust-strip">
       {CARDS.map((card) => (
         <button
           type="button"

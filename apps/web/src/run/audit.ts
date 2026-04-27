@@ -80,7 +80,10 @@ export async function buildAudit(args: {
   const inputHash = await inputSha256(args.pool, args.quotas);
   const doc: AuditDoc = {
     schema_version: AUDIT_SCHEMA_VERSION,
-    engine: { id: args.result.engine_meta.engine_id, version: args.result.engine_meta.engine_version },
+    engine: {
+      id: args.result.engine_meta.engine_id,
+      version: args.result.engine_meta.engine_version,
+    },
     algorithm: 'maximin',
     seed: args.seed,
     input_sha256: inputHash,
@@ -92,7 +95,9 @@ export async function buildAudit(args: {
     timing: {
       duration_ms: args.duration_ms,
       total_ms: args.result.timing.total_ms,
-      ...(args.result.timing.num_committees !== undefined ? { num_committees: args.result.timing.num_committees } : {}),
+      ...(args.result.timing.num_committees !== undefined
+        ? { num_committees: args.result.timing.num_committees }
+        : {}),
     },
   };
   return doc;
@@ -103,19 +108,33 @@ export interface SignedAudit {
   bodyJson: string; // serialized doc *without* public_key/signature
 }
 
-async function signWithEd25519(bodyJson: string): Promise<{ pubB64: string; sigB64: string; algo: string }> {
-  const keyPair = (await crypto.subtle.generateKey({ name: 'Ed25519' }, true, ['sign', 'verify'])) as CryptoKeyPair;
+async function signWithEd25519(
+  bodyJson: string,
+): Promise<{ pubB64: string; sigB64: string; algo: string }> {
+  const keyPair = (await crypto.subtle.generateKey({ name: 'Ed25519' }, true, [
+    'sign',
+    'verify',
+  ])) as CryptoKeyPair;
   const pub = await crypto.subtle.exportKey('raw', keyPair.publicKey);
-  const sig = await crypto.subtle.sign('Ed25519', keyPair.privateKey, new TextEncoder().encode(bodyJson));
-  return { pubB64: toBase64(new Uint8Array(pub)), sigB64: toBase64(new Uint8Array(sig)), algo: 'Ed25519' };
+  const sig = await crypto.subtle.sign(
+    'Ed25519',
+    keyPair.privateKey,
+    new TextEncoder().encode(bodyJson),
+  );
+  return {
+    pubB64: toBase64(new Uint8Array(pub)),
+    sigB64: toBase64(new Uint8Array(sig)),
+    algo: 'Ed25519',
+  };
 }
 
-async function signWithEcdsa(bodyJson: string): Promise<{ pubB64: string; sigB64: string; algo: string }> {
-  const keyPair = (await crypto.subtle.generateKey(
-    { name: 'ECDSA', namedCurve: 'P-256' },
-    true,
-    ['sign', 'verify'],
-  )) as CryptoKeyPair;
+async function signWithEcdsa(
+  bodyJson: string,
+): Promise<{ pubB64: string; sigB64: string; algo: string }> {
+  const keyPair = (await crypto.subtle.generateKey({ name: 'ECDSA', namedCurve: 'P-256' }, true, [
+    'sign',
+    'verify',
+  ])) as CryptoKeyPair;
   const pub = await crypto.subtle.exportKey('spki', keyPair.publicKey);
   const sig = await crypto.subtle.sign(
     { name: 'ECDSA', hash: 'SHA-256' },
@@ -149,7 +168,9 @@ export async function signAudit(doc: AuditDoc): Promise<SignedAudit> {
   return { doc: result, bodyJson };
 }
 
-function stripSignature(doc: AuditDoc): Omit<AuditDoc, 'public_key' | 'signature' | 'signature_algo'> {
+function stripSignature(
+  doc: AuditDoc,
+): Omit<AuditDoc, 'public_key' | 'signature' | 'signature_algo'> {
   const { public_key: _pk, signature: _sig, signature_algo: _algo, ...rest } = doc;
   return rest;
 }

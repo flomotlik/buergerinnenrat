@@ -25,11 +25,10 @@ function toBase64(bytes: Uint8Array): string {
 async function signWithEd25519(
   bodyJson: string,
 ): Promise<{ pubB64: string; sigB64: string; algo: 'Ed25519' }> {
-  const keyPair = (await crypto.subtle.generateKey(
-    { name: 'Ed25519' },
-    true,
-    ['sign', 'verify'],
-  )) as CryptoKeyPair;
+  const keyPair = (await crypto.subtle.generateKey({ name: 'Ed25519' }, true, [
+    'sign',
+    'verify',
+  ])) as CryptoKeyPair;
   const pub = await crypto.subtle.exportKey('raw', keyPair.publicKey);
   const sig = await crypto.subtle.sign(
     'Ed25519',
@@ -46,11 +45,10 @@ async function signWithEd25519(
 async function signWithEcdsa(
   bodyJson: string,
 ): Promise<{ pubB64: string; sigB64: string; algo: 'ECDSA-P256-SHA256' }> {
-  const keyPair = (await crypto.subtle.generateKey(
-    { name: 'ECDSA', namedCurve: 'P-256' },
-    true,
-    ['sign', 'verify'],
-  )) as CryptoKeyPair;
+  const keyPair = (await crypto.subtle.generateKey({ name: 'ECDSA', namedCurve: 'P-256' }, true, [
+    'sign',
+    'verify',
+  ])) as CryptoKeyPair;
   const pub = await crypto.subtle.exportKey('spki', keyPair.publicKey);
   const sig = await crypto.subtle.sign(
     { name: 'ECDSA', hash: 'SHA-256' },

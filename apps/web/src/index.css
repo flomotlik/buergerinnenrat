@@ -12,10 +12,7 @@
 
   body {
     /* cv11 = Inter stylistic set for legible 1/I/l differentiation. */
-    font-feature-settings:
-      'cv11',
-      'ss01',
-      'ss03';
+    font-feature-settings: 'cv11', 'ss01', 'ss03';
     text-rendering: optimizeLegibility;
   }
 

@@ -52,10 +52,7 @@ export const TOY_STRATA: ReadonlyArray<ToyStratum> = [
   { key: 'C / m', label: 'C / m', pool: 15 },
 ];
 
-export const TOY_TOTAL_POOL: number = TOY_STRATA.reduce(
-  (a, s) => a + s.pool,
-  0,
-);
+export const TOY_TOTAL_POOL: number = TOY_STRATA.reduce((a, s) => a + s.pool, 0);
 export const TOY_TARGET_N = 10;
 
 /**

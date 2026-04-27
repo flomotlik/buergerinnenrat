@@ -1,12 +1,4 @@
-import {
-  createMemo,
-  createSignal,
-  lazy,
-  onCleanup,
-  onMount,
-  Show,
-  Suspense,
-} from 'solid-js';
+import { createMemo, createSignal, lazy, onCleanup, onMount, Show, Suspense } from 'solid-js';
 import type { Component } from 'solid-js';
 import { CsvImport } from './csv/CsvImport';
 import { applyMapping } from './csv/parse';
@@ -193,14 +185,12 @@ export const App: Component = () => {
             <h1 class="text-3xl sm:text-4xl font-bold tracking-tight text-brand">
               Bürger:innenrat
             </h1>
-            <p class="mt-1 text-base text-slate-600">
-              Versand-Liste &amp; Panel-Auswahl
-            </p>
+            <p class="mt-1 text-base text-slate-600">Versand-Liste &amp; Panel-Auswahl</p>
           </div>
         </div>
         <p class="text-base text-slate-700 max-w-2xl leading-relaxed">
-          Open-Source-Werkzeug für Verwaltungen — stratifizierte Auswahl ohne Backend,
-          ohne Datenversand.
+          Open-Source-Werkzeug für Verwaltungen — stratifizierte Auswahl ohne Backend, ohne
+          Datenversand.
         </p>
       </header>
 

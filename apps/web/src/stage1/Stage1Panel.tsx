@@ -1,4 +1,5 @@
-import { Component, createEffect, createMemo, createSignal, For, on, Show } from 'solid-js';
+import type { Component } from 'solid-js';
+import { createEffect, createMemo, createSignal, For, on, Show } from 'solid-js';
 import { autoGuessMapping, parseCsvFile } from '../csv/parse';
 import type { ParsedCsv } from '../csv/parse';
 import { downloadBlob } from '../run/audit';
@@ -259,12 +260,8 @@ export const Stage1Panel: Component = () => {
             <polyline points="17 8 12 3 7 8" />
             <line x1="12" x2="12" y1="3" y2="15" />
           </svg>
-          <span class="dropzone-label">
-            Melderegister-CSV hochladen oder hier ablegen
-          </span>
-          <span class="dropzone-hint">
-            CSV mit Header-Zeile, UTF-8 oder Latin-1
-          </span>
+          <span class="dropzone-label">Melderegister-CSV hochladen oder hier ablegen</span>
+          <span class="dropzone-hint">CSV mit Header-Zeile, UTF-8 oder Latin-1</span>
           <Show when={file()}>
             {(f) => (
               <span class="text-xs text-brand-accent-strong font-medium mt-1">
@@ -327,8 +324,8 @@ export const Stage1Panel: Component = () => {
         >
           <p>
             <strong>Hinweis:</strong> Stratifikation kann nur über Felder erfolgen, die im
-            Melderegister enthalten sind. Bildung, Migrationshintergrund, Beruf sind nicht
-            im Melderegister — diese kommen erst nach Selbstauskunft hinzu.
+            Melderegister enthalten sind. Bildung, Migrationshintergrund, Beruf sind nicht im
+            Melderegister — diese kommen erst nach Selbstauskunft hinzu.
           </p>
           <p class="mt-1 text-xs">
             Quelle:{' '}
@@ -423,9 +420,7 @@ export const Stage1Panel: Component = () => {
             </button>
             <span
               class={
-                seedConfirmed()
-                  ? 'text-xs text-slate-500'
-                  : 'text-xs font-medium text-amber-800'
+                seedConfirmed() ? 'text-xs text-slate-500' : 'text-xs font-medium text-amber-800'
               }
               data-testid="stage1-seed-source"
             >
@@ -441,11 +436,10 @@ export const Stage1Panel: Component = () => {
             data-testid="stage1-seed-hint"
           >
             <strong>Hinweis zum Seed:</strong> Wählen Sie den Seed-Wert{' '}
-            <em>gemeinsam in der Verfahrens-Sitzung</em> (z.B. eine Zahl, die alle
-            Anwesenden vereinbaren — Lottozahlen, Datum, Würfelwurf). Er steht im
-            Audit-Protokoll und macht den Lauf reproduzierbar. Bewusst
-            öffentlich-vor-Lauf wählen verhindert, dass die Auswahl unbemerkt
-            durch Probieren verschiedener Seeds beeinflusst werden kann.
+            <em>gemeinsam in der Verfahrens-Sitzung</em> (z.B. eine Zahl, die alle Anwesenden
+            vereinbaren — Lottozahlen, Datum, Würfelwurf). Er steht im Audit-Protokoll und macht den
+            Lauf reproduzierbar. Bewusst öffentlich-vor-Lauf wählen verhindert, dass die Auswahl
+            unbemerkt durch Probieren verschiedener Seeds beeinflusst werden kann.
           </aside>
           <Show when={preview().error}>
             <p class="text-sm text-red-700" data-testid="stage1-preview-error">
@@ -453,14 +447,9 @@ export const Stage1Panel: Component = () => {
             </p>
           </Show>
           <Show when={preview().result !== null}>
-            <div
-              class="border rounded p-3 bg-slate-50 space-y-3"
-              data-testid="stage1-preview"
-            >
+            <div class="border rounded p-3 bg-slate-50 space-y-3" data-testid="stage1-preview">
               <div class="flex items-baseline justify-between">
-                <h3 class="text-sm font-semibold">
-                  Vorschau (vor dem Lauf)
-                </h3>
+                <h3 class="text-sm font-semibold">Vorschau (vor dem Lauf)</h3>
                 <span class="text-xs text-slate-500">
                   {preview().result?.rows.length ?? 0} Bevölkerungsgruppen, Soll-Summe{' '}
                   {preview().result?.totalTarget ?? 0}
@@ -483,11 +472,9 @@ export const Stage1Panel: Component = () => {
                       return (
                         <div data-testid="stage1-preview-zero-list">
                           <p>
-                            <strong>{zeros.length}</strong>{' '}
-                            Bevölkerungsgruppen bekommen nach proportionaler
-                            Allokation <strong>0 Personen</strong>. Sind das
-                            Gruppen, die bewusst leer bleiben sollen, oder
-                            zu viele/zu feine Merkmale?
+                            <strong>{zeros.length}</strong> Bevölkerungsgruppen bekommen nach
+                            proportionaler Allokation <strong>0 Personen</strong>. Sind das Gruppen,
+                            die bewusst leer bleiben sollen, oder zu viele/zu feine Merkmale?
                           </p>
                           <ul class="font-mono mt-1 space-y-0.5">
                             <For each={head}>
@@ -526,17 +513,14 @@ export const Stage1Panel: Component = () => {
                   </Show>
                   <Show when={(preview().result?.underfillStrata ?? 0) > 0}>
                     {(() => {
-                      const unders = (preview().result?.rows ?? []).filter(
-                        (r) => r.wouldUnderfill,
-                      );
+                      const unders = (preview().result?.rows ?? []).filter((r) => r.wouldUnderfill);
                       const head = unders.slice(0, 5);
                       const tail = unders.slice(5);
                       return (
                         <div data-testid="stage1-preview-underfill-list">
                           <p>
-                            <strong>{unders.length}</strong>{' '}
-                            Bevölkerungsgruppen werden unterbesetzt sein (Pool
-                            zu klein für Soll).
+                            <strong>{unders.length}</strong> Bevölkerungsgruppen werden unterbesetzt
+                            sein (Pool zu klein für Soll).
                           </p>
                           <ul class="font-mono mt-1 space-y-0.5">
                             <For each={head}>
@@ -629,10 +613,7 @@ export const Stage1Panel: Component = () => {
                 md+, secondary coverage + underfill cards each span 1.
                 Mobile stacks all three. Brand-accent left border + larger
                 display type elevate the hero. */}
-            <div
-              class="grid grid-cols-1 md:grid-cols-3 gap-3"
-              data-testid="stage1-summary-cards"
-            >
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3" data-testid="stage1-summary-cards">
               <div class="card md:col-span-3 border-l-4 border-l-brand-accent flex flex-col sm:flex-row sm:items-baseline sm:gap-6">
                 <div class="flex-1">
                   <div class="text-xs text-slate-500 uppercase tracking-wide font-semibold">
@@ -642,9 +623,7 @@ export const Stage1Panel: Component = () => {
                     {out().result.selected.length}
                   </div>
                 </div>
-                <div class="text-sm text-slate-600">
-                  von {parsed()?.rows.length ?? 0} im Pool
-                </div>
+                <div class="text-sm text-slate-600">von {parsed()?.rows.length ?? 0} im Pool</div>
               </div>
               <Show when={coverage()}>
                 {(c) => (
@@ -654,9 +633,7 @@ export const Stage1Panel: Component = () => {
                     </div>
                     <div class="text-2xl font-semibold tabular-nums text-slate-900 mt-1">
                       {c().coveredStrata}{' '}
-                      <span class="text-base text-slate-500">
-                        / {c().totalStrata}
-                      </span>
+                      <span class="text-base text-slate-500">/ {c().totalStrata}</span>
                     </div>
                     <div class="text-xs text-slate-500 mt-1">
                       {Number.isNaN(c().coverageRatio)
@@ -668,9 +645,7 @@ export const Stage1Panel: Component = () => {
               </Show>
               <div
                 class={`card md:col-span-2 ${
-                  (coverage()?.underfilledStrata ?? 0) > 0
-                    ? 'bg-amber-50 border-amber-300'
-                    : ''
+                  (coverage()?.underfilledStrata ?? 0) > 0 ? 'bg-amber-50 border-amber-300' : ''
                 }`}
                 data-testid="stage1-underfill-card"
               >
@@ -695,8 +670,7 @@ export const Stage1Panel: Component = () => {
             </div>
 
             <p class="text-xs text-slate-500">
-              Laufzeit:{' '}
-              <span class="tabular-nums">{Math.round(out().durationMs)} ms</span>
+              Laufzeit: <span class="tabular-nums">{Math.round(out().durationMs)} ms</span>
               {' · '}Seed: <span class="font-mono">{out().signedAudit.doc.seed}</span>
             </p>
 
@@ -709,18 +683,18 @@ export const Stage1Panel: Component = () => {
                   Unterbesetzte Bevölkerungsgruppen
                 </h3>
                 <p class="text-xs text-amber-900">
-                  Diese Bevölkerungsgruppen bekamen weniger Personen als die
-                  proportionale Allokation vorgesehen hat — Pool zu klein. Im
-                  echten Verfahren bedeutet das: bei diesen Gruppen wurden alle
-                  verfügbaren Personen angeschrieben.
+                  Diese Bevölkerungsgruppen bekamen weniger Personen als die proportionale
+                  Allokation vorgesehen hat — Pool zu klein. Im echten Verfahren bedeutet das: bei
+                  diesen Gruppen wurden alle verfügbaren Personen angeschrieben.
                 </p>
                 <ul class="text-xs text-amber-900 space-y-1">
                   <For each={underfills()}>
                     {(s) => (
                       <li class="font-mono">
-                        {Object.entries(s.key).map(([k, v]) => `${k}=${v}`).join(', ')}{' '}
-                        — Soll {s.n_h_target}, Ist {s.n_h_actual} (Pool nur{' '}
-                        {s.n_h_pool})
+                        {Object.entries(s.key)
+                          .map(([k, v]) => `${k}=${v}`)
+                          .join(', ')}{' '}
+                        — Soll {s.n_h_target}, Ist {s.n_h_actual} (Pool nur {s.n_h_pool})
                       </li>
                     )}
                   </For>
@@ -748,9 +722,7 @@ export const Stage1Panel: Component = () => {
             <Show when={resultMarginals().length > 0}>
               <section class="space-y-2" data-testid="stage1-axis-breakdowns">
                 <h3 class="text-sm font-semibold">Verteilung pro Merkmal</h3>
-                <For each={resultMarginals()}>
-                  {(m) => <AxisBreakdown marginals={m} />}
-                </For>
+                <For each={resultMarginals()}>{(m) => <AxisBreakdown marginals={m} />}</For>
               </section>
             </Show>
 
@@ -773,10 +745,7 @@ export const Stage1Panel: Component = () => {
               {/* Mobile: horizontal scroll container so the table doesn't
                   break into wrap-salat. Desktop: inline. */}
               <div class="overflow-x-auto">
-                <table
-                  class="min-w-full text-xs"
-                  data-testid="stage1-strata-table"
-                >
+                <table class="min-w-full text-xs" data-testid="stage1-strata-table">
                   <thead class="bg-slate-100">
                     <tr>
                       <th class="text-left px-3 py-2 font-semibold text-slate-700 uppercase tracking-wide text-[11px]">
@@ -800,13 +769,7 @@ export const Stage1Panel: Component = () => {
                     <For each={out().result.strata}>
                       {(s, i) => (
                         <tr
-                          class={
-                            s.underfilled
-                              ? 'bg-amber-50'
-                              : i() % 2 === 0
-                                ? ''
-                                : 'bg-slate-50'
-                          }
+                          class={s.underfilled ? 'bg-amber-50' : i() % 2 === 0 ? '' : 'bg-slate-50'}
                         >
                           <td class="px-3 py-2 font-mono whitespace-nowrap">
                             {Object.entries(s.key).length === 0
@@ -815,23 +778,11 @@ export const Stage1Panel: Component = () => {
                                   .map(([k, v]) => `${k}=${v}`)
                                   .join(', ')}
                           </td>
-                          <td class="px-3 py-2 text-right tabular-nums">
-                            {s.n_h_pool}
-                          </td>
-                          <td class="px-3 py-2 text-right tabular-nums">
-                            {s.n_h_target}
-                          </td>
-                          <td class="px-3 py-2 text-right tabular-nums">
-                            {s.n_h_actual}
-                          </td>
+                          <td class="px-3 py-2 text-right tabular-nums">{s.n_h_pool}</td>
+                          <td class="px-3 py-2 text-right tabular-nums">{s.n_h_target}</td>
+                          <td class="px-3 py-2 text-right tabular-nums">{s.n_h_actual}</td>
                           <td class="px-3 py-2 text-center">
-                            <span
-                              class={
-                                s.underfilled
-                                  ? 'status-pill-warn'
-                                  : 'status-pill-ok'
-                              }
-                            >
+                            <span class={s.underfilled ? 'status-pill-warn' : 'status-pill-ok'}>
                               {s.underfilled ? 'unterbesetzt' : 'ok'}
                             </span>
                           </td>

@@ -49,15 +49,10 @@ const DocsLayout: Component<Props> = (props) => {
             Zurück zur Übersicht
           </button>
         </Show>
-        <h1 class="text-3xl font-bold tracking-tight text-brand">
-          {props.title}
-        </h1>
+        <h1 class="text-3xl font-bold tracking-tight text-brand">{props.title}</h1>
       </header>
       <div class="prose-app text-sm leading-relaxed">{props.children}</div>
-      <footer
-        class="text-xs text-slate-500 border-t pt-3 mt-8"
-        data-testid="docs-build-footer"
-      >
+      <footer class="text-xs text-slate-500 border-t pt-3 mt-8" data-testid="docs-build-footer">
         Diese Doku gehört zu Build <code class="font-mono">{__GIT_SHA__}</code> vom{' '}
         <code class="font-mono">{__BUILD_DATE__}</code>.
       </footer>

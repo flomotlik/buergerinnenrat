@@ -27,7 +27,11 @@ export async function runEngineA(args: RunArgs, signal?: AbortSignal): Promise<R
   });
   for await (const ev of iter as AsyncIterable<EngineEvent>) {
     if (signal?.aborted) {
-      return { ok: false, error: { code: 'aborted', message: 'cancelled' }, duration_ms: performance.now() - t0 };
+      return {
+        ok: false,
+        error: { code: 'aborted', message: 'cancelled' },
+        duration_ms: performance.now() - t0,
+      };
     }
     if (ev.type === 'progress') {
       args.onProgress(`${ev.phase}${ev.message ? ': ' + ev.message : ''}`, ev.fraction);
@@ -43,5 +47,11 @@ export async function runEngineA(args: RunArgs, signal?: AbortSignal): Promise<R
       };
     }
   }
-  return outcome ?? { ok: false, error: { code: 'no_result', message: 'engine produced no event' }, duration_ms: performance.now() - t0 };
+  return (
+    outcome ?? {
+      ok: false,
+      error: { code: 'no_result', message: 'engine produced no event' },
+      duration_ms: performance.now() - t0,
+    }
+  );
 }
