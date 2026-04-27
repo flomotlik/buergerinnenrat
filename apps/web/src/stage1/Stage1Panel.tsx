@@ -2,10 +2,17 @@ import type { Component } from 'solid-js';
 import { createEffect, createMemo, createSignal, For, on, Show } from 'solid-js';
 import { autoGuessMapping, parseCsvFile } from '../csv/parse';
 import type { ParsedCsv } from '../csv/parse';
+import {
+  DEFAULT_AGE_BANDS,
+  recomputeAltersgruppe,
+  validateBands,
+  type AgeBand,
+} from '../csv/derive';
 import { downloadBlob } from '../run/audit';
 import { runStage1 } from './runStage1';
 import type { RunStage1Output } from './runStage1';
 import { AxisPicker } from './AxisPicker';
+import { AgeBandsEditor } from './AgeBandsEditor';
 import { AxisBreakdown } from './AxisBreakdown';
 import { AuditFooter } from './AuditFooter';
 import TrustStrip from './TrustStrip';
@@ -62,6 +69,27 @@ export const Stage1Panel: Component = () => {
   const [output, setOutput] = createSignal<RunStage1Output | null>(null);
   const [error, setError] = createSignal<string | null>(null);
   const [strataExpanded, setStrataExpanded] = createSignal(false);
+  // Age-band configuration (Issue #62). Bands live only in-session — not
+  // persisted across reloads. Each new upload resets to DEFAULT_AGE_BANDS.
+  const [bands, setBands] = createSignal<AgeBand[]>([...DEFAULT_AGE_BANDS]);
+  const refYear = new Date().getFullYear();
+
+  // When the user edits the bands, re-derive the altersgruppe column on the
+  // parsed rows. `defer: true` avoids firing on mount before the user
+  // touched anything. We bail out when no altersgruppe column was derived
+  // (e.g. CSV had no geburtsjahr).
+  createEffect(
+    on(
+      bands,
+      (b) => {
+        const p = parsed();
+        if (!p || !p.derivedColumns.includes('altersgruppe')) return;
+        const newRows = recomputeAltersgruppe(p.rows, b, refYear);
+        setParsed({ ...p, rows: newRows });
+      },
+      { defer: true },
+    ),
+  );
 
   // Cheap pre-run preview: cross-product allocation without RNG / shuffle.
   // Recomputed reactively when CSV, axes, or N change. We keep it inside a
@@ -137,6 +165,10 @@ export const Stage1Panel: Component = () => {
       setParsed(p);
       setDefaultAxes(recs);
       setSelectedAxes(recs);
+      // Each upload restarts band configuration from scratch — keeps the
+      // editor in sync with the per-file derived altersgruppe column and
+      // avoids stale bands from a previous session bleeding over.
+      setBands([...DEFAULT_AGE_BANDS]);
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
     }
@@ -158,7 +190,11 @@ export const Stage1Panel: Component = () => {
   }
 
   const canRun = () =>
-    parsed() !== null && targetN() !== null && (targetN() ?? 0) > 0 && !running();
+    parsed() !== null &&
+    targetN() !== null &&
+    (targetN() ?? 0) > 0 &&
+    !running() &&
+    validateBands(bands()) === null;
 
   async function start() {
     const p = parsed();
@@ -332,7 +368,7 @@ export const Stage1Panel: Component = () => {
 
       <Show when={parsed()}>
         {(p) => (
-          <section>
+          <section class="space-y-3">
             <h2 class="text-xl font-semibold mb-3">2. Stratifikation konfigurieren</h2>
             <AxisPicker
               headers={p().headers}
@@ -340,6 +376,9 @@ export const Stage1Panel: Component = () => {
               selected={selectedAxes}
               onToggle={toggleAxis}
             />
+            <Show when={p().derivedColumns.includes('altersgruppe')}>
+              <AgeBandsEditor bands={bands} onBandsChange={setBands} refYear={refYear} />
+            </Show>
           </section>
         )}
       </Show>
@@ -564,6 +603,11 @@ export const Stage1Panel: Component = () => {
                 <polyline points="12 5 19 12 12 19" />
               </svg>
             </button>
+            <Show when={parsed() && validateBands(bands()) !== null}>
+              <p class="mt-1 text-xs text-amber-800" data-testid="stage1-run-bands-block">
+                Run deaktiviert: Altersgruppen-Bänder sind ungültig — siehe oben.
+              </p>
+            </Show>
           </div>
         </section>
       </Show>

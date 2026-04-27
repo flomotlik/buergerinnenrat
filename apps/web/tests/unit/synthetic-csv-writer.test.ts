@@ -64,7 +64,11 @@ describe('writeCsv', () => {
     const csv = writeCsv(persons);
     const buf = new TextEncoder().encode(csv).buffer as ArrayBuffer;
     const parsed = parseCsvBuffer(buf);
-    expect(parsed.headers).toEqual([...STAGE1_HEADERS]);
+    // Issue #62: parseCsvBuffer derives an `altersgruppe` column when
+    // `geburtsjahr` is present. The first N headers still match
+    // STAGE1_HEADERS one-for-one — derived column comes after.
+    expect(parsed.headers.slice(0, STAGE1_HEADERS.length)).toEqual([...STAGE1_HEADERS]);
+    expect(parsed.headers[STAGE1_HEADERS.length]).toBe('altersgruppe');
     expect(parsed.rows).toHaveLength(3);
     const ids = parsed.rows.map((r) => r['person_id']).sort();
     expect(ids).toEqual(['a-00001', 'a-00002', 'a-00003']);
