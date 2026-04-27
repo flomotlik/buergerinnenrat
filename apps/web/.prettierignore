@@ -1,0 +1,13 @@
+dist/
+node_modules/
+playwright-report/
+test-results/
+
+# Build-time generated; the generator owns the formatting and the prebuild
+# hook enforces byte-exactness against re-runs. Running prettier on top would
+# desync the file from its generator output and break the drift-detection.
+src/generated/
+
+# Static assets — formatting them with prettier provides no value and would
+# inflate the diff.
+public/
