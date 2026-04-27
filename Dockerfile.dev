@@ -44,18 +44,19 @@ RUN apt-get update && \
 RUN corepack enable && \
     corepack prepare pnpm@9.12.3 --activate
 
+# --- pnpm global bin + store directories ------------------------------------
+# PNPM_HOME must be set BEFORE any `pnpm add -g`, otherwise pnpm errors with
+# ERR_PNPM_NO_GLOBAL_BIN_DIR. We also point the store at /pnpm/store so a named
+# volume can be mounted there for cache persistence between container runs.
+# Directory is world-writable so any host UID (passed via --user) can populate it.
+ENV PNPM_HOME=/pnpm
+ENV PATH=$PNPM_HOME:$PATH
+RUN mkdir -p /pnpm/store && chmod -R 777 /pnpm
+
 # --- tsx for ad-hoc TypeScript scripts --------------------------------------
 # Used by scripts/synthetic-meldedaten/generator.ts and others. Installed
 # globally via pnpm so it lands in a path that survives node_modules wipes.
 RUN pnpm add -g tsx
-
-# --- Per-user pnpm store path (also referenced by the Makefile) -------------
-# We point pnpm at /pnpm/store so a named volume can be mounted there for cache
-# persistence between container runs. The directory is world-writable so any
-# host UID (passed via --user) can populate it.
-ENV PNPM_HOME=/pnpm
-ENV PATH=$PNPM_HOME:$PATH
-RUN mkdir -p /pnpm/store && chmod -R 777 /pnpm
 
 WORKDIR /workspace
 
