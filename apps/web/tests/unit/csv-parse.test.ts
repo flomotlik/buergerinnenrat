@@ -64,9 +64,57 @@ describe('autoGuessMapping', () => {
     expect(m['Alter']).toBe('age_band');
     expect(m['Bezirk']).toBe('district');
   });
+  it('maps altersgruppe (derived) to age_band', () => {
+    const m = autoGuessMapping(['altersgruppe']);
+    expect(m['altersgruppe']).toBe('age_band');
+  });
   it('ignores unknown headers', () => {
     const m = autoGuessMapping(['xyzzy']);
     expect(m['xyzzy']).toBe('__ignore__');
+  });
+});
+
+describe('parseCsvBuffer — derive altersgruppe from geburtsjahr', () => {
+  it('appends altersgruppe column when geburtsjahr is present', () => {
+    const csv = 'person_id,geburtsjahr\np01,1990\np02,2020\np03,1955\n';
+    const r = parseCsvBuffer(buf(csv), 2026);
+    expect(r.headers).toEqual(['person_id', 'geburtsjahr', 'altersgruppe']);
+    expect(r.derivedColumns).toEqual(['altersgruppe']);
+    expect(r.rows[0]?.altersgruppe).toBe('25-44'); // 1990 → age 36
+    expect(r.rows[1]?.altersgruppe).toBe('unter-16'); // 2020 → age 6
+    expect(r.rows[2]?.altersgruppe).toBe('65+'); // 1955 → age 71
+  });
+
+  it('writes the correct band for an age-65 row', () => {
+    // 2026 - 1961 = 65 → '65+'.
+    const csv = 'person_id,geburtsjahr\np01,1961\n';
+    const r = parseCsvBuffer(buf(csv), 2026);
+    expect(r.rows[0]?.altersgruppe).toBe('65+');
+  });
+
+  it('leaves derivedColumns empty when geburtsjahr is missing', () => {
+    const csv = 'person_id,gender\np01,female\n';
+    const r = parseCsvBuffer(buf(csv), 2026);
+    expect(r.derivedColumns).toEqual([]);
+    expect(r.headers).toEqual(['person_id', 'gender']);
+    expect(r.rows[0]).toEqual({ person_id: 'p01', gender: 'female' });
+  });
+
+  it('preserves an existing altersgruppe column and emits a warning', () => {
+    const csv = 'person_id,geburtsjahr,altersgruppe\np01,1990,custom-band\n';
+    const r = parseCsvBuffer(buf(csv), 2026);
+    expect(r.derivedColumns).toEqual([]);
+    expect(r.rows[0]?.altersgruppe).toBe('custom-band');
+    expect(r.warnings.some((w) => w.includes('bereits'))).toBe(true);
+  });
+
+  it('uses current year as default refYear when none is passed', () => {
+    // Use a birth year far in the past so the result is stable across years:
+    // 1900 → 65+ regardless of current year.
+    const csv = 'person_id,geburtsjahr\np01,1900\n';
+    const r = parseCsvBuffer(buf(csv));
+    expect(r.derivedColumns).toEqual(['altersgruppe']);
+    expect(r.rows[0]?.altersgruppe).toBe('65+');
   });
 });
 

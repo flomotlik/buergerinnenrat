@@ -25,3 +25,4 @@ export type {
   PreviewRow,
   AllocationPreview,
 } from './reporting';
+export type { AgeBand } from './age-bands';
