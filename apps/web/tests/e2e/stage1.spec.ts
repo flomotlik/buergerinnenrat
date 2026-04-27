@@ -33,6 +33,10 @@ test('stage 1: upload → defaults → ziehen → download', async ({ page, brow
   // BMG §46 hint must be visible after upload.
   await expect(page.getByTestId('stage1-bmg-hint')).toBeVisible();
 
+  // Issue #62: this fixture carries `age_band` directly (no `geburtsjahr`),
+  // so the derive pipeline is dormant and the AgeBandsEditor must not mount.
+  await expect(page.getByTestId('stage1-age-bands-editor')).toHaveCount(0);
+
   // At least one of the recommended axes should be preselected.
   // generator.ts emits headers `district`, `age_band`, `gender` literally.
   await expect(page.getByTestId('axis-checkbox-district')).toBeChecked();

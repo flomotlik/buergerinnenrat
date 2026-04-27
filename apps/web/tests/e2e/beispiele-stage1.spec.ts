@@ -50,6 +50,10 @@ test('beispiele: download from /docs → upload into Stage 1 → run', async ({ 
   // shows the actual row count (~8000 ±1 % per generator household rounding).
   await expect(page.getByTestId('stage1-pool-summary')).toContainText(/\d{4} Zeilen/);
   await expect(page.getByTestId('axis-checkbox-sprengel')).toBeChecked();
+  // Issue #62: the herzogenburg fixture has geburtsjahr → altersgruppe is
+  // derived, AgeBandsEditor must mount with the 5-band default.
+  await expect(page.getByTestId('stage1-age-bands-editor')).toBeVisible();
+  await expect(page.getByTestId('band-mode-0-display')).toBeChecked();
 
   // Set N=300 and confirm the seed default, then run.
   await page.getByTestId('stage1-target-n').fill('300');
