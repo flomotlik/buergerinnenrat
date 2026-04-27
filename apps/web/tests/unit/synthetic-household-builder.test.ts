@@ -6,6 +6,7 @@ import {
   pickHouseholdSize,
   pickHouseholdType,
 } from '../../../../scripts/synthetic-meldedaten/household-builder';
+import { buildPerson } from '../../../../scripts/synthetic-meldedaten/person-builder';
 import { loadClusterPools } from '../../../../scripts/synthetic-meldedaten/cluster-pool';
 import { Mulberry32 } from '../../../../packages/core/src/pool/mulberry32';
 import type { Profile } from '../../../../scripts/synthetic-meldedaten/types';
@@ -230,6 +231,175 @@ describe('buildHousehold', () => {
     // 0.12-mix doesn't blow up.
     void mixed;
     expect(true).toBe(true);
+  });
+
+  it('single-parent families occur at sizes 3, 4, 5, and 6 (#58)', () => {
+    // After the #58 fix, the ~18 % single-parent probability applies to
+    // ALL family sizes, not only size 3. We sample ~200 families per size
+    // and assert that at least one single-parent household is found in
+    // every size class. With p=0.18 and N=200, the chance of zero hits
+    // per size is (0.82)^200 ≈ 1e-17 — effectively impossible.
+    const profile = makeProfile({ threeGenerationShare: 0 });
+    const sizesSeen: Record<number, { total: number; single: number }> = {
+      3: { total: 0, single: 0 },
+      4: { total: 0, single: 0 },
+      5: { total: 0, single: 0 },
+      6: { total: 0, single: 0 },
+    };
+    for (const size of [3, 4, 5, 6] as const) {
+      const sizeProfile = makeProfile({
+        householdDistribution: {
+          1: 0,
+          2: 0,
+          3: size === 3 ? 1 : 0,
+          4: size === 4 ? 1 : 0,
+          5: size === 5 ? 1 : 0,
+          6: size === 6 ? 1 : 0,
+        },
+        threeGenerationShare: 0,
+      });
+      for (let seed = 1; seed <= 200; seed++) {
+        const rng = new Mulberry32(seed);
+        const persons = buildHousehold(rng, {
+          ...PARAMS_BASE,
+          profile: sizeProfile,
+          idCounter: makeCounter(),
+        });
+        const adults = persons.filter((p) => 2026 - p.geburtsjahr >= 18);
+        const children = persons.filter((p) => 2026 - p.geburtsjahr < 18);
+        if (children.length === 0) continue; // not a family
+        sizesSeen[size]!.total++;
+        if (adults.length === 1) sizesSeen[size]!.single++;
+      }
+    }
+    void profile;
+    for (const size of [3, 4, 5, 6] as const) {
+      expect(sizesSeen[size]!.total).toBeGreaterThan(0);
+      expect(sizesSeen[size]!.single).toBeGreaterThan(0);
+    }
+    // Aggregate single-parent rate across all sizes should be near 18 %.
+    const totalFamilies =
+      sizesSeen[3]!.total +
+      sizesSeen[4]!.total +
+      sizesSeen[5]!.total +
+      sizesSeen[6]!.total;
+    const totalSingle =
+      sizesSeen[3]!.single +
+      sizesSeen[4]!.single +
+      sizesSeen[5]!.single +
+      sizesSeen[6]!.single;
+    const rate = totalSingle / totalFamilies;
+    expect(rate).toBeGreaterThan(0.13);
+    expect(rate).toBeLessThan(0.25);
+  });
+
+  it('three-generation households are produced and detectable (#58)', () => {
+    // With threeGenerationShare=0.05 across 500 households we expect
+    // ~25 three-gen households at minimum. Our heuristic for detection is
+    // size>=3 + oldest>=60 + altersspanne>=35.
+    const profile = makeProfile({
+      householdDistribution: { 1: 0, 2: 0, 3: 0, 4: 0.5, 5: 0.3, 6: 0.2 },
+      threeGenerationShare: 0.05,
+    });
+    let detected = 0;
+    let totalEligible = 0;
+    for (let seed = 1; seed <= 500; seed++) {
+      const rng = new Mulberry32(seed);
+      const persons = buildHousehold(rng, {
+        ...PARAMS_BASE,
+        profile,
+        idCounter: makeCounter(),
+      });
+      if (persons.length < 3) continue;
+      totalEligible++;
+      const ages = persons.map((p) => 2026 - p.geburtsjahr);
+      const oldest = Math.max(...ages);
+      const youngest = Math.min(...ages);
+      if (oldest >= 60 && oldest - youngest >= 35) detected++;
+    }
+    expect(totalEligible).toBeGreaterThan(0);
+    expect(detected).toBeGreaterThanOrEqual(5);
+  });
+
+  it('three-generation also works at size 3 (#58)', () => {
+    // Regression test: the old buildDreigeneration delegated to
+    // buildFamilie(coreSize=3) for size=3 and added zero grandparents
+    // because remaining=0. With the fix, size-3 dreigeneration must yield
+    // 3 distinct generations.
+    const profile = makeProfile({
+      householdDistribution: { 1: 0, 2: 0, 3: 1, 4: 0, 5: 0, 6: 0 },
+      threeGenerationShare: 1, // every size-3 household is dreigeneration
+    });
+    let detected = 0;
+    for (let seed = 1; seed <= 100; seed++) {
+      const rng = new Mulberry32(seed);
+      const persons = buildHousehold(rng, {
+        ...PARAMS_BASE,
+        profile,
+        idCounter: makeCounter(),
+      });
+      expect(persons).toHaveLength(3);
+      const ages = persons.map((p) => 2026 - p.geburtsjahr);
+      const oldest = Math.max(...ages);
+      const youngest = Math.min(...ages);
+      if (oldest >= 60 && oldest - youngest >= 35) detected++;
+    }
+    // All 100 should be detected as 3-gen (oldest grandparent >= 60,
+    // youngest child < 18, spread reliably ≥ 42).
+    expect(detected).toBeGreaterThanOrEqual(95);
+  });
+
+  it('buildPerson honours staatsbuergerschaft override (#58)', () => {
+    // Direct test of the BuildPersonParams.staatsbuergerschaft override:
+    // when set the cluster-correlated draw is bypassed.
+    const profile = makeProfile();
+    const rng = new Mulberry32(1);
+    const person = buildPerson(rng, {
+      profile,
+      pools: POOLS,
+      cluster: 'tr',
+      householdSurname: 'Aksoy',
+      gender: 'maennlich',
+      geburtsjahr: 2020,
+      staatsbuergerschaft: 'AT',
+      sprengel: 'S1',
+      katastralgemeinde: 'kg1',
+      haushaltsnummer: 'h1',
+      person_id: 't-00001',
+      referenceYear: 2026,
+    });
+    expect(person.staatsbuergerschaft).toBe('AT');
+  });
+
+  it('children inherit household citizenship (#58)', () => {
+    // For 100 family-only households, every child's citizenship must be
+    // present in the set of adult citizenships in the same household.
+    const profile = makeProfile({
+      householdDistribution: { 1: 0, 2: 0, 3: 0.4, 4: 0.4, 5: 0.15, 6: 0.05 },
+      threeGenerationShare: 0,
+      // Boost mixed marriages so we exercise the jus-sanguinis branch.
+      crossClusterMixProbability: 0.5,
+    });
+    let inconsistent = 0;
+    let totalChildren = 0;
+    for (let seed = 1; seed <= 100; seed++) {
+      const rng = new Mulberry32(seed);
+      const persons = buildHousehold(rng, {
+        ...PARAMS_BASE,
+        profile,
+        idCounter: makeCounter(),
+      });
+      const adults = persons.filter((p) => 2026 - p.geburtsjahr >= 18);
+      const children = persons.filter((p) => 2026 - p.geburtsjahr < 18);
+      if (children.length === 0) continue;
+      const adultCits = new Set(adults.map((p) => p.staatsbuergerschaft));
+      for (const c of children) {
+        totalChildren++;
+        if (!adultCits.has(c.staatsbuergerschaft)) inconsistent++;
+      }
+    }
+    expect(totalChildren).toBeGreaterThan(0);
+    expect(inconsistent).toBe(0);
   });
 
   it('cluster mix over many households respects profile.nameClusterMix ±3%', () => {

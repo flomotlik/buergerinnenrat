@@ -156,6 +156,14 @@ export interface BuildPersonParams {
    */
   geburtsjahr?: number;
   gender?: 'weiblich' | 'maennlich' | 'divers';
+  /**
+   * Explicit citizenship override. When set, the cluster-correlated
+   * `pickCitizenship` draw is bypassed. Used by the household-builder so
+   * that children inherit the household-level citizenship (jus sanguinis,
+   * §7 StbG) instead of independently rolling a citizenship that can be
+   * inconsistent with their parents.
+   */
+  staatsbuergerschaft?: string;
   sprengel: string;
   katastralgemeinde: string;
   haushaltsnummer: string;
@@ -191,11 +199,13 @@ export function buildPerson(rng: Mulberry32, params: BuildPersonParams): Person 
       ? applyFemaleSurnameSuffix(params.householdSurname, params.cluster)
       : params.householdSurname;
 
-  const staatsbuergerschaft = pickCitizenship(
-    rng,
-    params.cluster,
-    params.profile.citizenshipDistribution,
-  );
+  // Explicit override (children inheriting from the household) wins over
+  // the cluster-correlated draw. We still consume the RNG when no override
+  // is provided so seed-stability across calls is preserved for callers
+  // that don't pass the override.
+  const staatsbuergerschaft =
+    params.staatsbuergerschaft ??
+    pickCitizenship(rng, params.cluster, params.profile.citizenshipDistribution);
 
   return {
     person_id: params.person_id,

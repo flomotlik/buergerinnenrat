@@ -70,7 +70,7 @@
     "6": 0.025
   },
   "familiesWithChildren": 0.40,
-  "threeGenerationShare": 0.01,
+  "threeGenerationShare": 0.03,
   "crossClusterMixProbability": 0.12,
   "perKgOverrides": {}
 }
