@@ -1,0 +1,61 @@
+{
+  "name": "kleinstadt",
+  "idPrefix": "ks3k",
+  "totalPopulation": 3000,
+  "cityName": "Beispielstadt",
+  "bundesland": "Niederösterreich",
+  "katastralgemeinden": [
+    { "id": "Stadtkern", "name": "Stadtkern", "populationShare": 0.55 },
+    { "id": "Nordbezirk", "name": "Nordbezirk", "populationShare": 0.20 },
+    { "id": "Suedbezirk", "name": "Südbezirk", "populationShare": 0.15 },
+    { "id": "Westsiedlung", "name": "Westsiedlung", "populationShare": 0.10 }
+  ],
+  "sprengel": [
+    { "id": "Stadtkern-1", "name": "Stadtkern", "katastralgemeindeId": "Stadtkern" },
+    { "id": "Nordbezirk-1", "name": "Nordbezirk", "katastralgemeindeId": "Nordbezirk" },
+    { "id": "Suedbezirk-1", "name": "Südbezirk", "katastralgemeindeId": "Suedbezirk" },
+    { "id": "Westsiedlung-1", "name": "Westsiedlung", "katastralgemeindeId": "Westsiedlung" }
+  ],
+  "ageDistribution": {
+    "0-9": 0.09,
+    "10-19": 0.10,
+    "20-29": 0.11,
+    "30-39": 0.13,
+    "40-49": 0.14,
+    "50-59": 0.15,
+    "60-69": 0.13,
+    "70-79": 0.10,
+    "80+": 0.05
+  },
+  "genderDistribution": {
+    "weiblich": 0.508,
+    "maennlich": 0.491,
+    "divers": 0.001
+  },
+  "citizenshipDistribution": {
+    "austria": 0.875,
+    "eu_other": 0.069,
+    "third_country": 0.056,
+    "eu_countries": ["DE", "RO", "HU", "PL", "SK", "CZ", "IT", "HR"],
+    "third_country_countries": ["TR", "RS", "BA", "UA", "MK"]
+  },
+  "nameClusterMix": {
+    "at-de": 0.85,
+    "tr": 0.05,
+    "ex-yu": 0.03,
+    "osteuropa": 0.03,
+    "sonstige": 0.04
+  },
+  "householdDistribution": {
+    "1": 0.382,
+    "2": 0.278,
+    "3": 0.14,
+    "4": 0.13,
+    "5": 0.045,
+    "6": 0.025
+  },
+  "familiesWithChildren": 0.40,
+  "threeGenerationShare": 0.01,
+  "crossClusterMixProbability": 0.12,
+  "perKgOverrides": {}
+}

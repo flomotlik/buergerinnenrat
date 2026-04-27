@@ -283,6 +283,19 @@ export const Stage1Panel: Component = () => {
             }}
           />
         </label>
+        {/* Issue #57: low-friction onramp for users without their own CSV.
+            Hash-routing handles the click — App.tsx hashchange listener
+            navigates to the new docs subpage. */}
+        <p class="mt-2 text-sm text-slate-600">
+          Keine eigenen Daten?{' '}
+          <a
+            href="#/docs/beispiele"
+            class="underline text-brand-accent-strong hover:text-brand"
+            data-testid="stage1-beispiele-link"
+          >
+            Beispiel-Datei verwenden →
+          </a>
+        </p>
         <Show when={parsed()}>
           {(p) => (
             <>
