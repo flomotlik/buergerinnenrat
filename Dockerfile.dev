@@ -1,0 +1,64 @@
+# Dockerfile.dev — Local development environment for the buergerinnenrat sortition tool.
+#
+# This is a LOCAL DEVELOPMENT container, NOT a production image. It is intended
+# to be invoked via the project Makefile so that contributors do not need to
+# install Node.js, pnpm, Playwright browsers, Python, or tsx on their host.
+#
+# Layout:
+#   - Base: mcr.microsoft.com/playwright:v1.49.1-noble
+#       - Ubuntu 24.04 (noble) with Node 20 + Playwright 1.49.1 + chromium/firefox/webkit
+#         already installed under /ms-playwright. We pin the patch version so the
+#         installed browser binaries match @playwright/test in apps/web/package.json.
+#   - corepack + pnpm@9.12.3 — pinned to match `packageManager` in package.json.
+#   - apt: python3, python3-pip, make — needed by scripts/stage1_reference.py
+#     (Python cross-validation reference) and the Makefile itself.
+#   - tsx (global) — runs the TypeScript helper scripts under scripts/.
+#
+# The image deliberately bakes in NO source code: the Makefile bind-mounts the
+# repo into /workspace at runtime so a single image works for any branch /
+# worktree without rebuilds. node_modules and the pnpm content-addressed store
+# are kept in named volumes (see Makefile) for performance + persistence.
+#
+# Build:   docker build -f Dockerfile.dev -t buergerinnenrat-dev .
+# Smoke:   docker run --rm buergerinnenrat-dev sh -c \
+#            'node --version && pnpm --version && python3 --version && tsx --version'
+
+FROM mcr.microsoft.com/playwright:v1.49.1-noble
+
+# --- System packages ---------------------------------------------------------
+# python3 + pip:    scripts/stage1_reference.py and friends
+# make:             so `make` targets run when the user shells into the container
+# ca-certificates:  pinned for outbound HTTPS during pnpm install
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+      python3 \
+      python3-pip \
+      make \
+      ca-certificates && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# --- pnpm via corepack -------------------------------------------------------
+# Pinned to match package.json `packageManager`. corepack is bundled with the
+# Node 20 in the Playwright base image.
+RUN corepack enable && \
+    corepack prepare pnpm@9.12.3 --activate
+
+# --- tsx for ad-hoc TypeScript scripts --------------------------------------
+# Used by scripts/synthetic-meldedaten/generator.ts and others. Installed
+# globally via pnpm so it lands in a path that survives node_modules wipes.
+RUN pnpm add -g tsx
+
+# --- Per-user pnpm store path (also referenced by the Makefile) -------------
+# We point pnpm at /pnpm/store so a named volume can be mounted there for cache
+# persistence between container runs. The directory is world-writable so any
+# host UID (passed via --user) can populate it.
+ENV PNPM_HOME=/pnpm
+ENV PATH=$PNPM_HOME:$PATH
+RUN mkdir -p /pnpm/store && chmod -R 777 /pnpm
+
+WORKDIR /workspace
+
+# Default to an interactive shell. The Makefile overrides CMD per target
+# (e.g. `pnpm dev`, `pnpm test`).
+CMD ["bash"]

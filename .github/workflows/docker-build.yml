@@ -1,0 +1,31 @@
+name: Docker Dev-Image Build
+
+# Smoke test that Dockerfile.dev still builds and the baked-in tooling is
+# functional. Only triggers on changes to the dev container surface so we
+# do not slow down every PR with a 5-10 min image pull.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'Dockerfile.dev'
+      - 'Makefile'
+      - '.github/workflows/docker-build.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build Dev-Image
+        run: docker build -f Dockerfile.dev -t buergerinnenrat-dev .
+
+      - name: Smoke-Test Tooling
+        # Verifies every load-bearing tool in the image is on PATH and
+        # responsive. Pinned tools (pnpm, Playwright) are checked elsewhere
+        # against package.json; this only catches "did the install survive".
+        run: |
+          docker run --rm buergerinnenrat-dev sh -c \
+            'node --version && pnpm --version && python3 --version && tsx --version'

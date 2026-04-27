@@ -1,18 +1,23 @@
-.git
-.github
+# Files NEVER copied into the Docker build context. Keeps `docker build`
+# fast (no GBs of node_modules) and prevents accidental leakage of local
+# state (issue artifacts, real registry data) into images.
+
 node_modules
 **/node_modules
-.venv
-.venv-*
-.benchmarks
-dist
-build
-.vite
-.playwright-cache
-playwright-report
-test-results
+.git
+.github
+**/dist
+**/.vite
+**/.cache
+**/playwright-report
+**/test-results
+*.log
+.pnpm-store
+.claude
+.issues
 
-# Never let real Melderegister data into a build context
+# Never let real Melderegister data into a build context (preserved from
+# the previous .dockerignore — privacy guard, not just performance).
 private-data
 **/*.real.csv
 **/*.meldereg.csv
