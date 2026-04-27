@@ -108,7 +108,6 @@ test('mobile: stage 1 inputs and run-button are ≥44×44 after CSV load', async
   });
   await page.getByTestId('stage1-pool-summary').waitFor({ state: 'visible' });
   await page.getByTestId('stage1-target-n').fill('50');
-  await page.getByTestId('stage1-seed-confirm').click();
 
   for (const id of [
     'stage1-target-n',
@@ -133,7 +132,6 @@ test('mobile: stage 1 strata table container has horizontal scroll', async ({
   });
   await page.getByTestId('stage1-pool-summary').waitFor({ state: 'visible' });
   await page.getByTestId('stage1-target-n').fill('50');
-  await page.getByTestId('stage1-seed-confirm').click();
   await page.getByTestId('stage1-run').click();
   await page.getByTestId('stage1-result').waitFor({ state: 'visible' });
   await page.getByTestId('stage1-strata-toggle').click();
@@ -160,7 +158,6 @@ test('mobile: sticky run button uses safe-area-inset-bottom', async ({
   });
   await page.getByTestId('stage1-pool-summary').waitFor({ state: 'visible' });
   await page.getByTestId('stage1-target-n').fill('50');
-  await page.getByTestId('stage1-seed-confirm').click();
   const wrapper = page.getByTestId('stage1-run').locator('xpath=..');
   // Use computed style: env(safe-area-inset-bottom) resolves to 0px on a
   // browser without a notch, but the underlying CSS bottom rule must be

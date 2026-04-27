@@ -47,11 +47,8 @@ test('stage 1: upload → defaults → ziehen → download', async ({ page, brow
   await expect(page.getByTestId('stage1-preview')).toBeVisible();
   await expect(page.getByTestId('stage1-axis-breakdown-district')).toBeVisible();
 
-  // Seed-confirmation gate (issue #53 C, variant 1): the run button is
-  // disabled until the user explicitly confirms the auto-default or types
-  // a new value. We accept the default here.
-  await expect(page.getByTestId('stage1-run')).toBeDisabled();
-  await page.getByTestId('stage1-seed-confirm').click();
+  // Issue #61: no seed-confirm gate — run is enabled as soon as a CSV is
+  // loaded and N is set.
   await expect(page.getByTestId('stage1-run')).toBeEnabled();
 
   // Click "ziehen" — Stage 1 is sub-second, no progress bar needed.
@@ -133,8 +130,7 @@ test('stage 1: Stale Result wird gecleart wenn N nach Run geändert wird (H)', a
   await expect(page.getByTestId('stage1-pool-summary')).toContainText('500');
 
   await page.getByTestId('stage1-target-n').fill('40');
-  // Seed must be confirmed (issue #53 C) before run is enabled.
-  await page.getByTestId('stage1-seed-confirm').click();
+  // Issue #61: seed gating removed — run is enabled immediately.
 
   await page.getByTestId('stage1-run').click();
   await expect(page.getByTestId('stage1-result')).toBeVisible({ timeout: 5_000 });
@@ -144,7 +140,9 @@ test('stage 1: Stale Result wird gecleart wenn N nach Run geändert wird (H)', a
   await expect(page.getByTestId('stage1-result')).toBeHidden();
 });
 
-test('stage 1: Run-Button bleibt disabled bis Seed bestätigt oder editiert wurde (C)', async ({ page }) => {
+test('stage 1: Run-Button ist sofort klickbar nach N-Eingabe — kein Seed-Gating (#61)', async ({
+  page,
+}) => {
   await page.goto('/');
   await page.getByTestId('tab-stage1').click();
   await page.locator('[data-testid="stage1-csv-upload"]').setInputFiles({
@@ -154,23 +152,20 @@ test('stage 1: Run-Button bleibt disabled bis Seed bestätigt oder editiert wurd
   });
   await page.getByTestId('stage1-target-n').fill('30');
 
-  // Initial state: seed shows the "bitte vereinbaren" warning, run is disabled.
-  await expect(page.getByTestId('stage1-seed-source')).toContainText('bitte gemeinsam vereinbaren');
-  await expect(page.getByTestId('stage1-run')).toBeDisabled();
-
-  // Path A: clicking "Default-Seed übernehmen" enables the button.
-  await page.getByTestId('stage1-seed-confirm').click();
-  await expect(page.getByTestId('stage1-seed-source')).toContainText('bestätigt');
-  await expect(page.getByTestId('stage1-run')).toBeEnabled();
-  // Confirm button disappears once confirmation is given.
+  // Default seed is immediately accepted — the seed-source label says so,
+  // and the confirm-button from #53 has been removed entirely (#61).
+  await expect(page.getByTestId('stage1-seed-source')).toContainText('Default — editierbar');
   await expect(page.getByTestId('stage1-seed-confirm')).toHaveCount(0);
+  await expect(page.getByTestId('stage1-run')).toBeEnabled();
 
-  // Path B: requesting a fresh default re-disables until next confirmation;
-  // editing the seed value counts as confirmation directly.
-  await page.getByText('Neuer Default-Seed').click();
-  await expect(page.getByTestId('stage1-run')).toBeDisabled();
+  // Editing the seed updates the source label, button stays enabled.
   await page.getByTestId('stage1-seed').fill('123456');
   await expect(page.getByTestId('stage1-seed-source')).toContainText('manuell');
+  await expect(page.getByTestId('stage1-run')).toBeEnabled();
+
+  // Requesting a fresh default flips the label back, button still enabled.
+  await page.getByText('Neuer Default-Seed').click();
+  await expect(page.getByTestId('stage1-seed-source')).toContainText('Default — editierbar');
   await expect(page.getByTestId('stage1-run')).toBeEnabled();
 });
 
@@ -199,7 +194,6 @@ test('stage 1: SVG-Bars haben title-Children und Pattern-Defs (E, a11y)', async 
     buffer: readFileSync(FIXTURE),
   });
   await page.getByTestId('stage1-target-n').fill('40');
-  await page.getByTestId('stage1-seed-confirm').click();
   await page.getByTestId('stage1-run').click();
   await expect(page.getByTestId('stage1-result')).toBeVisible({ timeout: 5_000 });
 

@@ -54,12 +54,10 @@ export const Stage1Panel: Component = () => {
   const [targetN, setTargetN] = createSignal<number | null>(null);
   const [seed, setSeed] = createSignal<number>(defaultSeed());
   const [seedSource, setSeedSource] = createSignal<Stage1SeedSource>('unix-time-default');
-  // Issue #53 C (variant 1): seed value is pre-filled with a default so the
-  // user is never blocked by an empty input, but the run button stays
-  // disabled until the user either explicitly confirms the default or types
-  // a new value. This forces a deliberate act ("öffentlich vor Lauf wählen")
-  // without nagging with a forced first-time entry.
-  const [seedConfirmed, setSeedConfirmed] = createSignal(false);
+  // Issue #61: removed the seed-confirmation gate from #53. The default seed
+  // is immediately usable; the inline notice next to the seed input tells the
+  // user it is editable. Group-meeting workflow mitigates seed-grinding
+  // socially (see CLAUDE.md and audit footer for transparency).
   const [running, setRunning] = createSignal(false);
   const [output, setOutput] = createSignal<RunStage1Output | null>(null);
   const [error, setError] = createSignal<string | null>(null);
@@ -152,28 +150,15 @@ export const Stage1Panel: Component = () => {
   function changeSeed(value: number) {
     setSeed(value);
     setSeedSource('user');
-    // Editing the seed counts as confirmation — user has made a choice.
-    setSeedConfirmed(true);
   }
 
   function newDefaultSeed() {
     setSeed(defaultSeed());
     setSeedSource('unix-time-default');
-    // A fresh default needs a new explicit confirmation.
-    setSeedConfirmed(false);
-  }
-
-  function confirmDefaultSeed() {
-    // User has explicitly accepted the auto-generated default seed.
-    setSeedConfirmed(true);
   }
 
   const canRun = () =>
-    parsed() !== null &&
-    targetN() !== null &&
-    (targetN() ?? 0) > 0 &&
-    !running() &&
-    seedConfirmed();
+    parsed() !== null && targetN() !== null && (targetN() ?? 0) > 0 && !running();
 
   async function start() {
     const p = parsed();
@@ -399,17 +384,6 @@ export const Stage1Panel: Component = () => {
             </div>
           </div>
           <div class="flex flex-wrap items-center gap-3">
-            <Show when={!seedConfirmed()}>
-              <button
-                type="button"
-                class="status-pill-warn px-3 py-1.5 hover:bg-amber-200"
-                onClick={confirmDefaultSeed}
-                disabled={running()}
-                data-testid="stage1-seed-confirm"
-              >
-                Default-Seed übernehmen
-              </button>
-            </Show>
             <button
               type="button"
               class="text-xs underline text-slate-500 hover:text-slate-700"
@@ -418,28 +392,18 @@ export const Stage1Panel: Component = () => {
             >
               Neuer Default-Seed (Unix-Sekunde)
             </button>
-            <span
-              class={
-                seedConfirmed() ? 'text-xs text-slate-500' : 'text-xs font-medium text-amber-800'
-              }
-              data-testid="stage1-seed-source"
-            >
-              {!seedConfirmed()
-                ? '(Default — bitte gemeinsam vereinbaren oder bestätigen)'
-                : seedSource() === 'user'
-                  ? '(manuell)'
-                  : '(bestätigt)'}
+            <span class="text-xs text-slate-500" data-testid="stage1-seed-source">
+              {seedSource() === 'user' ? '(manuell)' : '(Default — editierbar)'}
             </span>
           </div>
           <aside
-            class="text-xs text-slate-600 bg-amber-50 border border-amber-200 rounded p-3"
+            class="text-xs text-slate-600 bg-slate-50 border border-slate-200 rounded p-3"
             data-testid="stage1-seed-hint"
           >
-            <strong>Hinweis zum Seed:</strong> Wählen Sie den Seed-Wert{' '}
-            <em>gemeinsam in der Verfahrens-Sitzung</em> (z.B. eine Zahl, die alle Anwesenden
-            vereinbaren — Lottozahlen, Datum, Würfelwurf). Er steht im Audit-Protokoll und macht den
-            Lauf reproduzierbar. Bewusst öffentlich-vor-Lauf wählen verhindert, dass die Auswahl
-            unbemerkt durch Probieren verschiedener Seeds beeinflusst werden kann.
+            <strong>Hinweis zum Seed:</strong> Der Default-Seed ist sofort einsatzbereit — Sie
+            können ihn übernehmen oder mit einem gemeinsam vereinbarten Wert (z.B. Lottozahlen,
+            Datum, Würfelwurf) überschreiben. Der gewählte Seed steht im signierten Audit-Protokoll
+            und macht den Lauf reproduzierbar.
           </aside>
           <Show when={preview().error}>
             <p class="text-sm text-red-700" data-testid="stage1-preview-error">

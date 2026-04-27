@@ -129,7 +129,6 @@ for (const shot of FINAL_SHOTS) {
         });
         await page.getByTestId('stage1-pool-summary').waitFor({ state: 'visible' });
         await page.getByTestId('stage1-target-n').fill('50');
-        await page.getByTestId('stage1-seed-confirm').click();
         await page.getByTestId('stage1-run').click();
         await page.getByTestId('stage1-result').waitFor({ state: 'visible' });
         await page.waitForTimeout(200);
@@ -169,7 +168,6 @@ for (const step of STEPS) {
           });
           await page.getByTestId('stage1-pool-summary').waitFor({ state: 'visible' });
           await page.getByTestId('stage1-target-n').fill('50');
-          await page.getByTestId('stage1-seed-confirm').click();
           // Give preview a beat to render.
           await page.waitForTimeout(200);
         }
