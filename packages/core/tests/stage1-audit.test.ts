@@ -182,7 +182,7 @@ describe('buildStage1Audit', () => {
     expect(docAuto.seed_source).toBe('unix-time-default');
   });
 
-  it('sets schema_version=0.2, operation=stage1-versand, and algorithm provenance fields', async () => {
+  it('sets schema_version=0.3, operation=stage1-versand, and algorithm provenance fields', async () => {
     const rows = makeRows(20, ['a', 'b']);
     const result = stratify(rows, { axes: ['district'], targetN: 4, seed: 1 });
     const doc = await buildStage1Audit({
@@ -197,13 +197,96 @@ describe('buildStage1Audit', () => {
       result,
       durationMs: 1,
     });
-    expect(doc.schema_version).toBe('0.2');
+    expect(doc.schema_version).toBe('0.3');
     expect(doc.operation).toBe('stage1-versand');
-    expect(doc.algorithm_version).toBe('stage1@1.0.0');
+    expect(doc.algorithm_version).toBe('stage1@1.1.0');
     expect(doc.prng).toBe('mulberry32');
     expect(doc.tie_break_rule).toContain('largest-remainder');
     expect(doc.key_encoding).toBe('json-compact-array-of-pairs');
     expect(doc.stratum_sort).toBe('codepoint-ascending');
+  });
+
+  it('omits derived_columns and forced_zero_strata when the args do not provide them', async () => {
+    const rows = makeRows(20, ['a', 'b']);
+    const result = stratify(rows, { axes: ['district'], targetN: 4, seed: 1 });
+    const doc = await buildStage1Audit({
+      inputBytes: enc.encode('x'),
+      filename: 'f.csv',
+      sizeBytes: 1,
+      axes: ['district'],
+      targetN: 4,
+      seed: 1,
+      seedSource: 'user',
+      poolSize: 20,
+      result,
+      durationMs: 1,
+    });
+    expect(doc.derived_columns).toBeUndefined();
+    expect(doc.forced_zero_strata).toBeUndefined();
+    // Issue #62: pool_filter must NEVER appear in the schema.
+    expect((doc as unknown as Record<string, unknown>).pool_filter).toBeUndefined();
+  });
+
+  it('emits derived_columns and forced_zero_strata when args provide them', async () => {
+    const rows = makeRows(20, ['a', 'b']);
+    const result = stratify(rows, { axes: ['district'], targetN: 4, seed: 1 });
+    const forcedKeys = ['[["altersgruppe","unter-16"]]'];
+    const doc = await buildStage1Audit({
+      inputBytes: enc.encode('x'),
+      filename: 'f.csv',
+      sizeBytes: 1,
+      axes: ['district'],
+      targetN: 4,
+      seed: 1,
+      seedSource: 'user',
+      poolSize: 20,
+      result,
+      durationMs: 1,
+      derivedColumns: {
+        altersgruppe: {
+          source: 'geburtsjahr',
+          description: 'test',
+          bands: [{ min: 0, max: 15, label: 'unter-16', mode: 'display-only' }],
+        },
+      },
+      forcedZeroStrata: forcedKeys,
+    });
+    expect(doc.derived_columns?.altersgruppe?.source).toBe('geburtsjahr');
+    expect(doc.derived_columns?.altersgruppe?.bands).toHaveLength(1);
+    expect(doc.forced_zero_strata).toEqual(forcedKeys);
+  });
+
+  it('canonical JSON for a doc with derived_columns is deterministic across two builds', async () => {
+    const rows = makeRows(20, ['a', 'b']);
+    const result = stratify(rows, { axes: ['district'], targetN: 4, seed: 1 });
+    const args = {
+      inputBytes: enc.encode('x'),
+      filename: 'f.csv',
+      sizeBytes: 1,
+      axes: ['district'],
+      targetN: 4,
+      seed: 1,
+      seedSource: 'user' as const,
+      poolSize: 20,
+      result,
+      durationMs: 1,
+      derivedColumns: {
+        altersgruppe: {
+          source: 'geburtsjahr',
+          description: 'derived',
+          bands: [
+            { min: 0, max: 15, label: 'unter-16', mode: 'display-only' as const },
+          ],
+        },
+      },
+      forcedZeroStrata: ['[["altersgruppe","unter-16"]]'],
+    };
+    const doc1 = await buildStage1Audit(args);
+    const doc2 = await buildStage1Audit(args);
+    // Each build picks up its own timestamp_iso, so isolate by stripping it.
+    doc1.timestamp_iso = '';
+    doc2.timestamp_iso = '';
+    expect(canonicalStage1Json(doc1)).toBe(canonicalStage1Json(doc2));
   });
 
   it('binds the audit to the actual selection via selected_indices', async () => {

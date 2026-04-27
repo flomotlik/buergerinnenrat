@@ -3,8 +3,10 @@
 
 import {
   buildStage1Audit,
+  bucketize,
   stage1ResultToCsv,
   stratify,
+  type AgeBand,
   type Stage1AuditDoc,
   type Stage1SeedSource,
   type StratifyResult,
@@ -19,6 +21,16 @@ export interface RunStage1Input {
   targetN: number;
   seed: number;
   seedSource: Stage1SeedSource;
+  /**
+   * Optional (Issue #62): user-edited age-band configuration. Bands flagged
+   * `mode: 'display-only'` are translated into a forced-zero stratum-key set
+   * so the allocator never assigns to them. Pool stays as-is.
+   */
+  bands?: readonly AgeBand[];
+  /** Header name carrying the band label (typically `'altersgruppe'`). */
+  ageBandColumn?: string;
+  /** Reference year used when the bands were applied — for audit metadata. */
+  bandsRefYear?: number;
 }
 
 export interface RunStage1Output {
@@ -37,11 +49,58 @@ export async function runStage1(input: RunStage1Input): Promise<RunStage1Output>
   const t0 = performance.now();
   const buf = await input.file.arrayBuffer();
 
+  // Issue #62: derive forced-zero stratum-keys from display-only bands when
+  // (a) the user supplied a band configuration, (b) the band column is
+  // among the active axes. We compute the keys up-front so they reach both
+  // the allocator and the audit document.
+  let forcedZeroStrataKeys: ReadonlySet<string> | undefined;
+  let forcedZeroStrataList: string[] | undefined;
+  let derivedColumnsForAudit: Stage1AuditDoc['derived_columns'] | undefined;
+
+  if (
+    input.bands &&
+    input.bands.length > 0 &&
+    input.ageBandColumn &&
+    input.axes.includes(input.ageBandColumn)
+  ) {
+    const displayOnlyLabels = new Set(
+      input.bands.filter((b) => b.mode === 'display-only').map((b) => b.label),
+    );
+    if (displayOnlyLabels.size > 0) {
+      const buckets = bucketize(input.parsed.rows, input.axes);
+      const matching = new Set<string>();
+      for (const key of buckets.keys()) {
+        // bucketize emits each key as JSON.stringify([[axis, value], ...]).
+        const pairs = JSON.parse(key) as [string, string][];
+        const cell = pairs.find(([a]) => a === input.ageBandColumn);
+        if (cell && displayOnlyLabels.has(cell[1])) {
+          matching.add(key);
+        }
+      }
+      if (matching.size > 0) {
+        forcedZeroStrataKeys = matching;
+        forcedZeroStrataList = [...matching].sort();
+      }
+    }
+    const refYear = input.bandsRefYear ?? new Date().getFullYear();
+    const bandSummary = input.bands
+      .map((b) => `${b.label}(${b.mode})`)
+      .join(', ');
+    derivedColumnsForAudit = {
+      [input.ageBandColumn]: {
+        source: 'geburtsjahr',
+        description: `berechnet aus geburtsjahr; Stichtag ${refYear}; Bänder: ${bandSummary}`,
+        bands: [...input.bands],
+      },
+    };
+  }
+
   // Stratify (synchronous, pure). May throw on pool-too-small.
   const result = stratify(input.parsed.rows, {
     axes: input.axes,
     targetN: input.targetN,
     seed: input.seed,
+    ...(forcedZeroStrataKeys ? { forcedZeroStrataKeys } : {}),
   });
 
   const durationMs = performance.now() - t0;
@@ -57,6 +116,8 @@ export async function runStage1(input: RunStage1Input): Promise<RunStage1Output>
     poolSize: input.parsed.rows.length,
     result,
     durationMs,
+    ...(derivedColumnsForAudit ? { derivedColumns: derivedColumnsForAudit } : {}),
+    ...(forcedZeroStrataList ? { forcedZeroStrata: forcedZeroStrataList } : {}),
   });
 
   const signedAudit = await signStage1Audit(auditDoc);

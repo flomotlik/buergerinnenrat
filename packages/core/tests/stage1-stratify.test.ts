@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { generatePool, PROFILES, stratify } from '../src';
+import { generatePool, largestRemainderAllocation, PROFILES, stratify } from '../src';
 
 const KLEINSTADT = PROFILES['kleinstadt-bezirkshauptort']!;
 
@@ -253,6 +253,83 @@ describe('stratify — output ordering', () => {
     // 'a' indices are 3..5, 'b' indices are 0..2.
     for (const i of aIndices) expect(i).toBeGreaterThanOrEqual(3);
     for (const i of bIndices) expect(i).toBeLessThanOrEqual(2);
+  });
+});
+
+describe('largestRemainderAllocation — forcedZeroIndices (Issue #62)', () => {
+  it('produces the same result without forcedZeroIndices and with an empty set', () => {
+    // Backward-compat guard: behavior must be byte-identical when the new
+    // parameter is undefined OR an empty Set.
+    const keys = ['k0', 'k1', 'k2'];
+    const sizes = [10, 20, 30];
+    const a = largestRemainderAllocation(keys, sizes, 12);
+    const b = largestRemainderAllocation(keys, sizes, 12, undefined);
+    const c = largestRemainderAllocation(keys, sizes, 12, new Set());
+    expect(b).toEqual(a);
+    expect(c).toEqual(a);
+  });
+
+  it('forces index 0 to 0 and proportionally allocates the rest', () => {
+    const keys = ['k0', 'k1', 'k2'];
+    const sizes = [100, 200, 300];
+    // Without forcing: total=600, quotas [10, 20, 30] for targetN=60.
+    // With index 0 forced: remainingTotal=500, quotas [0, 24, 36] for 60.
+    const out = largestRemainderAllocation(keys, sizes, 60, new Set([0]));
+    expect(out).toEqual([0, 24, 36]);
+    expect(out.reduce((a, b) => a + b, 0)).toBe(60);
+  });
+
+  it('returns all zeros when every index is forced', () => {
+    const keys = ['k0', 'k1'];
+    const sizes = [10, 20];
+    const out = largestRemainderAllocation(keys, sizes, 5, new Set([0, 1]));
+    expect(out).toEqual([0, 0]);
+  });
+});
+
+describe('stratify — forcedZeroStrataKeys (Issue #62)', () => {
+  it('forces a stratum to n_h_target=0 and never includes its rows in selected', () => {
+    const rows: Record<string, string>[] = [];
+    for (let i = 0; i < 10; i++) rows.push({ person_id: `c${i}`, band: 'unter-16' });
+    for (let i = 0; i < 10; i++) rows.push({ person_id: `m${i}`, band: '25-44' });
+    for (let i = 0; i < 10; i++) rows.push({ person_id: `s${i}`, band: '65+' });
+    const forcedKey = JSON.stringify([['band', 'unter-16']]);
+    const r = stratify(rows, {
+      axes: ['band'],
+      targetN: 10,
+      seed: 7,
+      forcedZeroStrataKeys: new Set([forcedKey]),
+    });
+    expect(r.selected.length).toBe(10);
+    const minor = r.strata.find((s) => s.key.band === 'unter-16')!;
+    expect(minor.n_h_target).toBe(0);
+    expect(minor.n_h_actual).toBe(0);
+    expect(minor.forced_zero).toBe(true);
+    expect(minor.underfilled).toBe(false);
+    // No warning even though n_h_pool > 0 — the zero is intentional.
+    expect(r.warnings).toEqual([]);
+    // Other strata sum to targetN.
+    const others = r.strata.filter((s) => s.key.band !== 'unter-16');
+    const sum = others.reduce((a, s) => a + s.n_h_target, 0);
+    expect(sum).toBe(10);
+    // No selected index points to a `unter-16` row (indices 0..9).
+    for (const idx of r.selected) expect(idx).toBeGreaterThanOrEqual(10);
+  });
+
+  it('produces byte-identical strata to the no-forced version when the set is empty', () => {
+    const rows = toStringRows(
+      generatePool({ profile: KLEINSTADT, size: 400, seed: 5, tightness: 0.7 }),
+    );
+    const a = stratify(rows, { axes: ['district', 'gender'], targetN: 60, seed: 99 });
+    const b = stratify(rows, {
+      axes: ['district', 'gender'],
+      targetN: 60,
+      seed: 99,
+      forcedZeroStrataKeys: new Set<string>(),
+    });
+    expect(b.selected).toEqual(a.selected);
+    expect(b.strata).toEqual(a.strata);
+    expect(b.warnings).toEqual(a.warnings);
   });
 });
 

@@ -66,18 +66,21 @@ export async function buildStage1Audit(args: BuildStage1AuditArgs): Promise<Stag
   const inputHash = await sha256Hex(args.inputBytes);
 
   // Stratify already returns strata in lex stratum-key order; preserve that.
+  // forced_zero (Issue #62) is propagated only when present (omit when false
+  // so canonical JSON stays minimal for the common case).
   const strata = args.result.strata.map((s) => ({
     key: s.key,
     n_h_pool: s.n_h_pool,
     n_h_target: s.n_h_target,
     n_h_actual: s.n_h_actual,
     underfilled: s.underfilled,
+    ...(s.forced_zero ? { forced_zero: true } : {}),
   }));
 
   return {
-    schema_version: '0.2',
+    schema_version: '0.3',
     operation: 'stage1-versand',
-    algorithm_version: 'stage1@1.0.0',
+    algorithm_version: 'stage1@1.1.0',
     prng: 'mulberry32',
     tie_break_rule: 'largest-remainder, then largest n_h, then codepoint-smaller key',
     key_encoding: 'json-compact-array-of-pairs',
@@ -94,6 +97,11 @@ export async function buildStage1Audit(args: BuildStage1AuditArgs): Promise<Stag
     selected_indices: [...args.result.selected],
     strata,
     warnings: args.result.warnings,
+    // Issue #62: derived_columns / forced_zero_strata are only emitted when
+    // the caller passed something — undefined fields stay absent in the
+    // canonical JSON for backward compatibility with v0.2 verifiers.
+    ...(args.derivedColumns ? { derived_columns: args.derivedColumns } : {}),
+    ...(args.forcedZeroStrata ? { forced_zero_strata: args.forcedZeroStrata } : {}),
     timestamp_iso: new Date().toISOString(),
     duration_ms: args.durationMs,
   };
