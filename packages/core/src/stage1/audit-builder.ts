@@ -78,9 +78,9 @@ export async function buildStage1Audit(args: BuildStage1AuditArgs): Promise<Stag
   }));
 
   return {
-    schema_version: '0.3',
+    schema_version: '0.4',
     operation: 'stage1-versand',
-    algorithm_version: 'stage1@1.1.0',
+    algorithm_version: 'stage1@1.2.0',
     prng: 'mulberry32',
     tie_break_rule: 'largest-remainder, then largest n_h, then codepoint-smaller key',
     key_encoding: 'json-compact-array-of-pairs',
@@ -102,6 +102,9 @@ export async function buildStage1Audit(args: BuildStage1AuditArgs): Promise<Stag
     // canonical JSON for backward compatibility with v0.2 verifiers.
     ...(args.derivedColumns ? { derived_columns: args.derivedColumns } : {}),
     ...(args.forcedZeroStrata ? { forced_zero_strata: args.forcedZeroStrata } : {}),
+    // Issue #64: only emit when the caller actually had a proposal — keeps
+    // older 0.3-shaped audit consumers (and manual-N runs) lean.
+    ...(args.sampleSizeProposal ? { sample_size_proposal: args.sampleSizeProposal } : {}),
     timestamp_iso: new Date().toISOString(),
     duration_ms: args.durationMs,
   };

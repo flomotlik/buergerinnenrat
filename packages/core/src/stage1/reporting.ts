@@ -313,6 +313,39 @@ export function stage1ToMarkdownReport(audit: Stage1AuditDoc): string {
   lines.push(`- **Laufzeit:** ${audit.duration_ms} ms`);
   lines.push('');
 
+  // Issue #64: Bemessung. Only renders when the audit doc actually carries
+  // a sample-size proposal (i.e. the user touched the calculator). Manual-N
+  // runs produce 0.4 docs without this section.
+  if (audit.sample_size_proposal) {
+    const p = audit.sample_size_proposal;
+    const outreachLabel =
+      p.outreach === 'mail-only'
+        ? 'Nur Briefe'
+        : p.outreach === 'mail-plus-phone'
+          ? 'Briefe + Telefon-Nachfasser'
+          : 'Eigene Rücklaufquote';
+    const fmtPct = (r: number): string => {
+      const v = r * 100;
+      return Math.abs(v - Math.round(v)) < 1e-9 ? `${Math.round(v)} %` : `${v.toFixed(1)} %`;
+    };
+    const minPct = fmtPct(p.response_rate_min);
+    const maxPct = fmtPct(p.response_rate_max);
+    lines.push('## Bemessung der Stichprobe');
+    lines.push('');
+    lines.push(`- **Ziel-Panelgröße:** ${p.panel_size}`);
+    lines.push(`- **Outreach-Methode:** ${outreachLabel} (${minPct}–${maxPct} Rücklauf)`);
+    lines.push(`- **Sicherheitspuffer:** × ${p.safety_factor}`);
+    lines.push(`- **Vorschlag:** ${p.recommended} Briefe (Range ${p.range[0]}–${p.range[1]})`);
+    if (p.manually_overridden) {
+      lines.push(
+        `- **Stichprobengröße:** ${audit.target_n} (manuell überschrieben — Vorschlag war ${p.recommended})`,
+      );
+    } else {
+      lines.push(`- **Stichprobengröße:** ${audit.target_n} (Vorschlag übernommen)`);
+    }
+    lines.push('');
+  }
+
   // Issue #62: derived columns documentation. Only renders when the audit
   // doc actually carries the optional field — older 0.2 docs are silent.
   if (audit.derived_columns && Object.keys(audit.derived_columns).length > 0) {

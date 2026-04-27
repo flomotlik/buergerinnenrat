@@ -67,10 +67,43 @@ export interface StratifyResult {
 /** Source of the seed value, surfaced in the audit document for traceability. */
 export type Stage1SeedSource = 'user' | 'unix-time-default';
 
+/**
+ * Stage 1 sample-size proposal, recorded in the audit doc when the user
+ * used the SampleSizeCalculator (Issue #64). Optional — manually-set N
+ * still produces a valid 0.4 audit doc, the field is simply absent.
+ */
+export interface Stage1SampleSizeProposalAudit {
+  /** Target panel size the user entered. */
+  panel_size: number;
+  /** Outreach method choice. */
+  outreach: 'mail-only' | 'mail-plus-phone' | 'custom';
+  /** Pessimistic response rate (0..1) used to compute range_max. */
+  response_rate_min: number;
+  /** Optimistic response rate (0..1) used to compute range_min. */
+  response_rate_max: number;
+  /** Safety factor applied to compensate for Stage 3 drop-outs. */
+  safety_factor: number;
+  /** N that the calculator suggested (rounded to nearest 10). */
+  recommended: number;
+  /** [optimistic_min, conservative_max] — both integers. */
+  range: [number, number];
+  /**
+   * True iff the actually-used target_n diverges from `recommended` —
+   * surfaced in the footer/Markdown so reviewers see "manuell überschrieben".
+   */
+  manually_overridden: boolean;
+}
+
 /** Stage 1 audit JSON document. Signature fields are filled in by the web layer. */
 export interface Stage1AuditDoc {
-  /** Schema version of the audit document itself. Bump on breaking shape changes. */
-  schema_version: '0.3';
+  /**
+   * Schema version of the audit document itself. Bump on breaking shape
+   * changes.
+   *
+   * 0.4 (Issue #64): adds optional `sample_size_proposal`. Older 0.3 docs
+   * remain valid — the field is omitted when no calculator was used.
+   */
+  schema_version: '0.4';
   operation: 'stage1-versand';
   /**
    * Algorithm version: identifier of the algorithm + tie-break + key-encoding
@@ -78,9 +111,11 @@ export interface Stage1AuditDoc {
    * that older audit docs cannot be silently re-played with the new code.
    *
    * 1.1.0 (Issue #62): adds optional `forcedZeroStrataKeys` allocator branch.
-   * Behavior is byte-identical to 1.0.0 when no keys are forced.
+   * 1.2.0 (Issue #64): adds optional `sample_size_proposal` audit field.
+   *   Allocator behavior is byte-identical to 1.1.0 — only metadata is
+   *   widened.
    */
-  algorithm_version: 'stage1@1.1.0';
+  algorithm_version: 'stage1@1.2.0';
   /** PRNG identifier — currently always 'mulberry32'. */
   prng: 'mulberry32';
   /**
@@ -148,6 +183,12 @@ export interface Stage1AuditDoc {
    * Sorted ascending by codepoint for stable canonical JSON.
    */
   forced_zero_strata?: string[];
+  /**
+   * Optional (Issue #64): sample-size proposal recorded when the user used
+   * the SampleSizeCalculator. Absent when N was set manually without the
+   * calculator — keeps backward-compat with 0.3 docs.
+   */
+  sample_size_proposal?: Stage1SampleSizeProposalAudit;
   /** ISO 8601 UTC timestamp when the audit doc was built. */
   timestamp_iso: string;
   /** Wall-clock duration in milliseconds for the full Stage 1 pipeline. */
@@ -181,4 +222,10 @@ export interface BuildStage1AuditArgs {
    * Optional (Issue #62): see {@link Stage1AuditDoc.forced_zero_strata}.
    */
   forcedZeroStrata?: string[];
+  /**
+   * Optional (Issue #64): see {@link Stage1AuditDoc.sample_size_proposal}.
+   * The web layer composes this from the SampleSizeCalculator's last accepted
+   * proposal plus a manualOverride flag captured at run-time.
+   */
+  sampleSizeProposal?: Stage1SampleSizeProposalAudit;
 }

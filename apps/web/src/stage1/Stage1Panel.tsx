@@ -16,6 +16,7 @@ import { AgeBandsEditor } from './AgeBandsEditor';
 import { AxisBreakdown } from './AxisBreakdown';
 import { AuditFooter } from './AuditFooter';
 import { StratificationExplainer } from './StratificationExplainer';
+import { SampleSizeCalculator } from './SampleSizeCalculator';
 import TrustStrip from './TrustStrip';
 import { CsvPreview } from '../csv/CsvPreview';
 import {
@@ -30,6 +31,7 @@ import type {
   AllocationPreview,
   CoverageMetric as CoverageStat,
   MarginalsForAxis,
+  SampleSizeProposal,
   Stage1SeedSource,
 } from '@sortition/core';
 
@@ -90,6 +92,12 @@ export const Stage1Panel: Component = () => {
   const [bands, setBands] = createSignal<AgeBand[]>([...DEFAULT_AGE_BANDS]);
   const refYear = new Date().getFullYear();
   const [explainerOpen, setExplainerOpen] = createSignal(true);
+  // Issue #64: sample-size proposal state. Tracks the last accepted proposal
+  // and whether the user subsequently overrode N to a value that diverges.
+  // Both fields are optional in the audit doc (schema_version 0.4).
+  const [sampleSizeProposal, setSampleSizeProposal] = createSignal<SampleSizeProposal | null>(null);
+  const [sampleSizeManuallyOverridden, setSampleSizeManuallyOverridden] =
+    createSignal<boolean>(false);
 
   // Distinct-value counts for the currently selected axes only — counting
   // every header would be wasteful on 8000-row pools.
@@ -210,6 +218,29 @@ export const Stage1Panel: Component = () => {
     setSelectedAxes(cur.includes(header) ? cur.filter((h) => h !== header) : [...cur, header]);
   }
 
+  // Issue #64: SampleSizeCalculator → Stage1Panel handshake.
+  //
+  // - Clicking "Vorschlag übernehmen" sets targetN, stores the proposal for
+  //   the audit doc, and clears the manualOverride flag.
+  // - Subsequent manual edits to targetN flip the override flag if the new
+  //   value diverges from the stored proposal's `recommended`. Re-typing the
+  //   exact recommended value clears the flag again — so the audit reflects
+  //   the user's final intent, not a transient mid-edit state.
+  function handleSampleSizeAccept(recommended: number, proposal: SampleSizeProposal) {
+    setTargetN(recommended);
+    setSampleSizeProposal(proposal);
+    setSampleSizeManuallyOverridden(false);
+  }
+
+  function handleTargetNInput(rawValue: string) {
+    const v = Number(rawValue);
+    const next = Number.isFinite(v) && v > 0 ? Math.floor(v) : null;
+    setTargetN(next);
+    const p = sampleSizeProposal();
+    if (p === null) return;
+    setSampleSizeManuallyOverridden(next !== p.recommended);
+  }
+
   function changeSeed(value: number) {
     setSeed(value);
     setSeedSource('user');
@@ -241,6 +272,25 @@ export const Stage1Panel: Component = () => {
       // are inert (no allocator effect, no audit metadata).
       const passBands =
         p.derivedColumns.includes('altersgruppe') && selectedAxes().includes('altersgruppe');
+      // Issue #64: thread the sample-size proposal (if any) through to the
+      // audit doc. `manually_overridden` is computed on the fly so the audit
+      // reflects the user's CURRENT N at run-time (not the value at accept-
+      // time). This matters when the user accepted, then edited N before
+      // pressing Run. The audit field uses snake_case to match the JSON
+      // schema; the in-memory SampleSizeProposal uses camelCase.
+      const proposal = sampleSizeProposal();
+      const auditProposal = proposal
+        ? {
+            panel_size: proposal.panelSize,
+            outreach: proposal.outreach,
+            response_rate_min: proposal.rateUsed.min,
+            response_rate_max: proposal.rateUsed.max,
+            safety_factor: proposal.safetyFactor,
+            recommended: proposal.recommended,
+            range: proposal.range,
+            manually_overridden: sampleSizeManuallyOverridden(),
+          }
+        : undefined;
       const out = await runStage1({
         file: f,
         parsed: p,
@@ -251,6 +301,7 @@ export const Stage1Panel: Component = () => {
         ...(passBands
           ? { bands: bands(), ageBandColumn: 'altersgruppe', bandsRefYear: refYear }
           : {}),
+        ...(auditProposal ? { sampleSizeProposal: auditProposal } : {}),
       });
       setOutput(out);
     } catch (e) {
@@ -405,10 +456,24 @@ export const Stage1Panel: Component = () => {
         </aside>
       </Show>
 
+      {/* Issue #64: Bemessung der Stichprobe — optional helper that turns
+          panel size + outreach method into a Versand-N suggestion. The N
+          input below stays manually editable; this section just provides a
+          starting point for users who don't already know N. */}
+      <Show when={parsed()}>
+        <section class="space-y-3">
+          <h2 class="text-xl font-semibold mb-1">2. Bemessung der Stichprobe</h2>
+          <SampleSizeCalculator
+            poolSize={() => parsed()?.rows.length ?? null}
+            onAccept={handleSampleSizeAccept}
+          />
+        </section>
+      </Show>
+
       <Show when={parsed()}>
         {(p) => (
           <section class="space-y-3">
-            <h2 class="text-xl font-semibold mb-3">2. Stratifikation konfigurieren</h2>
+            <h2 class="text-xl font-semibold mb-3">3. Stratifikation konfigurieren</h2>
             <StratificationExplainer
               selectedAxes={selectedAxes}
               rows={() => parsed()?.rows ?? []}
@@ -433,7 +498,7 @@ export const Stage1Panel: Component = () => {
 
       <Show when={parsed()}>
         <section class="space-y-3">
-          <h2 class="text-xl font-semibold mb-1">3. Stichprobengröße und Seed</h2>
+          <h2 class="text-xl font-semibold mb-1">4. Stichprobengröße und Seed</h2>
           {/* Inputs grid: 2 columns on ≥sm, stacked on mobile. Both inputs
               share the .input-base style so they render at identical height. */}
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -448,10 +513,7 @@ export const Stage1Panel: Component = () => {
                 class="input-base tabular-nums"
                 data-testid="stage1-target-n"
                 value={targetN() ?? ''}
-                onInput={(e) => {
-                  const v = Number(e.currentTarget.value);
-                  setTargetN(Number.isFinite(v) && v > 0 ? Math.floor(v) : null);
-                }}
+                onInput={(e) => handleTargetNInput(e.currentTarget.value)}
                 disabled={running()}
               />
             </div>
@@ -663,7 +725,7 @@ export const Stage1Panel: Component = () => {
       <Show when={output()}>
         {(out) => (
           <section class="space-y-4 stage1-report" data-testid="stage1-result">
-            <h2 class="text-xl font-semibold">4. Ergebnis</h2>
+            <h2 class="text-xl font-semibold">5. Ergebnis</h2>
 
             {/* Top-line summary cards: hero "Gezogen" card spans 2 cols on
                 md+, secondary coverage + underfill cards each span 1.

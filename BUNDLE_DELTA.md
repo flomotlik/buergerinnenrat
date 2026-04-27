@@ -1,3 +1,41 @@
+# Bundle Delta — Issue #64 (Sample-Size-Vorschlag aus Panelgröße + Outreach)
+
+**Build:** `VITE_BASE_PATH=/ pnpm --filter @sortition/web build` (Vite 6, sourcemaps enabled).
+**Baseline:** post-#62 (`index-*.js` 122.06 KB raw / 40.50 KB gzip).
+**Post:** commit on `sample-size-suggestion`.
+
+| Asset                          | Baseline (KB) | After (KB) | Delta (KB) |
+| ------------------------------ | ------------: | ---------: | ---------: |
+| dist/assets/index-*.js (raw)   |        122.06 |     132.82 |     +10.76 |
+| dist/assets/index-*.js (gzip)  |         40.50 |      43.39 |      +2.89 |
+| dist/assets/index-*.css (raw)  |         44.29 |      44.47 |      +0.18 |
+| dist/assets/index-*.css (gzip) |          7.38 |       7.41 |      +0.03 |
+
+Raw HiGHS WASM: unchanged — feature touches no solver code.
+
+## Notes
+
+The +2.89 KB gzip delta is within the planned envelope (~+2–3 KB) and well
+below the +10 KB gzip stop threshold. Drivers:
+
+1. `packages/core/src/stage1/sample-size.ts` (~1.4 KB raw) — pure-Funktion
+   `suggestSampleSize`, OUTREACH_DEFAULTS table, type defs.
+2. `apps/web/src/stage1/SampleSizeCalculator.tsx` (~6 KB raw) — controlled
+   inputs, radio group, custom-mode reveal, suggestion box, pool-too-small
+   warning, "Wie wird das berechnet?" details.
+3. `apps/web/src/stage1/Stage1Panel.tsx` extensions — section header
+   renumbering, sampleSizeProposal/manualOverride signals, audit-proposal
+   composition, handleTargetNInput override-detection.
+4. `apps/web/src/stage1/AuditFooter.tsx` — Bemessung row with conditional
+   "Vorschlag übernommen" / "manuell überschrieben" rendering.
+5. `packages/core/src/stage1/reporting.ts` — neue `## Bemessung der
+   Stichprobe` Markdown-Sektion.
+
+No new runtime dependencies. Schema bump 0.3 → 0.4, algorithm version
+1.1.0 → 1.2.0 — both backwards-compatible (new field is optional).
+
+---
+
 # Bundle Delta — Issue #62 (Altersgruppe-Derivation + Bands-Editor + Display-Only)
 
 **Build:** `pnpm --filter @sortition/web build` (Vite 6, sourcemaps enabled).
