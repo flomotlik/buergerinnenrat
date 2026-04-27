@@ -1,5 +1,5 @@
 import type { Component } from 'solid-js';
-import { Show } from 'solid-js';
+import { For, Show } from 'solid-js';
 import type { Stage1AuditDoc } from '@sortition/core';
 
 // Visible audit/provenance footer per Issue #53 B. Print-CSS keeps this
@@ -77,6 +77,35 @@ export const AuditFooter: Component<Props> = (props) => {
         <dd class="font-mono" title={props.doc.signature ?? ''} data-testid="audit-footer-sig">
           {abbreviateToken(props.doc.signature)}
         </dd>
+
+        {/* Issue #62: derived columns documentation. Truncates each
+            description to keep the footer compact; the full string lives in
+            the JSON download. */}
+        <Show when={props.doc.derived_columns && Object.keys(props.doc.derived_columns).length > 0}>
+          <dt class="font-medium">Berechnete Spalten:</dt>
+          <dd class="font-mono" data-testid="audit-footer-derived">
+            <For each={Object.entries(props.doc.derived_columns ?? {})}>
+              {([col, info]) => (
+                <div>
+                  <span class="font-semibold">{col}</span> —{' '}
+                  {info.description.length > 80
+                    ? `${info.description.slice(0, 80)}…`
+                    : info.description}
+                </div>
+              )}
+            </For>
+          </dd>
+        </Show>
+
+        {/* Issue #62: forced-zero strata summary. Stresses that the pool
+            stays unchanged — non-trivial nuance for auditors. */}
+        <Show when={(props.doc.forced_zero_strata?.length ?? 0) > 0}>
+          <dt class="font-medium">Strata mit Soll=0 (nur Anzeige):</dt>
+          <dd class="font-mono" data-testid="audit-footer-forced-zero">
+            {props.doc.forced_zero_strata?.length ?? 0} (Pool wurde NICHT gefiltert — diese Personen
+            bleiben Teil des Pools.)
+          </dd>
+        </Show>
       </dl>
       <p class="text-slate-600 italic mt-2">
         Vollständige Signatur und Hashes sind im Audit-JSON-Download enthalten. Die Signatur deckt

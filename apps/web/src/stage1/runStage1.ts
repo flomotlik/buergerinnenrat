@@ -83,9 +83,7 @@ export async function runStage1(input: RunStage1Input): Promise<RunStage1Output>
       }
     }
     const refYear = input.bandsRefYear ?? new Date().getFullYear();
-    const bandSummary = input.bands
-      .map((b) => `${b.label}(${b.mode})`)
-      .join(', ');
+    const bandSummary = input.bands.map((b) => `${b.label}(${b.mode})`).join(', ');
     derivedColumnsForAudit = {
       [input.ageBandColumn]: {
         source: 'geburtsjahr',

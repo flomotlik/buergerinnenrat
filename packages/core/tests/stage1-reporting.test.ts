@@ -2,13 +2,14 @@ import { describe, expect, it } from 'vitest';
 import {
   buildStage1Audit,
   coverageMetric,
+  infoOnlyBandsReport,
   marginalAggregates,
   previewAllocation,
   sortUnderfillsByGap,
   stage1ToMarkdownReport,
   stratify,
 } from '../src/stage1';
-import type { StratumResult } from '../src/stage1';
+import type { AgeBand, StratumResult } from '../src/stage1';
 
 const enc = new TextEncoder();
 
@@ -107,6 +108,57 @@ describe('sortUnderfillsByGap', () => {
     const before = strata.map((s) => s.key.x);
     sortUnderfillsByGap(strata);
     expect(strata.map((s) => s.key.x)).toEqual(before);
+  });
+});
+
+describe('infoOnlyBandsReport', () => {
+  const bands: AgeBand[] = [
+    { min: 0, max: 15, label: 'unter-16', mode: 'display-only' },
+    { min: 16, max: 64, label: '16-64', mode: 'selection' },
+    { min: 65, max: null, label: '65+', mode: 'selection' },
+  ];
+
+  function rowsFor(altersgruppen: string[]): Record<string, string>[] {
+    return altersgruppen.map((g, i) => ({ person_id: `p${i}`, altersgruppe: g }));
+  }
+
+  it('returns one row per display-only band with pool count and hypothetical Soll', () => {
+    const r = rowsFor([
+      ...Array(20).fill('unter-16'),
+      ...Array(70).fill('16-64'),
+      ...Array(10).fill('65+'),
+    ]);
+    const out = infoOnlyBandsReport(r, bands, 'altersgruppe', 10, 100);
+    expect(out).toHaveLength(1);
+    expect(out[0]).toEqual({ label: 'unter-16', poolCount: 20, hypotheticalSoll: 2 });
+  });
+
+  it('emits a row even when poolCount is 0', () => {
+    const r = rowsFor([...Array(50).fill('16-64'), ...Array(50).fill('65+')]);
+    const out = infoOnlyBandsReport(r, bands, 'altersgruppe', 10, 100);
+    expect(out).toEqual([{ label: 'unter-16', poolCount: 0, hypotheticalSoll: 0 }]);
+  });
+
+  it('does not divide by zero when totalPoolSize is 0', () => {
+    const out = infoOnlyBandsReport([], bands, 'altersgruppe', 10, 0);
+    expect(out).toEqual([{ label: 'unter-16', poolCount: 0, hypotheticalSoll: 0 }]);
+  });
+
+  it('emits one row per display-only band in input order with multiple displays', () => {
+    const multi: AgeBand[] = [
+      { min: 0, max: 15, label: 'unter-16', mode: 'display-only' },
+      { min: 16, max: 17, label: '16-17', mode: 'display-only' },
+      { min: 18, max: null, label: '18+', mode: 'selection' },
+    ];
+    const r = rowsFor([
+      ...Array(10).fill('unter-16'),
+      ...Array(5).fill('16-17'),
+      ...Array(85).fill('18+'),
+    ]);
+    const out = infoOnlyBandsReport(r, multi, 'altersgruppe', 50, 100);
+    expect(out.map((row) => row.label)).toEqual(['unter-16', '16-17']);
+    expect(out[0]?.hypotheticalSoll).toBe(5);
+    expect(out[1]?.hypotheticalSoll).toBe(3); // round(50 * 5 / 100) = 3 (banker's? Math.round = 3 here)
   });
 });
 
@@ -233,6 +285,98 @@ describe('stage1ToMarkdownReport', () => {
     expect(md).toContain('PUBKEY-HEX');
     expect(md).toContain('SIG-HEX');
     expect(md).toContain('Ed25519');
+  });
+
+  it('renders Berechnete Spalten and Nicht in Auswahl sections when audit fields are present', async () => {
+    const rows = makeRows({
+      'a|f|25-34': 8,
+      'a|m|25-34': 8,
+      'b|f|25-34': 4,
+      'b|m|25-34': 4,
+    });
+    const result = stratify(rows, {
+      axes: ['altersgruppe'] as unknown as string[],
+      targetN: 4,
+      seed: 1,
+    });
+    // Override result.strata with synthesized data so we can include a
+    // forced-zero stratum without doing a full pipeline integration.
+    const synthAudit = await buildStage1Audit({
+      inputBytes: enc.encode('x'),
+      filename: 'p.csv',
+      sizeBytes: 1,
+      axes: ['altersgruppe'],
+      targetN: 50,
+      seed: 1,
+      seedSource: 'user',
+      poolSize: 100,
+      result: {
+        selected: [0, 1, 2],
+        strata: [
+          {
+            key: { altersgruppe: 'unter-16' },
+            n_h_pool: 20,
+            n_h_target: 0,
+            n_h_actual: 0,
+            underfilled: false,
+            forced_zero: true,
+          },
+          {
+            key: { altersgruppe: '25-44' },
+            n_h_pool: 80,
+            n_h_target: 50,
+            n_h_actual: 50,
+            underfilled: false,
+          },
+        ],
+        warnings: [],
+      },
+      durationMs: 1,
+      derivedColumns: {
+        altersgruppe: {
+          source: 'geburtsjahr',
+          description: 'derived',
+          bands: [
+            { min: 0, max: 15, label: 'unter-16', mode: 'display-only' },
+            { min: 16, max: null, label: '16+', mode: 'selection' },
+          ],
+        },
+      },
+      forcedZeroStrata: ['[["altersgruppe","unter-16"]]'],
+    });
+    // ensure result-snapshot suppression doesn't run; this synthesized doc
+    // is what we want to render.
+    void result;
+
+    const md = stage1ToMarkdownReport(synthAudit);
+    expect(md).toContain('## Berechnete Spalten');
+    expect(md).toContain('### altersgruppe');
+    expect(md).toContain('## Nicht in Auswahl einbezogen');
+    expect(md).toContain('| Band | Im Pool');
+    expect(md).toContain('Kinderrat');
+    // Status column should report 'nur Anzeige' for the forced-zero stratum.
+    expect(md).toContain('nur Anzeige');
+  });
+
+  it('omits Berechnete Spalten and Nicht in Auswahl sections when audit fields are absent', async () => {
+    const rows = makeRows({ 'a|f|25-34': 4, 'b|m|25-34': 4 });
+    const result = stratify(rows, { axes: ['district'], targetN: 4, seed: 1 });
+    const audit = await buildStage1Audit({
+      inputBytes: enc.encode('x'),
+      filename: 'p.csv',
+      sizeBytes: 1,
+      axes: ['district'],
+      targetN: 4,
+      seed: 1,
+      seedSource: 'user',
+      poolSize: 8,
+      result,
+      durationMs: 1,
+    });
+    const md = stage1ToMarkdownReport(audit);
+    expect(md).not.toContain('## Berechnete Spalten');
+    expect(md).not.toContain('## Nicht in Auswahl einbezogen');
+    expect(md).not.toContain('Kinderrat');
   });
 
   it('handles SRS (no axes) gracefully', async () => {

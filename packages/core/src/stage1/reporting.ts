@@ -8,6 +8,7 @@
 // statistics terms appear in parentheses for auditors. Audit-JSON schema
 // fields stay unchanged — that is a machine format.
 
+import type { AgeBand } from './age-bands';
 import { bucketize, largestRemainderAllocation } from './stratify';
 import type { Stage1AuditDoc, StratumResult } from './types';
 
@@ -230,6 +231,54 @@ export function previewAllocation(
 }
 
 // ---------------------------------------------------------------------------
+// Info-only bands report (Issue #62)
+// ---------------------------------------------------------------------------
+
+/**
+ * One row of the "Nicht in Auswahl einbezogen" report — the pool counts and
+ * a hypothetical proportional Soll for a display-only band. The hypothetical
+ * Soll answers the question "if this band were drawn proportionally, how
+ * many people would be in scope?" — useful for sanity-checking the pool's
+ * minor population without selecting them.
+ */
+export interface InfoOnlyBandsReportRow {
+  /** Band label (also the value in the altersgruppe column). */
+  label: string;
+  /** Number of CSV rows whose ageBandColumn equals this label. */
+  poolCount: number;
+  /** Math.round(targetN * poolCount / totalPoolSize), or 0 when totalPoolSize=0. */
+  hypotheticalSoll: number;
+}
+
+/**
+ * Build a per-band breakdown of pool counts + hypothetical Soll for every
+ * band currently in `display-only` mode. Bands in `selection` mode are
+ * skipped — they appear in the regular result tables.
+ *
+ * Pure: does not mutate inputs. Returns rows in input bands order.
+ */
+export function infoOnlyBandsReport(
+  rows: Record<string, string>[],
+  bands: readonly AgeBand[],
+  ageBandColumn: string,
+  targetN: number,
+  totalPoolSize: number,
+): InfoOnlyBandsReportRow[] {
+  const out: InfoOnlyBandsReportRow[] = [];
+  for (const band of bands) {
+    if (band.mode !== 'display-only') continue;
+    let poolCount = 0;
+    for (const r of rows) {
+      if (r[ageBandColumn] === band.label) poolCount++;
+    }
+    const hypotheticalSoll =
+      totalPoolSize > 0 ? Math.round((targetN * poolCount) / totalPoolSize) : 0;
+    out.push({ label: band.label, poolCount, hypotheticalSoll });
+  }
+  return out;
+}
+
+// ---------------------------------------------------------------------------
 // Markdown report builder
 // ---------------------------------------------------------------------------
 
@@ -264,6 +313,30 @@ export function stage1ToMarkdownReport(audit: Stage1AuditDoc): string {
   lines.push(`- **Laufzeit:** ${audit.duration_ms} ms`);
   lines.push('');
 
+  // Issue #62: derived columns documentation. Only renders when the audit
+  // doc actually carries the optional field — older 0.2 docs are silent.
+  if (audit.derived_columns && Object.keys(audit.derived_columns).length > 0) {
+    lines.push('## Berechnete Spalten');
+    lines.push('');
+    for (const [col, info] of Object.entries(audit.derived_columns)) {
+      lines.push(`### ${col}`);
+      lines.push('');
+      lines.push(`**Quelle:** ${info.source}`);
+      lines.push('');
+      lines.push(`**Beschreibung:** ${info.description}`);
+      if (info.bands && info.bands.length > 0) {
+        lines.push('');
+        lines.push('| Band | Min | Max | Modus |');
+        lines.push('| --- | ---: | ---: | --- |');
+        for (const b of info.bands) {
+          const max = b.max === null ? 'offen' : String(b.max);
+          lines.push(`| ${b.label} | ${b.min} | ${max} | ${b.mode} |`);
+        }
+      }
+      lines.push('');
+    }
+  }
+
   lines.push('## Gruppen-Abdeckung');
   lines.push('');
   const covPct = Number.isNaN(cov.coverageRatio) ? 0 : Math.round(cov.coverageRatio * 1000) / 10;
@@ -291,6 +364,37 @@ export function stage1ToMarkdownReport(audit: Stage1AuditDoc): string {
     }
   }
 
+  // Issue #62: "Nicht in Auswahl einbezogen" — aggregate the forced-zero
+  // strata's pool counts and compute a hypothetical proportional Soll
+  // (had they participated). Only renders when the audit doc carries
+  // forced_zero_strata and at least one stratum is actually marked.
+  if (audit.forced_zero_strata && audit.forced_zero_strata.length > 0) {
+    const perBand = new Map<string, number>();
+    for (const s of audit.strata) {
+      if (s.forced_zero !== true) continue;
+      const label = s.key.altersgruppe ?? '(unbenannt)';
+      perBand.set(label, (perBand.get(label) ?? 0) + s.n_h_pool);
+    }
+    if (perBand.size > 0) {
+      lines.push('## Nicht in Auswahl einbezogen');
+      lines.push('');
+      lines.push('| Band | Im Pool | Hypothetisch (Soll-Proportion) |');
+      lines.push('| --- | ---: | ---: |');
+      const labels = [...perBand.keys()].sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
+      for (const label of labels) {
+        const sum = perBand.get(label)!;
+        const hypothetical =
+          audit.pool_size > 0 ? Math.round((audit.target_n * sum) / audit.pool_size) : 0;
+        lines.push(`| ${label} | ${sum} | ${hypothetical} |`);
+      }
+      lines.push('');
+      lines.push(
+        '_Diese Personen wurden nicht gezogen — eigene Verfahrenswege denkbar (z.B. Kinderrat)._',
+      );
+      lines.push('');
+    }
+  }
+
   lines.push('## Detail-Tabelle (Bevölkerungsgruppen, Cross-Product)');
   lines.push('');
   lines.push('| Bevölkerungsgruppe (Stratum) | Pool | Soll | Ist | Status |');
@@ -299,7 +403,8 @@ export function stage1ToMarkdownReport(audit: Stage1AuditDoc): string {
     const stratumLabel = Object.keys(s.key).length === 0
       ? '(gesamt)'
       : Object.entries(s.key).map(([k, v]) => `${k}=${v}`).join(', ');
-    lines.push(`| ${stratumLabel} | ${s.n_h_pool} | ${s.n_h_target} | ${s.n_h_actual} | ${s.underfilled ? 'unterbesetzt' : 'ok'} |`);
+    const status = s.forced_zero ? 'nur Anzeige' : s.underfilled ? 'unterbesetzt' : 'ok';
+    lines.push(`| ${stratumLabel} | ${s.n_h_pool} | ${s.n_h_target} | ${s.n_h_actual} | ${status} |`);
   }
   lines.push('');
 

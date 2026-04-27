@@ -31,11 +31,7 @@ export const AgeBandsEditor: Component<AgeBandsEditorProps> = (props) => {
     props.onBandsChange(next);
   }
 
-  function setBandField<K extends keyof AgeBand>(
-    index: number,
-    key: K,
-    value: AgeBand[K],
-  ): void {
+  function setBandField<K extends keyof AgeBand>(index: number, key: K, value: AgeBand[K]): void {
     const next = props.bands().map((b, i) => (i === index ? { ...b, [key]: value } : { ...b }));
     commit(next);
   }
@@ -68,10 +64,7 @@ export const AgeBandsEditor: Component<AgeBandsEditorProps> = (props) => {
   };
 
   return (
-    <fieldset
-      class="border rounded p-3 space-y-2"
-      data-testid="stage1-age-bands-editor"
-    >
+    <fieldset class="border rounded p-3 space-y-2" data-testid="stage1-age-bands-editor">
       <legend class="text-sm font-semibold px-1">
         Altersgruppen-Bänder (berechnet aus geburtsjahr)
       </legend>
