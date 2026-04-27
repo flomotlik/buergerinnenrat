@@ -6,6 +6,22 @@ Browser-natives Werkzeug für die stratifizierte Zufallsauswahl von Personen fü
 
 **Live:** <https://flomotlik.github.io/buergerinnenrat/>
 
+## Lokale Entwicklung mit Docker
+
+Voraussetzung: Docker installiert (Linux, macOS, Windows-WSL).
+
+```bash
+make build-image     # Image bauen (~1.8 GB, dauert beim ersten Mal ~5 min)
+make install         # pnpm install im Container
+make dev             # → http://localhost:5173 (Vite mit HMR)
+```
+
+Vollständige Liste aller Targets: `make help`.
+
+Power-User mit lokal installiertem Node 20 + pnpm + Playwright können
+`NO_DOCKER=1` setzen, dann läuft alles direkt ohne Container:
+`make NO_DOCKER=1 dev`.
+
 ## Beispiel-Daten ausprobieren
 
 Du willst das Tool ohne eigene Melderegister-Datei testen? Auf der Live-Seite
