@@ -398,4 +398,92 @@ describe('stage1ToMarkdownReport', () => {
     expect(md).toContain('(keine — einfache Zufallsstichprobe)');
     expect(md).not.toContain('## Verteilung pro Merkmal'); // no axes => skip
   });
+
+  it('renders the Bemessung section when sample_size_proposal is present (Issue #64)', async () => {
+    const rows = makeRows({ 'a|f|25-34': 60, 'a|m|25-34': 60, 'b|f|25-34': 30, 'b|m|25-34': 30 });
+    const result = stratify(rows, { axes: ['district'], targetN: 110, seed: 1 });
+    const audit = await buildStage1Audit({
+      inputBytes: enc.encode('x'),
+      filename: 'p.csv',
+      sizeBytes: 1,
+      axes: ['district'],
+      targetN: 110,
+      seed: 1,
+      seedSource: 'user',
+      poolSize: rows.length,
+      result,
+      durationMs: 1,
+      sampleSizeProposal: {
+        panel_size: 30,
+        outreach: 'mail-plus-phone',
+        response_rate_min: 0.3,
+        response_rate_max: 0.5,
+        safety_factor: 1.5,
+        recommended: 110,
+        range: [60, 150],
+        manually_overridden: false,
+      },
+    });
+
+    const md = stage1ToMarkdownReport(audit);
+    expect(md).toContain('## Bemessung der Stichprobe');
+    expect(md).toContain('Ziel-Panelgröße:** 30');
+    expect(md).toContain('Briefe + Telefon-Nachfasser');
+    expect(md).toContain('30 %–50 %');
+    expect(md).toContain('× 1.5');
+    expect(md).toContain('110 Briefe');
+    expect(md).toContain('Range 60–150');
+    expect(md).toContain('Vorschlag übernommen');
+    expect(md).not.toContain('manuell überschrieben');
+  });
+
+  it('marks manually overridden N in the Bemessung section (Issue #64)', async () => {
+    const rows = makeRows({ 'a|f|25-34': 110, 'a|m|25-34': 110, 'b|f|25-34': 60, 'b|m|25-34': 60 });
+    const result = stratify(rows, { axes: ['district'], targetN: 200, seed: 1 });
+    const audit = await buildStage1Audit({
+      inputBytes: enc.encode('x'),
+      filename: 'p.csv',
+      sizeBytes: 1,
+      axes: ['district'],
+      targetN: 200,
+      seed: 1,
+      seedSource: 'user',
+      poolSize: rows.length,
+      result,
+      durationMs: 1,
+      sampleSizeProposal: {
+        panel_size: 30,
+        outreach: 'mail-plus-phone',
+        response_rate_min: 0.3,
+        response_rate_max: 0.5,
+        safety_factor: 1.5,
+        recommended: 110,
+        range: [60, 150],
+        manually_overridden: true,
+      },
+    });
+
+    const md = stage1ToMarkdownReport(audit);
+    expect(md).toContain('manuell überschrieben — Vorschlag war 110');
+    expect(md).toContain('Stichprobengröße:** 200');
+  });
+
+  it('omits the Bemessung section when sample_size_proposal is absent', async () => {
+    const rows = makeRows({ 'a|f|25-34': 4, 'b|m|25-34': 4 });
+    const result = stratify(rows, { axes: ['district'], targetN: 4, seed: 1 });
+    const audit = await buildStage1Audit({
+      inputBytes: enc.encode('x'),
+      filename: 'p.csv',
+      sizeBytes: 1,
+      axes: ['district'],
+      targetN: 4,
+      seed: 1,
+      seedSource: 'user',
+      poolSize: 8,
+      result,
+      durationMs: 1,
+    });
+    const md = stage1ToMarkdownReport(audit);
+    expect(md).not.toContain('## Bemessung der Stichprobe');
+  });
 });

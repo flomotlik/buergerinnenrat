@@ -16,9 +16,21 @@ export type {
   StratumResult,
   Stage1AuditDoc,
   Stage1SeedSource,
+  Stage1SampleSizeProposalAudit,
   BuildStage1AuditArgs,
 } from './types';
 export type { Stage1CsvOptions, Stage1CsvResult } from './csv-export';
+export {
+  suggestSampleSize,
+  OUTREACH_DEFAULTS,
+  DEFAULT_SAFETY_FACTOR,
+} from './sample-size';
+export type {
+  OutreachMode,
+  OutreachRates,
+  SampleSizeProposal,
+  CustomRates,
+} from './sample-size';
 export type {
   MarginalBucket,
   MarginalsForAxis,

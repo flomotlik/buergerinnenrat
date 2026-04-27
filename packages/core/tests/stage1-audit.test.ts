@@ -182,7 +182,7 @@ describe('buildStage1Audit', () => {
     expect(docAuto.seed_source).toBe('unix-time-default');
   });
 
-  it('sets schema_version=0.3, operation=stage1-versand, and algorithm provenance fields', async () => {
+  it('sets schema_version=0.4, operation=stage1-versand, and algorithm provenance fields', async () => {
     const rows = makeRows(20, ['a', 'b']);
     const result = stratify(rows, { axes: ['district'], targetN: 4, seed: 1 });
     const doc = await buildStage1Audit({
@@ -197,13 +197,98 @@ describe('buildStage1Audit', () => {
       result,
       durationMs: 1,
     });
-    expect(doc.schema_version).toBe('0.3');
+    expect(doc.schema_version).toBe('0.4');
     expect(doc.operation).toBe('stage1-versand');
-    expect(doc.algorithm_version).toBe('stage1@1.1.0');
+    expect(doc.algorithm_version).toBe('stage1@1.2.0');
     expect(doc.prng).toBe('mulberry32');
     expect(doc.tie_break_rule).toContain('largest-remainder');
     expect(doc.key_encoding).toBe('json-compact-array-of-pairs');
     expect(doc.stratum_sort).toBe('codepoint-ascending');
+  });
+
+  it('omits sample_size_proposal when the args do not provide it (Issue #64)', async () => {
+    const rows = makeRows(20, ['a', 'b']);
+    const result = stratify(rows, { axes: ['district'], targetN: 4, seed: 1 });
+    const doc = await buildStage1Audit({
+      inputBytes: enc.encode('x'),
+      filename: 'f.csv',
+      sizeBytes: 1,
+      axes: ['district'],
+      targetN: 4,
+      seed: 1,
+      seedSource: 'user',
+      poolSize: 20,
+      result,
+      durationMs: 1,
+    });
+    expect(doc.sample_size_proposal).toBeUndefined();
+  });
+
+  it('emits sample_size_proposal verbatim when args provide it (Issue #64)', async () => {
+    const rows = makeRows(200, ['a', 'b']);
+    const result = stratify(rows, { axes: ['district'], targetN: 110, seed: 1 });
+    const doc = await buildStage1Audit({
+      inputBytes: enc.encode('x'),
+      filename: 'f.csv',
+      sizeBytes: 1,
+      axes: ['district'],
+      targetN: 110,
+      seed: 1,
+      seedSource: 'user',
+      poolSize: 200,
+      result,
+      durationMs: 1,
+      sampleSizeProposal: {
+        panel_size: 30,
+        outreach: 'mail-plus-phone',
+        response_rate_min: 0.3,
+        response_rate_max: 0.5,
+        safety_factor: 1.5,
+        recommended: 110,
+        range: [60, 150],
+        manually_overridden: false,
+      },
+    });
+    expect(doc.sample_size_proposal).toEqual({
+      panel_size: 30,
+      outreach: 'mail-plus-phone',
+      response_rate_min: 0.3,
+      response_rate_max: 0.5,
+      safety_factor: 1.5,
+      recommended: 110,
+      range: [60, 150],
+      manually_overridden: false,
+    });
+  });
+
+  it('records manually_overridden when the user changed N after accepting (Issue #64)', async () => {
+    const rows = makeRows(20, ['a', 'b']);
+    const result = stratify(rows, { axes: ['district'], targetN: 4, seed: 1 });
+    const doc = await buildStage1Audit({
+      inputBytes: enc.encode('x'),
+      filename: 'f.csv',
+      sizeBytes: 1,
+      axes: ['district'],
+      targetN: 200,
+      seed: 1,
+      seedSource: 'user',
+      poolSize: 20,
+      result,
+      durationMs: 1,
+      sampleSizeProposal: {
+        panel_size: 30,
+        outreach: 'mail-plus-phone',
+        response_rate_min: 0.3,
+        response_rate_max: 0.5,
+        safety_factor: 1.5,
+        recommended: 110,
+        range: [60, 150],
+        manually_overridden: true,
+      },
+    });
+    expect(doc.sample_size_proposal?.manually_overridden).toBe(true);
+    expect(doc.sample_size_proposal?.recommended).toBe(110);
+    expect(doc.target_n).toBe(200);
   });
 
   it('omits derived_columns and forced_zero_strata when the args do not provide them', async () => {

@@ -4,9 +4,9 @@ import { canonicalStage1Json, type Stage1AuditDoc } from '@sortition/core';
 
 function makeDoc(): Stage1AuditDoc {
   return {
-    schema_version: '0.3',
+    schema_version: '0.4',
     operation: 'stage1-versand',
-    algorithm_version: 'stage1@1.1.0',
+    algorithm_version: 'stage1@1.2.0',
     prng: 'mulberry32',
     tie_break_rule: 'largest-remainder, then largest n_h, then codepoint-smaller key',
     key_encoding: 'json-compact-array-of-pairs',

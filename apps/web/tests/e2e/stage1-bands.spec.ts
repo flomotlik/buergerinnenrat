@@ -109,8 +109,8 @@ test('default display-only unter-16 → result view + audit reflect forced-zero 
   expect(path).toBeTruthy();
   const fs = await import('node:fs');
   const json = JSON.parse(fs.readFileSync(path!, 'utf8')) as Record<string, unknown>;
-  expect(json.schema_version).toBe('0.3');
-  expect(json.algorithm_version).toBe('stage1@1.1.0');
+  expect(json.schema_version).toBe('0.4');
+  expect(json.algorithm_version).toBe('stage1@1.2.0');
   expect(Array.isArray(json.forced_zero_strata)).toBe(true);
   expect((json.forced_zero_strata as string[]).length).toBeGreaterThan(0);
   const derived = json.derived_columns as Record<string, unknown> | undefined;

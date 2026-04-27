@@ -15,6 +15,20 @@ interface Props {
   doc: Stage1AuditDoc;
 }
 
+/** German label for an outreach mode, used by the "Bemessung" footer row. */
+function outreachLabel(mode: 'mail-only' | 'mail-plus-phone' | 'custom'): string {
+  if (mode === 'mail-only') return 'Nur Briefe';
+  if (mode === 'mail-plus-phone') return 'Briefe + Telefon-Nachfasser';
+  return 'Eigene Rücklaufquote';
+}
+
+/** Format a 0..1 rate as a percent without unnecessary decimals. */
+function rateToPercent(r: number): string {
+  const v = r * 100;
+  if (Math.abs(v - Math.round(v)) < 1e-9) return `${Math.round(v)} %`;
+  return `${v.toFixed(1)} %`;
+}
+
 /** Abbreviate a hex string to `<first 16 chars>…<last 8 chars>` for display. */
 function abbreviateHash(hex: string): string {
   if (hex.length <= 24) return hex;
@@ -95,6 +109,34 @@ export const AuditFooter: Component<Props> = (props) => {
               )}
             </For>
           </dd>
+        </Show>
+
+        {/* Issue #64: sample-size proposal summary. Renders only when the
+            user used the SampleSizeCalculator. The doc.target_n carries the
+            actually-drawn N — when it diverges from `recommended` we surface
+            "manuell überschrieben" so reviewers see the deviation. */}
+        <Show when={props.doc.sample_size_proposal}>
+          {(p) => (
+            <>
+              <dt class="font-medium">Bemessung:</dt>
+              <dd class="font-mono" data-testid="audit-footer-sample-size">
+                <div>
+                  Panelgröße: {p().panel_size} — Outreach: {outreachLabel(p().outreach)} (
+                  {rateToPercent(p().response_rate_min)}–{rateToPercent(p().response_rate_max)}{' '}
+                  Rücklauf, Faktor {p().safety_factor})
+                </div>
+                <div>
+                  <Show
+                    when={p().manually_overridden}
+                    fallback={<>Stichprobengröße: {props.doc.target_n} (Vorschlag übernommen)</>}
+                  >
+                    Stichprobengröße: {props.doc.target_n} (manuell überschrieben — Vorschlag war{' '}
+                    {p().recommended})
+                  </Show>
+                </div>
+              </dd>
+            </>
+          )}
         </Show>
 
         {/* Issue #62: forced-zero strata summary. Stresses that the pool

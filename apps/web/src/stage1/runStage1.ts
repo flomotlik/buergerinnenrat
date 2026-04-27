@@ -8,6 +8,7 @@ import {
   stratify,
   type AgeBand,
   type Stage1AuditDoc,
+  type Stage1SampleSizeProposalAudit,
   type Stage1SeedSource,
   type StratifyResult,
 } from '@sortition/core';
@@ -31,6 +32,12 @@ export interface RunStage1Input {
   ageBandColumn?: string;
   /** Reference year used when the bands were applied — for audit metadata. */
   bandsRefYear?: number;
+  /**
+   * Optional (Issue #64): the SampleSizeCalculator's last accepted proposal
+   * plus a `manuallyOverridden` flag captured at run-time. Threaded straight
+   * through to the audit doc — runStage1 itself doesn't interpret it.
+   */
+  sampleSizeProposal?: Stage1SampleSizeProposalAudit;
 }
 
 export interface RunStage1Output {
@@ -116,6 +123,7 @@ export async function runStage1(input: RunStage1Input): Promise<RunStage1Output>
     durationMs,
     ...(derivedColumnsForAudit ? { derivedColumns: derivedColumnsForAudit } : {}),
     ...(forcedZeroStrataList ? { forcedZeroStrata: forcedZeroStrataList } : {}),
+    ...(input.sampleSizeProposal ? { sampleSizeProposal: input.sampleSizeProposal } : {}),
   });
 
   const signedAudit = await signStage1Audit(auditDoc);
