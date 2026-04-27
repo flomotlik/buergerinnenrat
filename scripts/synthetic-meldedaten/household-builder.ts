@@ -223,9 +223,10 @@ function buildPaar(ctx: BuildCtx): Person[] {
 }
 
 function buildFamilie(ctx: BuildCtx, size: number): Person[] {
-  // 1-2 adults (25-55) + (size - adults) children (0-18). For size 3 we
-  // have a 15% chance of a single-parent household.
-  const adultsCount = size === 3 && ctx.rng.nextFloat() < 0.15 ? 1 : 2;
+  // 1-2 adults (25-55) + (size - adults) children (0-18). Statistik
+  // Austria reports ~18 % single-parent families across ALL family sizes
+  // (not just size 3), so we apply the same probability uniformly.
+  const adultsCount = ctx.rng.nextFloat() < 0.18 ? 1 : 2;
   const childrenCount = Math.max(0, size - adultsCount);
 
   const fatherAge = pickAgeInRange(ctx.rng, 25, 55);
@@ -271,6 +272,13 @@ function buildFamilie(ctx: BuildCtx, size: number): Person[] {
   const childMinAge = 0;
   const childMaxAge = Math.min(18, Math.max(0, youngestAdultAge - 18));
 
+  // Determine the citizenship the children will inherit. Austrian jus
+  // sanguinis (§7 StbG): a child gets AT citizenship if at least one
+  // parent has it. Otherwise we propagate the father's citizenship —
+  // mixed-cluster mothers keep their own citizenship but the kids align
+  // with the household's primary citizenship.
+  const childCitizenship = inheritedChildCitizenship(adults);
+
   const children: Person[] = [];
   for (let i = 0; i < childrenCount; i++) {
     const childAge = pickAgeInRange(ctx.rng, childMinAge, childMaxAge);
@@ -281,6 +289,7 @@ function buildFamilie(ctx: BuildCtx, size: number): Person[] {
         cluster: ctx.cluster,
         householdSurname: ctx.surname,
         geburtsjahr: ctx.refYear - childAge,
+        staatsbuergerschaft: childCitizenship,
         sprengel: ctx.params.sprengel,
         katastralgemeinde: ctx.params.katastralgemeinde,
         haushaltsnummer: ctx.params.haushaltsnummer,
@@ -292,16 +301,121 @@ function buildFamilie(ctx: BuildCtx, size: number): Person[] {
   return [...adults, ...children];
 }
 
+/**
+ * Resolve the citizenship that children of the given adults inherit. AT
+ * has priority (jus sanguinis — §7 StbG). With no AT parent we fall back
+ * to the first adult's citizenship (typically the father in `buildFamilie`).
+ */
+function inheritedChildCitizenship(adults: Person[]): string {
+  for (const a of adults) {
+    if (a.staatsbuergerschaft === 'AT') return 'AT';
+  }
+  return adults[0]!.staatsbuergerschaft;
+}
+
 function buildDreigeneration(ctx: BuildCtx, size: number): Person[] {
-  // Family core (≥3) + 1-2 grandparents (60-85). For size 4 → core 3 + 1
-  // grandparent. For size 6 → core 4 + 2 grandparents.
+  // Three-generation household: parent generation + at least one child
+  // (0-18) + at least one grandparent (60-85). The previous version
+  // delegated to `buildFamilie(coreSize)` with `coreSize = max(3, size-gp)`
+  // which silently produced zero grandparents for size 3 (`remaining = 0`)
+  // — so 3-Gen households were structurally indistinguishable from regular
+  // families. We now build the layers explicitly:
+  //
+  //   size 3 → 1 parent + 1 child + 1 grandparent
+  //   size 4 → 2 parents + 1 child + 1 grandparent
+  //   size 5 → 2 parents + 1 child + 2 grandparents (or 2 parents + 2 children + 1 gp)
+  //   size 6 → 2 parents + 2 children + 2 grandparents
+  //
+  // Grandparents share the household surname and the household's primary
+  // cluster; they keep their own (independently rolled) citizenship — only
+  // children inherit, see jus sanguinis comment in `buildFamilie`.
   const grandparentsCount = size >= 5 ? 2 : 1;
-  const coreSize = Math.max(3, size - grandparentsCount);
-  const familyCore = buildFamilie(ctx, coreSize);
-  const remaining = size - familyCore.length;
+  // Reserve at least 1 child + 1 parent slot. Adults can be 1 or 2; the
+  // remainder are children.
+  const remainingForFamily = size - grandparentsCount;
+  // Need at least 2 family slots (1 parent + 1 child). Force grandparents
+  // down to 1 if size is too small to host two grandparents plus a
+  // minimal family.
+  const adjGrandparents = remainingForFamily < 2 ? 1 : grandparentsCount;
+  const familySlots = size - adjGrandparents;
+  const adultsCount = familySlots >= 3 ? 2 : 1;
+  const childrenCount = Math.max(1, familySlots - adultsCount);
+
+  // Build parent layer (mirrors `buildFamilie` logic but with explicit
+  // adult count so we don't re-roll the single-parent probability here).
+  const fatherAge = pickAgeInRange(ctx.rng, 25, 55);
+  const father = buildPerson(ctx.rng, {
+    profile: ctx.params.profile,
+    pools: ctx.params.pools,
+    cluster: ctx.cluster,
+    householdSurname: ctx.surname,
+    gender: 'maennlich',
+    geburtsjahr: ctx.refYear - fatherAge,
+    sprengel: ctx.params.sprengel,
+    katastralgemeinde: ctx.params.katastralgemeinde,
+    haushaltsnummer: ctx.params.haushaltsnummer,
+    person_id: makeId(ctx.params.idPrefix, ctx.params.idCounter),
+    referenceYear: ctx.refYear,
+  });
+  const adults: Person[] = [father];
+  if (adultsCount === 2) {
+    const motherCluster = maybeMixCluster(ctx);
+    const motherMinAge = Math.max(25, fatherAge - 8);
+    const motherMaxAge = Math.min(55, fatherAge + 8);
+    const motherAge = pickAgeInRange(ctx.rng, motherMinAge, motherMaxAge);
+    const mother = buildPerson(ctx.rng, {
+      profile: ctx.params.profile,
+      pools: ctx.params.pools,
+      cluster: motherCluster,
+      householdSurname: ctx.surname,
+      gender: 'weiblich',
+      geburtsjahr: ctx.refYear - motherAge,
+      sprengel: ctx.params.sprengel,
+      katastralgemeinde: ctx.params.katastralgemeinde,
+      haushaltsnummer: ctx.params.haushaltsnummer,
+      person_id: makeId(ctx.params.idPrefix, ctx.params.idCounter),
+      referenceYear: ctx.refYear,
+    });
+    adults.push(mother);
+  }
+
+  // Children inherit citizenship per jus sanguinis.
+  const childCitizenship = inheritedChildCitizenship(adults);
+  const youngestAdultAge = Math.min(
+    ...adults.map((a) => ctx.refYear - a.geburtsjahr),
+  );
+  const childMaxAge = Math.min(18, Math.max(0, youngestAdultAge - 18));
+  const children: Person[] = [];
+  for (let i = 0; i < childrenCount; i++) {
+    const childAge = pickAgeInRange(ctx.rng, 0, childMaxAge);
+    children.push(
+      buildPerson(ctx.rng, {
+        profile: ctx.params.profile,
+        pools: ctx.params.pools,
+        cluster: ctx.cluster,
+        householdSurname: ctx.surname,
+        geburtsjahr: ctx.refYear - childAge,
+        staatsbuergerschaft: childCitizenship,
+        sprengel: ctx.params.sprengel,
+        katastralgemeinde: ctx.params.katastralgemeinde,
+        haushaltsnummer: ctx.params.haushaltsnummer,
+        person_id: makeId(ctx.params.idPrefix, ctx.params.idCounter),
+        referenceYear: ctx.refYear,
+      }),
+    );
+  }
+
+  // Grandparent layer: ages 60-85, but clamped to be at least 20 years
+  // older than the oldest adult so the heuristic
+  // (oldest>=60 && altersspanne>=35) reliably classifies these.
+  const oldestAdultAge = Math.max(
+    ...adults.map((a) => ctx.refYear - a.geburtsjahr),
+  );
+  const gpMinAge = Math.max(60, oldestAdultAge + 20);
+  const gpMaxAge = Math.max(gpMinAge, 85);
   const grandparents: Person[] = [];
-  for (let i = 0; i < remaining; i++) {
-    const gpAge = pickAgeInRange(ctx.rng, 60, 85);
+  for (let i = 0; i < adjGrandparents; i++) {
+    const gpAge = pickAgeInRange(ctx.rng, gpMinAge, gpMaxAge);
     grandparents.push(
       buildPerson(ctx.rng, {
         profile: ctx.params.profile,
@@ -317,7 +431,7 @@ function buildDreigeneration(ctx: BuildCtx, size: number): Person[] {
       }),
     );
   }
-  return [...familyCore, ...grandparents];
+  return [...adults, ...children, ...grandparents];
 }
 
 function buildWg(ctx: BuildCtx, size: number): Person[] {

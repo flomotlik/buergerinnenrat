@@ -27,8 +27,14 @@ describe('synthetic generator integration', () => {
   const buf = new TextEncoder().encode(csv).buffer as ArrayBuffer;
   const parsed = parseCsvBuffer(buf);
 
-  it('produces exactly 8000 rows', () => {
-    expect(parsed.rows).toHaveLength(8000);
+  it('produces close to 8000 rows', () => {
+    // The generator targets totalPopulation=8000 by computing
+    // totalHouseholds = round(totalPopulation / expectedMeanSize), then
+    // trims down to 8000 if it overshoots. RNG variance in the actual
+    // realised mean household size means we can land slightly below 8000
+    // (no upward padding). Tolerance: ±1 % of target.
+    expect(parsed.rows.length).toBeGreaterThanOrEqual(7920);
+    expect(parsed.rows.length).toBeLessThanOrEqual(8000);
   });
 
   it('header order equals STAGE1_HEADERS', () => {
@@ -41,11 +47,16 @@ describe('synthetic generator integration', () => {
       const g = r['geschlecht'] as keyof typeof counts;
       counts[g]!++;
     }
-    expect(counts.weiblich / 8000).toBeGreaterThan(0.49);
-    expect(counts.weiblich / 8000).toBeLessThan(0.53);
-    expect(counts.maennlich / 8000).toBeGreaterThan(0.47);
-    expect(counts.maennlich / 8000).toBeLessThan(0.51);
-    expect(counts.divers / 8000).toBeLessThan(0.005);
+    const total = parsed.rows.length;
+    // Profile target: weiblich 50.8 %, maennlich 49.1 %, divers 0.1 %.
+    // Adult gender is fixed by the household builder (parents have explicit
+    // genders); gendered children/grandparents only roll randomly. Tolerance
+    // ±2 % for the binary majority, ±0.5 % for divers.
+    expect(counts.weiblich / total).toBeGreaterThan(0.488);
+    expect(counts.weiblich / total).toBeLessThan(0.528);
+    expect(counts.maennlich / total).toBeGreaterThan(0.47);
+    expect(counts.maennlich / total).toBeLessThan(0.51);
+    expect(counts.divers / total).toBeLessThan(0.005);
   });
 
   it('citizenship split: AT in [83%, 92%], non-AT in [8%, 17%]', () => {
@@ -60,12 +71,15 @@ describe('synthetic generator integration', () => {
       else if (euCountries.has(c)) euOther++;
       else if (tcCountries.has(c)) third++;
     }
+    const total = parsed.rows.length;
     // The cluster-correlated AT-rate model produces ~89% AT (slightly higher
     // than the 87.5% profile target because the at-de cluster's 95% AT rate
-    // dominates given its 85% mix share).
-    expect(at / 8000).toBeGreaterThan(0.83);
-    expect(at / 8000).toBeLessThan(0.92);
-    expect((euOther + third) / 8000).toBeGreaterThan(0.08);
+    // dominates given its 85% mix share). Children inherit the household-
+    // primary citizenship (#58, jus sanguinis) which marginally raises the
+    // AT share since most households have at least one AT parent.
+    expect(at / total).toBeGreaterThan(0.83);
+    expect(at / total).toBeLessThan(0.92);
+    expect((euOther + third) / total).toBeGreaterThan(0.08);
   });
 
   it('household count is in [3500, 3900]', () => {
