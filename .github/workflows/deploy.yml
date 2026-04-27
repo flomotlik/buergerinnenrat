@@ -33,11 +33,17 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Lint web app (eslint + prettier)
+        run: pnpm --filter @sortition/web lint
+
       - name: Typecheck workspace
         run: pnpm -r --filter './packages/**' --filter '@sortition/web' exec tsc --noEmit
 
       - name: Run unit tests (packages)
         run: pnpm -r --filter './packages/**' test
+
+      - name: Run unit tests (web)
+        run: pnpm --filter @sortition/web test
 
       - name: Build web bundle
         run: pnpm --filter @sortition/web build

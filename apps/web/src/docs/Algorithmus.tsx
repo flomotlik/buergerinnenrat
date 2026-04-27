@@ -13,10 +13,9 @@ const Algorithmus: Component = () => {
     <div class="space-y-8" data-testid="docs-page-algorithmus">
       <section class="space-y-3">
         <p>
-          Stage 1 zieht aus einem Pool (z. B. dem Melderegister) eine
-          Versand-Liste, die <strong>proportional</strong> zu den
-          Bevölkerungsgruppen ist — definiert über die ausgewählten Merkmale
-          (Bezirk, Geschlecht, Altersgruppe ...).
+          Stage 1 zieht aus einem Pool (z. B. dem Melderegister) eine Versand-Liste, die{' '}
+          <strong>proportional</strong> zu den Bevölkerungsgruppen ist — definiert über die
+          ausgewählten Merkmale (Bezirk, Geschlecht, Altersgruppe ...).
         </p>
         <p>
           Das Verfahren nutzt zwei klassische Bausteine: die{' '}
@@ -27,43 +26,35 @@ const Algorithmus: Component = () => {
           <Term slug="fisher-yates">
             <strong>Fisher-Yates-Shuffle</strong>
           </Term>{' '}
-          für die Auswahl innerhalb jeder Gruppe. Beide sind über 100 Jahre
-          alt, transparent und in jedem Statistik-Lehrbuch dokumentiert.
+          für die Auswahl innerhalb jeder Gruppe. Beide sind über 100 Jahre alt, transparent und in
+          jedem Statistik-Lehrbuch dokumentiert.
         </p>
       </section>
 
       <section class="space-y-3">
         <h2 class="text-xl font-semibold">Toy-Beispiel: 100 Personen, 10 ziehen</h2>
         <p>
-          Zur Veranschaulichung ein konstruiertes Beispiel: 100 Personen,
-          aufgeteilt in 3 Bezirke × 2 Geschlechter = 6 Bevölkerungsgruppen.
-          Ziel: 10 Personen ziehen.
+          Zur Veranschaulichung ein konstruiertes Beispiel: 100 Personen, aufgeteilt in 3 Bezirke ×
+          2 Geschlechter = 6 Bevölkerungsgruppen. Ziel: 10 Personen ziehen.
         </p>
         <HamiltonSvg />
         <p class="text-xs text-slate-600">
-          Pro Gruppe (<Term slug="stratum">Stratum</Term>) berechnet das
-          Verfahren die Soll-Zahl (Pool/Gesamt × Ziel), nimmt den
-          Ganzzahl-Anteil (<Term slug="floor">Floor</Term>) und verteilt die
-          übrigen Sitze nach den größten Brüchen (
-          <Term slug="remainder">Remainder</Term>). Bonus-Boxen sind amber
-          markiert.
+          Pro Gruppe (<Term slug="stratum">Stratum</Term>) berechnet das Verfahren die Soll-Zahl
+          (Pool/Gesamt × Ziel), nimmt den Ganzzahl-Anteil (<Term slug="floor">Floor</Term>) und
+          verteilt die übrigen Sitze nach den größten Brüchen (
+          <Term slug="remainder">Remainder</Term>). Bonus-Boxen sind amber markiert.
         </p>
       </section>
 
       <section class="space-y-3">
         <h2 class="text-xl font-semibold">Realistisches Beispiel</h2>
         <p>
-          Im echten Verfahren sind Pool und Ziel deutlich größer. Beispiel: 6.000
-          Personen aus dem Melderegister einer Mittelstadt, 300 Versand-Briefe,
-          stratifiziert nach Bezirk × Geschlecht × Altersgruppe. Stage 1 läuft
-          in unter 100 ms im Browser.
+          Im echten Verfahren sind Pool und Ziel deutlich größer. Beispiel: 6.000 Personen aus dem
+          Melderegister einer Mittelstadt, 300 Versand-Briefe, stratifiziert nach Bezirk ×
+          Geschlecht × Altersgruppe. Stage 1 läuft in unter 100 ms im Browser.
         </p>
         <p>
-          <a
-            href="#/stage1"
-            class="underline text-slate-700"
-            data-testid="algorithm-try-stage1"
-          >
+          <a href="#/stage1" class="underline text-slate-700" data-testid="algorithm-try-stage1">
             → Selbst ausprobieren in „Stage 1 / Versand-Liste"
           </a>
         </p>
@@ -76,30 +67,29 @@ const Algorithmus: Component = () => {
           </summary>
           <ol class="list-decimal pl-5 mt-3 space-y-2 text-sm">
             <li>
-              <strong>Bucketize</strong> — Personen werden nach
-              Stratum-Schlüssel (Kombination der Merkmals-Werte) gruppiert.
+              <strong>Bucketize</strong> — Personen werden nach Stratum-Schlüssel (Kombination der
+              Merkmals-Werte) gruppiert.
             </li>
             <li>
-              <strong>Hamilton-Apportionment</strong> — Für jedes Stratum:
-              Soll = Pool/Gesamt × Ziel; Floor wird vergeben; übrige Sitze gehen
-              an die größten Remainder (siehe Toy-Beispiel oben).
+              <strong>Hamilton-Apportionment</strong> — Für jedes Stratum: Soll = Pool/Gesamt ×
+              Ziel; Floor wird vergeben; übrige Sitze gehen an die größten Remainder (siehe
+              Toy-Beispiel oben).
             </li>
             <li>
-              <strong>Lex-Order</strong> — Strata werden alphabetisch nach
-              Schlüssel sortiert. Diese Reihenfolge ist deterministisch und
-              seed-unabhängig — sie entscheidet nur, in welcher Reihenfolge die
-              Strata in der Detail-Tabelle erscheinen.
+              <strong>Lex-Order</strong> — Strata werden alphabetisch nach Schlüssel sortiert. Diese
+              Reihenfolge ist deterministisch und seed-unabhängig — sie entscheidet nur, in welcher
+              Reihenfolge die Strata in der Detail-Tabelle erscheinen.
             </li>
             <li>
-              <strong>Fisher-Yates-Shuffle</strong> — Pro Stratum werden n
-              Personen aus dem Pool gezogen. Der Shuffle ist deterministisch
-              gesteuert über <Term slug="mulberry32">Mulberry32</Term> mit
-              dem in der Sitzung vereinbarten <Term slug="seed">Seed</Term>.
+              <strong>Fisher-Yates-Shuffle</strong> — Pro Stratum werden n Personen aus dem Pool
+              gezogen. Der Shuffle ist deterministisch gesteuert über{' '}
+              <Term slug="mulberry32">Mulberry32</Term> mit dem in der Sitzung vereinbarten{' '}
+              <Term slug="seed">Seed</Term>.
             </li>
             <li>
-              <strong>Output</strong> — Versand-Liste als CSV plus signiertes
-              Audit-JSON (Ed25519 oder ECDSA). Audit enthält Seed, Hash der
-              Eingangs-CSV, gezogene Personen-Indizes und Tie-Break-Regel.
+              <strong>Output</strong> — Versand-Liste als CSV plus signiertes Audit-JSON (Ed25519
+              oder ECDSA). Audit enthält Seed, Hash der Eingangs-CSV, gezogene Personen-Indizes und
+              Tie-Break-Regel.
             </li>
           </ol>
         </details>
@@ -108,7 +98,9 @@ const Algorithmus: Component = () => {
       <section class="space-y-2">
         <h2 class="text-xl font-semibold">Quellen und Verweise</h2>
         <ul class="list-disc pl-5 space-y-1 text-sm">
-          <li>Cochran, <em>Sampling Techniques</em> 3rd ed., Kapitel 5 (Buchverweis).</li>
+          <li>
+            Cochran, <em>Sampling Techniques</em> 3rd ed., Kapitel 5 (Buchverweis).
+          </li>
           <li>
             Hamilton-Methode / Largest-Remainder:{' '}
             <a

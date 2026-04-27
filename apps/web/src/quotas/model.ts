@@ -38,13 +38,20 @@ export function uniqueValues(rows: Record<string, string>[], column: string): st
   return Array.from(set).sort();
 }
 
-export function emptyCategory(column: string, values: readonly string[], panelSize: number): CategoryQuota {
+export function emptyCategory(
+  column: string,
+  values: readonly string[],
+  panelSize: number,
+): CategoryQuota {
   const bounds: Record<string, QuotaBound> = {};
   for (const v of values) bounds[v] = { min: 0, max: panelSize };
   return { column, bounds };
 }
 
-export function valueCounts(rows: Record<string, string>[], column: string): Record<string, number> {
+export function valueCounts(
+  rows: Record<string, string>[],
+  column: string,
+): Record<string, number> {
   const out: Record<string, number> = {};
   for (const r of rows) {
     const v = r[column];
@@ -85,14 +92,10 @@ export function validateQuotas(
       }
     }
     if (sumMin > config.panel_size) {
-      errors.push(
-        `${cat.column}: Summe der min (${sumMin}) > Panel-Größe (${config.panel_size}).`,
-      );
+      errors.push(`${cat.column}: Summe der min (${sumMin}) > Panel-Größe (${config.panel_size}).`);
     }
     if (sumMax < config.panel_size) {
-      errors.push(
-        `${cat.column}: Summe der max (${sumMax}) < Panel-Größe (${config.panel_size}).`,
-      );
+      errors.push(`${cat.column}: Summe der max (${sumMax}) < Panel-Größe (${config.panel_size}).`);
     }
     return { column: cat.column, ok: errors.length === 0, errors, warnings };
   });

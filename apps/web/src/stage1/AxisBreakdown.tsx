@@ -1,4 +1,5 @@
-import { Component, For, Show } from 'solid-js';
+import type { Component } from 'solid-js';
+import { For, Show } from 'solid-js';
 import type { MarginalsForAxis } from '@sortition/core';
 
 interface Props {
@@ -17,12 +18,7 @@ interface Props {
  */
 export const AxisBreakdown: Component<Props> = (props) => {
   const max = () =>
-    Math.max(
-      1,
-      ...props.marginals.buckets.map((b) =>
-        Math.max(b.pool, b.target, b.actual),
-      ),
-    );
+    Math.max(1, ...props.marginals.buckets.map((b) => Math.max(b.pool, b.target, b.actual)));
 
   // Layout constants in SVG-units. The bars are 200 user-units wide; scale
   // is `value / max() * 200`. Each row is 28 units tall.
@@ -59,12 +55,14 @@ export const AxisBreakdown: Component<Props> = (props) => {
       <h3 class="text-sm font-semibold mb-2">
         Merkmal: <span class="font-mono">{props.marginals.axis}</span>{' '}
         <span class="text-xs text-slate-500 font-normal">
-          ({props.marginals.buckets.length} Werte, gesamt Soll{' '}
-          {props.marginals.totalTarget}
+          ({props.marginals.buckets.length} Werte, gesamt Soll {props.marginals.totalTarget}
           {!props.previewMode && `, Ist ${props.marginals.totalActual}`})
         </span>
       </h3>
-      <Show when={props.marginals.buckets.length > 0} fallback={<p class="text-xs text-slate-500">(keine Werte)</p>}>
+      <Show
+        when={props.marginals.buckets.length > 0}
+        fallback={<p class="text-xs text-slate-500">(keine Werte)</p>}
+      >
         <div class="overflow-x-auto">
           <svg
             width={BAR_W + 250}
@@ -80,12 +78,7 @@ export const AxisBreakdown: Component<Props> = (props) => {
                 axis-scoped so multiple breakdowns do not collide. */}
             <desc>{aggregateDesc()}</desc>
             <defs>
-              <pattern
-                id={patternId()}
-                patternUnits="userSpaceOnUse"
-                width="6"
-                height="6"
-              >
+              <pattern id={patternId()} patternUnits="userSpaceOnUse" width="6" height="6">
                 <rect width="6" height="6" fill="#e2e8f0" />
                 <path d="M0,6 L6,0" stroke="#94a3b8" stroke-width="1.5" />
               </pattern>
@@ -122,13 +115,7 @@ export const AxisBreakdown: Component<Props> = (props) => {
                     </rect>
                     {/* Ist bar (blue) — only when not in preview mode */}
                     <Show when={!props.previewMode}>
-                      <rect
-                        x={120}
-                        y={y + 13}
-                        width={istW}
-                        height={9}
-                        fill="#3b82f6"
-                      >
+                      <rect x={120} y={y + 13} width={istW} height={9} fill="#3b82f6">
                         <title>{`Ist: ${b.actual} Personen (Wert ${b.value}, Soll ${b.target})`}</title>
                       </rect>
                     </Show>

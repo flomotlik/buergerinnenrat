@@ -144,7 +144,10 @@ export interface MappingValidation {
   duplicate_person_ids: string[];
 }
 
-export function validateMapping(rows: Record<string, string>[], mapping: ColumnMapping): MappingValidation {
+export function validateMapping(
+  rows: Record<string, string>[],
+  mapping: ColumnMapping,
+): MappingValidation {
   const errors: string[] = [];
   const personIdCol = Object.entries(mapping).find(([, v]) => v === 'person_id')?.[0];
   if (!personIdCol) errors.push('Spalte für `person_id` muss gemappt sein.');
@@ -164,13 +167,18 @@ export function validateMapping(rows: Record<string, string>[], mapping: ColumnM
       if (count > 1) duplicates.push(id);
     }
     if (duplicates.length) {
-      errors.push(`${duplicates.length} doppelte person_id (z.B. ${duplicates.slice(0, 3).join(', ')}).`);
+      errors.push(
+        `${duplicates.length} doppelte person_id (z.B. ${duplicates.slice(0, 3).join(', ')}).`,
+      );
     }
   }
   return { ok: errors.length === 0, errors, duplicate_person_ids: duplicates };
 }
 
-export function applyMapping(rows: Record<string, string>[], mapping: ColumnMapping): Record<string, string>[] {
+export function applyMapping(
+  rows: Record<string, string>[],
+  mapping: ColumnMapping,
+): Record<string, string>[] {
   return rows.map((row) => {
     const out: Record<string, string> = {};
     for (const [origCol, target] of Object.entries(mapping)) {

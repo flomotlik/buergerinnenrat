@@ -12,9 +12,7 @@ const SPECIAL_NAMES = new Set([
 ]);
 
 function pickKind(kinds: ReadonlyArray<TechEntry['kind']>): TechEntry[] {
-  return TECH_MANIFEST.filter(
-    (e) => kinds.includes(e.kind) && !SPECIAL_NAMES.has(e.name),
-  );
+  return TECH_MANIFEST.filter((e) => kinds.includes(e.kind) && !SPECIAL_NAMES.has(e.name));
 }
 
 function findSpecial(name: string): TechEntry | undefined {
@@ -30,12 +28,7 @@ const TechRow: Component<{ entry: TechEntry }> = (props) => (
     <td class="p-1 text-xs">{props.entry.purpose}</td>
     <td class="p-1 text-xs">
       <Show when={props.entry.sourceUrl}>
-        <a
-          class="underline"
-          href={props.entry.sourceUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+        <a class="underline" href={props.entry.sourceUrl} target="_blank" rel="noopener noreferrer">
           Quelle
         </a>
       </Show>
@@ -60,22 +53,18 @@ const Technik: Component = () => {
     <div class="space-y-8" data-testid="docs-page-technik">
       <section class="space-y-3">
         <p>
-          Die App ist eine statische Single-Page-App ohne Backend. Alle
-          Berechnungen laufen im Browser. Diese Seite zeigt — direkt aus dem
-          aktuellen Build generiert — welche Bibliotheken in welcher Version
-          mit welcher Lizenz eingesetzt sind. Die Liste wird via{' '}
-          <code class="font-mono">scripts/build-tech-manifest.ts</code>{' '}
-          erzeugt und bei jedem Build gegen Drift geprüft.
+          Die App ist eine statische Single-Page-App ohne Backend. Alle Berechnungen laufen im
+          Browser. Diese Seite zeigt — direkt aus dem aktuellen Build generiert — welche
+          Bibliotheken in welcher Version mit welcher Lizenz eingesetzt sind. Die Liste wird via{' '}
+          <code class="font-mono">scripts/build-tech-manifest.ts</code> erzeugt und bei jedem Build
+          gegen Drift geprüft.
         </p>
       </section>
 
       <section class="space-y-3">
         <h2 class="text-xl font-semibold">Bibliotheken (direkte Dependencies)</h2>
         <div class="overflow-x-auto border rounded">
-          <table
-            class="w-full text-left"
-            data-testid="tech-table-libs"
-          >
+          <table class="w-full text-left" data-testid="tech-table-libs">
             <thead class="bg-slate-100">
               <tr>
                 <th class="p-1 text-xs">Name</th>
@@ -134,9 +123,8 @@ const Technik: Component = () => {
                   (Wikipedia).
                 </p>
                 <p class="text-xs">
-                  <strong>Warum hier:</strong> deterministische
-                  Quoten-Allokation für stratifizierte Auswahl. Lehrbuch-Stoff,
-                  in jeder Demokratie-Geschichte erklärt.
+                  <strong>Warum hier:</strong> deterministische Quoten-Allokation für stratifizierte
+                  Auswahl. Lehrbuch-Stoff, in jeder Demokratie-Geschichte erklärt.
                 </p>
               </div>
             )}
@@ -146,8 +134,7 @@ const Technik: Component = () => {
               <div class="border rounded p-3 bg-white space-y-1">
                 <div class="font-semibold">Fisher-Yates-Shuffle</div>
                 <p class="text-xs">
-                  Quelle: Knuth <em>TAOCP</em> Vol. 2 §3.4.2 (Buchverweis);
-                  Übersicht{' '}
+                  Quelle: Knuth <em>TAOCP</em> Vol. 2 §3.4.2 (Buchverweis); Übersicht{' '}
                   <a
                     class="underline"
                     href={e().sourceUrl}
@@ -159,9 +146,8 @@ const Technik: Component = () => {
                   .
                 </p>
                 <p class="text-xs">
-                  <strong>Warum hier:</strong> uniformer Shuffle in O(n) ohne
-                  Bias — die einzig richtige Wahl, wenn jede Person aus dem
-                  Pool die gleiche Chance haben soll.
+                  <strong>Warum hier:</strong> uniformer Shuffle in O(n) ohne Bias — die einzig
+                  richtige Wahl, wenn jede Person aus dem Pool die gleiche Chance haben soll.
                 </p>
               </div>
             )}
@@ -183,12 +169,10 @@ const Technik: Component = () => {
                   .
                 </p>
                 <p class="text-xs">
-                  <strong>Warum hier:</strong> deterministisch, reproduzierbar
-                  aus dem Seed; klein genug, um in jedem Audit-Schreiben
-                  zitiert zu werden. <strong>Achtung:</strong>{' '}
-                  <Term slug="mulberry32">Mulberry32</Term> ist <em>kein</em>{' '}
-                  crypto-grade RNG — siehe Limitationen-Seite. Mitigation:
-                  Seed gemeinsam vor dem Lauf vereinbaren.
+                  <strong>Warum hier:</strong> deterministisch, reproduzierbar aus dem Seed; klein
+                  genug, um in jedem Audit-Schreiben zitiert zu werden. <strong>Achtung:</strong>{' '}
+                  <Term slug="mulberry32">Mulberry32</Term> ist <em>kein</em> crypto-grade RNG —
+                  siehe Limitationen-Seite. Mitigation: Seed gemeinsam vor dem Lauf vereinbaren.
                 </p>
               </div>
             )}
@@ -197,8 +181,7 @@ const Technik: Component = () => {
             {(e) => (
               <div class="border rounded p-3 bg-white space-y-1">
                 <div class="font-semibold">
-                  <Term slug="signatur">Ed25519/ECDSA-Signatur</Term> via Web
-                  Crypto API
+                  <Term slug="signatur">Ed25519/ECDSA-Signatur</Term> via Web Crypto API
                 </div>
                 <p class="text-xs">
                   Quelle:{' '}
@@ -213,12 +196,9 @@ const Technik: Component = () => {
                   .
                 </p>
                 <p class="text-xs">
-                  <strong>Warum hier:</strong>{' '}
-                  <Term slug="audit-json">Audit-Protokoll</Term>-Integrität
-                  ohne Custom-Krypto. Browser-API, kein zusätzlicher Code im
-                  Bundle. Wird auf den{' '}
-                  <Term slug="fisher-yates">Fisher-Yates</Term>-Output
-                  angewendet.
+                  <strong>Warum hier:</strong> <Term slug="audit-json">Audit-Protokoll</Term>
+                  -Integrität ohne Custom-Krypto. Browser-API, kein zusätzlicher Code im Bundle.
+                  Wird auf den <Term slug="fisher-yates">Fisher-Yates</Term>-Output angewendet.
                 </p>
               </div>
             )}
@@ -229,21 +209,19 @@ const Technik: Component = () => {
       <section class="space-y-3">
         <h2 class="text-xl font-semibold">Build-Reproduzierbarkeit</h2>
         <p>
-          Diese Doku gehört zu Build{' '}
-          <code class="font-mono">{__GIT_SHA__}</code> vom{' '}
+          Diese Doku gehört zu Build <code class="font-mono">{__GIT_SHA__}</code> vom{' '}
           <code class="font-mono">{__BUILD_DATE__}</code>.
         </p>
         <p>
           <strong>Build-Reproduktion:</strong> Repo auf SHA{' '}
           <code class="font-mono">{__GIT_SHA__}</code> auschecken,{' '}
           <code class="font-mono">pnpm install --frozen-lockfile</code>,{' '}
-          <code class="font-mono">pnpm build</code>. Alle Versionen sind in
-          der Lockfile festgenagelt.
+          <code class="font-mono">pnpm build</code>. Alle Versionen sind in der Lockfile
+          festgenagelt.
         </p>
         <p class="text-xs text-slate-600">
-          Lockfile-Hash wird zur Runtime nicht berechnet (kein
-          Filesystem-Zugriff im Browser). Der Commit-SHA reicht als
-          deterministische Build-Koordinate — er bestimmt sowohl Quellcode als
+          Lockfile-Hash wird zur Runtime nicht berechnet (kein Filesystem-Zugriff im Browser). Der
+          Commit-SHA reicht als deterministische Build-Koordinate — er bestimmt sowohl Quellcode als
           auch Lockfile.
         </p>
       </section>

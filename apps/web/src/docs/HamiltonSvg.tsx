@@ -1,20 +1,10 @@
 import { For } from 'solid-js';
 import type { Component } from 'solid-js';
-import {
-  computeHamiltonAllocation,
-  TOY_STRATA,
-  TOY_TARGET_N,
-  TOY_TOTAL_POOL,
-} from './hamilton';
+import { computeHamiltonAllocation, TOY_STRATA, TOY_TARGET_N, TOY_TOTAL_POOL } from './hamilton';
 
 // Re-export so callers (and tests) can import either the math or the SVG
 // from the same place; keeps consumers from caring about the internal split.
-export {
-  computeHamiltonAllocation,
-  TOY_STRATA,
-  TOY_TARGET_N,
-  TOY_TOTAL_POOL,
-};
+export { computeHamiltonAllocation, TOY_STRATA, TOY_TARGET_N, TOY_TOTAL_POOL };
 export type { HamiltonRow, ToyStratum } from './hamilton';
 
 /** SVG layout constants; tweak together to keep boxes evenly spaced. */
@@ -34,10 +24,7 @@ const HamiltonSvg: Component = () => {
   const totalWidth = PADDING_X * 2 + rows.length * BOX_W + (rows.length - 1) * BOX_GAP;
 
   return (
-    <div
-      class="overflow-x-auto border rounded p-3 bg-white"
-      data-testid="hamilton-svg-container"
-    >
+    <div class="overflow-x-auto border rounded p-3 bg-white" data-testid="hamilton-svg-container">
       <svg
         viewBox={`0 0 ${totalWidth} ${BOX_H + 24}`}
         width={totalWidth}
@@ -48,10 +35,9 @@ const HamiltonSvg: Component = () => {
         data-testid="hamilton-svg"
       >
         <desc>
-          Toy-Beispiel: Pool 100 Personen, Ziel 10 Personen, 6 Bevölkerungsgruppen
-          (Bezirk A/B/C × Geschlecht w/m). Hamilton-Verfahren: Soll = Pool/Gesamt
-          × Ziel. Ganzzahl-Anteil (Floor) wird vergeben; die größten Brüche
-          (Remainder) bekommen die übrigen Sitze.
+          Toy-Beispiel: Pool 100 Personen, Ziel 10 Personen, 6 Bevölkerungsgruppen (Bezirk A/B/C ×
+          Geschlecht w/m). Hamilton-Verfahren: Soll = Pool/Gesamt × Ziel. Ganzzahl-Anteil (Floor)
+          wird vergeben; die größten Brüche (Remainder) bekommen die übrigen Sitze.
         </desc>
         <For each={rows}>
           {(r, i) => {
@@ -69,13 +55,7 @@ const HamiltonSvg: Component = () => {
                   stroke-width={isBonus ? 1.5 : 1}
                   rx={4}
                 />
-                <text
-                  x={x + 8}
-                  y={24}
-                  font-weight="600"
-                  fill="#0f172a"
-                  font-size="11"
-                >
+                <text x={x + 8} y={24} font-weight="600" fill="#0f172a" font-size="11">
                   {r.label}
                 </text>
                 <text x={x + 8} y={42} fill="#1e293b" font-size="10">
@@ -105,9 +85,8 @@ const HamiltonSvg: Component = () => {
         </For>
       </svg>
       <p class="text-xs text-slate-600 mt-2">
-        Summe Floor: {rows.reduce((a, r) => a + r.floor, 0)} ·{' '}
-        Bonus-Sitze: {rows.reduce((a, r) => a + r.bonus, 0)} ·{' '}
-        Final: {rows.reduce((a, r) => a + r.final, 0)}
+        Summe Floor: {rows.reduce((a, r) => a + r.floor, 0)} · Bonus-Sitze:{' '}
+        {rows.reduce((a, r) => a + r.bonus, 0)} · Final: {rows.reduce((a, r) => a + r.final, 0)}
       </p>
     </div>
   );

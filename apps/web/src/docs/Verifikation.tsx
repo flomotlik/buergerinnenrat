@@ -61,11 +61,10 @@ const Verifikation: Component = () => {
     <div class="space-y-8" data-testid="docs-page-verifikation">
       <section class="space-y-3">
         <p>
-          Jeder Stage-1-Lauf produziert ein signiertes{' '}
-          <Term slug="audit-json">Audit-JSON</Term>. Mit der nativen
-          Python-Referenz lässt sich der Lauf byte-exakt nachrechnen — das
-          ist der Auditor:innen-Pfad: was im Browser passiert, kann auf
-          einem unabhängigen Rechner ohne diese App reproduziert werden.
+          Jeder Stage-1-Lauf produziert ein signiertes <Term slug="audit-json">Audit-JSON</Term>.
+          Mit der nativen Python-Referenz lässt sich der Lauf byte-exakt nachrechnen — das ist der
+          Auditor:innen-Pfad: was im Browser passiert, kann auf einem unabhängigen Rechner ohne
+          diese App reproduziert werden.
         </p>
       </section>
 
@@ -75,30 +74,26 @@ const Verifikation: Component = () => {
           <li>
             <strong>Audit-JSON herunterladen</strong>
             <p class="text-sm mt-1">
-              Im Stage-1-Ergebnis-Bereich auf{' '}
-              <em>„Audit-JSON herunterladen"</em> klicken. Das JSON enthält
-              den <Term slug="seed">Seed</Term>, die Achsen, die gezogenen
-              Personen-Indizes und die Signatur.
+              Im Stage-1-Ergebnis-Bereich auf <em>„Audit-JSON herunterladen"</em> klicken. Das JSON
+              enthält den <Term slug="seed">Seed</Term>, die Achsen, die gezogenen Personen-Indizes
+              und die Signatur.
             </p>
           </li>
           <li>
             <strong>Eingangs-CSV bereithalten</strong>
             <p class="text-sm mt-1">
-              Die Original-Melderegister-CSV, die im Stage-1-Lauf hochgeladen
-              wurde. Im Audit-JSON steht <code>input_csv_sha256</code> — die
-              CSV muss diesem SHA-256-Hash entsprechen. Wenn jemand die CSV
-              zwischendurch ändert, schlägt dieser Hash fehl und die
+              Die Original-Melderegister-CSV, die im Stage-1-Lauf hochgeladen wurde. Im Audit-JSON
+              steht <code>input_csv_sha256</code> — die CSV muss diesem SHA-256-Hash entsprechen.
+              Wenn jemand die CSV zwischendurch ändert, schlägt dieser Hash fehl und die
               Verifikation ist sinnlos.
             </p>
           </li>
           <li>
             <strong>Python-Referenz laufen lassen</strong>
             <p class="text-sm mt-1">
-              Die Parameter (Achsen, Seed, Target-N) aus dem Audit-JSON
-              extrahieren und an{' '}
+              Die Parameter (Achsen, Seed, Target-N) aus dem Audit-JSON extrahieren und an{' '}
               <code>scripts/stage1_reference.py</code> übergeben. Anschließend{' '}
-              <code>selected_indices</code> aus beiden JSONs sortieren und
-              vergleichen — sie müssen{' '}
+              <code>selected_indices</code> aus beiden JSONs sortieren und vergleichen — sie müssen{' '}
               <Term slug="byte-identisch">byte-identisch</Term> sein.
             </p>
           </li>
@@ -134,23 +129,20 @@ const Verifikation: Component = () => {
         <ul class="list-disc pl-5 space-y-1 text-sm">
           <li>
             <strong>Signatur prüfen</strong> — der Helper{' '}
-            <code class="font-mono">scripts/verify_audit.py</code> verifiziert
-            die Ed25519/ECDSA-Signatur gegen den Public Key im Audit-JSON.
-            Schlägt fehl, sobald auch nur ein Byte des Dokuments verändert
-            wurde.
+            <code class="font-mono">scripts/verify_audit.py</code> verifiziert die
+            Ed25519/ECDSA-Signatur gegen den Public Key im Audit-JSON. Schlägt fehl, sobald auch nur
+            ein Byte des Dokuments verändert wurde.
           </li>
           <li>
             <strong>Cross-Validation</strong> — der Skript-Lauf{' '}
-            <code class="font-mono">scripts/stage1_cross_validate.sh</code>{' '}
-            führt den TypeScript-Lauf und die Python-Referenz parallel aus
-            und vergleicht alle <code>selected_indices</code>. Genutzt im CI
-            für Regressions-Schutz.
+            <code class="font-mono">scripts/stage1_cross_validate.sh</code> führt den
+            TypeScript-Lauf und die Python-Referenz parallel aus und vergleicht alle{' '}
+            <code>selected_indices</code>. Genutzt im CI für Regressions-Schutz.
           </li>
           <li>
-            <strong>Eigene Tools</strong> — solange das Verfahren (Hamilton +
-            Fisher-Yates + Mulberry32) und die Tie-Break-Regel
-            (alphabetische Sortierung) dokumentiert sind, kann jede:r das
-            Verfahren in beliebiger Sprache (R, Julia, C, Excel-Macros)
+            <strong>Eigene Tools</strong> — solange das Verfahren (Hamilton + Fisher-Yates +
+            Mulberry32) und die Tie-Break-Regel (alphabetische Sortierung) dokumentiert sind, kann
+            jede:r das Verfahren in beliebiger Sprache (R, Julia, C, Excel-Macros)
             nachimplementieren und gegen unsere Outputs vergleichen.
           </li>
         </ul>
@@ -164,9 +156,8 @@ const Verifikation: Component = () => {
           <li>scripts/verify_audit.py — Signatur-Prüfung</li>
         </ul>
         <p class="text-xs text-slate-600">
-          Die Pfade sind relativ zur Repo-Wurzel. Sobald die App ein
-          öffentliches Code-Hosting hat (z. B. GitHub-Pages für die App,
-          Repo daneben), werden die Pfade hier zu klickbaren Links.
+          Die Pfade sind relativ zur Repo-Wurzel. Sobald die App ein öffentliches Code-Hosting hat
+          (z. B. GitHub-Pages für die App, Repo daneben), werden die Pfade hier zu klickbaren Links.
         </p>
       </section>
     </div>

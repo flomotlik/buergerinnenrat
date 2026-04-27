@@ -57,16 +57,16 @@ const Beispiele: Component = () => {
         class="border-l-4 border-brand-accent bg-amber-50 p-3 rounded text-sm text-slate-800"
         data-testid="beispiele-banner"
       >
-        Diese Daten sind <strong>synthetisch erzeugt</strong>. Sie enthalten keine echten
-        Personen. Sie dürfen frei verwendet werden, um den Workflow auszuprobieren.
+        Diese Daten sind <strong>synthetisch erzeugt</strong>. Sie enthalten keine echten Personen.
+        Sie dürfen frei verwendet werden, um den Workflow auszuprobieren.
       </aside>
 
       <section class="space-y-3">
         <h2 class="text-xl font-semibold">Beispiel-Dateien zum Download</h2>
         <p class="text-sm">
-          Vier vor-generierte CSV-Dateien decken den vollen Stage-1- und
-          Stage-3-Workflow ab. Klick auf eine Datei lädt sie direkt herunter
-          — anschließend in den entsprechenden Stage-Reiter hochladen.
+          Vier vor-generierte CSV-Dateien decken den vollen Stage-1- und Stage-3-Workflow ab. Klick
+          auf eine Datei lädt sie direkt herunter — anschließend in den entsprechenden Stage-Reiter
+          hochladen.
         </p>
         <div class="overflow-x-auto">
           <table class="min-w-full text-xs border" data-testid="beispiele-table">
@@ -120,17 +120,13 @@ const Beispiele: Component = () => {
 
       <section class="space-y-2">
         <h3 class="text-base font-semibold">Was steckt in den Spalten</h3>
-        <p class="text-sm">
-          Stage-1-Felder (in den Melderegister-/Versand-/Kleinstadt-Dateien):
-        </p>
+        <p class="text-sm">Stage-1-Felder (in den Melderegister-/Versand-/Kleinstadt-Dateien):</p>
         <ul class="list-disc pl-5 text-sm space-y-1">
           <li>
-            <code>person_id</code> — laufende ID mit Profil-Prefix (z.B.{' '}
-            <code>hzbg-00001</code>)
+            <code>person_id</code> — laufende ID mit Profil-Prefix (z.B. <code>hzbg-00001</code>)
           </li>
           <li>
-            <code>vorname</code>, <code>nachname</code> — Namen aus 4 kulturellen
-            Clustern
+            <code>vorname</code>, <code>nachname</code> — Namen aus 4 kulturellen Clustern
           </li>
           <li>
             <code>geburtsjahr</code> — vier-stellig, aus dem NÖ-Altersprofil
@@ -140,20 +136,20 @@ const Beispiele: Component = () => {
             <code>divers</code>
           </li>
           <li>
-            <code>staatsbuergerschaft</code> — ISO-3166-1-α2 (z.B. <code>AT</code>,{' '}
-            <code>DE</code>, <code>TR</code>)
+            <code>staatsbuergerschaft</code> — ISO-3166-1-α2 (z.B. <code>AT</code>, <code>DE</code>,{' '}
+            <code>TR</code>)
           </li>
           <li>
-            <code>sprengel</code> — Wahlsprengel-ID (wird vom Stage-1-Sampler
-            automatisch als Achse erkannt)
+            <code>sprengel</code> — Wahlsprengel-ID (wird vom Stage-1-Sampler automatisch als Achse
+            erkannt)
           </li>
           <li>
-            <code>katastralgemeinde</code> — KG-ID (kann manuell als zusätzliche
-            Achse gewählt werden)
+            <code>katastralgemeinde</code> — KG-ID (kann manuell als zusätzliche Achse gewählt
+            werden)
           </li>
           <li>
-            <code>haushaltsnummer</code> — gemeinsame Haushalts-ID; Personen einer
-            Familie haben dieselbe Nummer
+            <code>haushaltsnummer</code> — gemeinsame Haushalts-ID; Personen einer Familie haben
+            dieselbe Nummer
           </li>
         </ul>
         <p class="text-sm pt-2">
@@ -161,36 +157,32 @@ const Beispiele: Component = () => {
         </p>
         <ul class="list-disc pl-5 text-sm space-y-1">
           <li>
-            <code>bildung</code> — <code>pflicht</code> | <code>lehre</code> |{' '}
-            <code>matura</code> | <code>hochschul</code>
+            <code>bildung</code> — <code>pflicht</code> | <code>lehre</code> | <code>matura</code> |{' '}
+            <code>hochschul</code>
           </li>
           <li>
-            <code>migrationshintergrund</code> — <code>keiner</code> |{' '}
-            <code>erste-generation</code> | <code>zweite-generation</code>
+            <code>migrationshintergrund</code> — <code>keiner</code> | <code>erste-generation</code>{' '}
+            | <code>zweite-generation</code>
           </li>
         </ul>
         <p class="text-sm">
-          Diese Selbstauskunfts-Felder sind <strong>nicht im Melderegister</strong> —
-          im realen Workflow füllen die Antwortenden sie auf einem
-          Anmeldeformular aus.
+          Diese Selbstauskunfts-Felder sind <strong>nicht im Melderegister</strong> — im realen
+          Workflow füllen die Antwortenden sie auf einem Anmeldeformular aus.
         </p>
       </section>
 
       <section class="space-y-2">
         <h3 class="text-base font-semibold">Warum synthetisch</h3>
         <p class="text-sm">
-          Die Cluster-Verteilung (~85 % deutsch-österreichisch, ~5 %
-          türkisch, ~3 % ex-jugoslawisch, ~3 % osteuropäisch, ~4 % sonstige)
-          ist eine statistisch motivierte Schätzung auf Basis von
+          Die Cluster-Verteilung (~85 % deutsch-österreichisch, ~5 % türkisch, ~3 % ex-jugoslawisch,
+          ~3 % osteuropäisch, ~4 % sonstige) ist eine statistisch motivierte Schätzung auf Basis von
           Statistik-Austria-Daten für Niederösterreich — <strong>nicht</strong>
-          die realen Werte für Herzogenburg. Synthetische Daten vermeiden jedes
-          PII-Risiko und erlauben uns, deterministische Test-Beispiele zu
-          versionieren.
+          die realen Werte für Herzogenburg. Synthetische Daten vermeiden jedes PII-Risiko und
+          erlauben uns, deterministische Test-Beispiele zu versionieren.
         </p>
         <p class="text-sm">
-          Quellen der Namens-Listen:{' '}
-          <code>scripts/synthetic-meldedaten/names/SOURCES.md</code> im Repo
-          (Statistik Austria CC-BY 4.0 + Wikipedia CC-BY-SA 4.0). Generator-Code:{' '}
+          Quellen der Namens-Listen: <code>scripts/synthetic-meldedaten/names/SOURCES.md</code> im
+          Repo (Statistik Austria CC-BY 4.0 + Wikipedia CC-BY-SA 4.0). Generator-Code:{' '}
           <code>scripts/synthetic-meldedaten/</code>.
         </p>
       </section>

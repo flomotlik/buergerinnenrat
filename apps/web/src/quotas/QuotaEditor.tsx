@@ -1,4 +1,5 @@
-import { Component, createSignal, For, Show, createMemo } from 'solid-js';
+import type { Component } from 'solid-js';
+import { createSignal, For, Show, createMemo } from 'solid-js';
 import {
   emptyCategory,
   quotaConfigFromJson,
@@ -50,13 +51,15 @@ export const QuotaEditor: Component<QuotaEditorProps> = (props) => {
     emit({
       ...config(),
       categories: config().categories.map((c) =>
-        c.column !== col ? c : {
-          ...c,
-          bounds: {
-            ...c.bounds,
-            [val]: { ...c.bounds[val]!, [key]: n },
-          },
-        },
+        c.column !== col
+          ? c
+          : {
+              ...c,
+              bounds: {
+                ...c.bounds,
+                [val]: { ...c.bounds[val]!, [key]: n },
+              },
+            },
       ),
     });
   }
@@ -110,11 +113,13 @@ export const QuotaEditor: Component<QuotaEditorProps> = (props) => {
           data-testid="quota-add-category"
         >
           <option value="">— wählen —</option>
-          <For each={props.candidateColumns}>
-            {(c) => <option value={c}>{c}</option>}
-          </For>
+          <For each={props.candidateColumns}>{(c) => <option value={c}>{c}</option>}</For>
         </select>
-        <button class="text-sm border rounded px-2 py-1 bg-white" onClick={exportJson} data-testid="quota-export">
+        <button
+          class="text-sm border rounded px-2 py-1 bg-white"
+          onClick={exportJson}
+          data-testid="quota-export"
+        >
           JSON exportieren
         </button>
         <input

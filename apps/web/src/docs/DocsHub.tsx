@@ -192,12 +192,10 @@ const DocsHub: Component<Props> = (props) => {
       fallback={
         <section class="space-y-6" data-testid="docs-hub">
           <header>
-            <h2 class="text-2xl font-semibold tracking-tight text-brand">
-              Dokumentation
-            </h2>
+            <h2 class="text-2xl font-semibold tracking-tight text-brand">Dokumentation</h2>
             <p class="text-sm text-slate-600 mt-2 max-w-2xl">
-              Erklärungen zum Algorithmus, der eingesetzten Technik, dem
-              Reproduktions-Pfad und den rechtlichen Grundlagen.
+              Erklärungen zum Algorithmus, der eingesetzten Technik, dem Reproduktions-Pfad und den
+              rechtlichen Grundlagen.
             </p>
           </header>
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -211,12 +209,8 @@ const DocsHub: Component<Props> = (props) => {
                 >
                   {tile.icon}
                   <div>
-                    <div class="text-lg font-semibold text-slate-900">
-                      {tile.title}
-                    </div>
-                    <div class="text-sm text-slate-600 mt-1">
-                      {tile.description}
-                    </div>
+                    <div class="text-lg font-semibold text-slate-900">{tile.title}</div>
+                    <div class="text-sm text-slate-600 mt-1">{tile.description}</div>
                   </div>
                 </button>
               )}
@@ -226,8 +220,7 @@ const DocsHub: Component<Props> = (props) => {
             class="text-xs text-slate-500 border-t pt-3 mt-8"
             data-testid="docs-build-footer-hub"
           >
-            Diese Doku gehört zu Build{' '}
-            <code class="font-mono">{__GIT_SHA__}</code> vom{' '}
+            Diese Doku gehört zu Build <code class="font-mono">{__GIT_SHA__}</code> vom{' '}
             <code class="font-mono">{__BUILD_DATE__}</code>.
           </footer>
         </section>

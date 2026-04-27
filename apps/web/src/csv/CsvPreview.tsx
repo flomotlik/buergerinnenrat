@@ -1,4 +1,5 @@
-import { Component, For } from 'solid-js';
+import type { Component } from 'solid-js';
+import { For } from 'solid-js';
 
 // Shared CSV preview table — first N rows visible after upload. Used in
 // Stage 1 (always) and could replace the inline preview in Stage 3 in a
@@ -18,15 +19,10 @@ export const CsvPreview: Component<CsvPreviewProps> = (props) => {
 
   return (
     <div class="overflow-x-auto" data-testid="csv-preview-wrap">
-      <table
-        class="w-full text-xs border-collapse"
-        data-testid="csv-preview-table"
-      >
+      <table class="w-full text-xs border-collapse" data-testid="csv-preview-table">
         <thead>
           <tr class="bg-slate-100">
-            <For each={props.headers}>
-              {(h) => <th class="border px-2 py-1 text-left">{h}</th>}
-            </For>
+            <For each={props.headers}>{(h) => <th class="border px-2 py-1 text-left">{h}</th>}</For>
           </tr>
         </thead>
         <tbody>

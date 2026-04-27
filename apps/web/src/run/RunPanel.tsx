@@ -1,4 +1,5 @@
-import { Component, createSignal, For, Show } from 'solid-js';
+import type { Component } from 'solid-js';
+import { createSignal, For, Show } from 'solid-js';
 import type { Pool, Quotas } from '@sortition/engine-contract';
 import { runEngineA, type RunOutcome } from './runEngine';
 import { buildAudit, downloadBlob, selectedToCsv, signAudit } from './audit';
@@ -29,7 +30,8 @@ export const RunPanel: Component<RunPanelProps> = (props) => {
           pool: props.pool,
           quotas: props.quotas,
           seed: seed(),
-          onProgress: (msg, fraction) => setProgress({ msg, ...(fraction !== undefined ? { fraction } : {}) }),
+          onProgress: (msg, fraction) =>
+            setProgress({ msg, ...(fraction !== undefined ? { fraction } : {}) }),
           onLog: (msg) => setLogs((xs) => [...xs.slice(-50), msg]),
         },
         ctrl.signal,
@@ -109,7 +111,9 @@ export const RunPanel: Component<RunPanelProps> = (props) => {
 
       <Show when={running() || progress().msg}>
         <div class="space-y-1">
-          <div class="text-xs text-slate-700" data-testid="run-progress">{progress().msg}</div>
+          <div class="text-xs text-slate-700" data-testid="run-progress">
+            {progress().msg}
+          </div>
           <Show when={progress().fraction !== undefined}>
             <div class="h-2 bg-slate-200 rounded overflow-hidden">
               <div
@@ -131,15 +135,18 @@ export const RunPanel: Component<RunPanelProps> = (props) => {
       </Show>
 
       <Show when={outcome() && !outcome()!.ok}>
-        <div class="border-l-4 border-red-600 bg-red-50 p-3 rounded text-sm" data-testid="run-error">
+        <div
+          class="border-l-4 border-red-600 bg-red-50 p-3 rounded text-sm"
+          data-testid="run-error"
+        >
           <p class="font-semibold text-red-800">Lauf fehlgeschlagen</p>
           <p class="text-red-800">
             {outcome()!.error?.code}: {outcome()!.error?.message}
           </p>
           <Show when={outcome()!.error?.code === 'infeasible_quotas'}>
             <p class="text-xs mt-2 text-red-700">
-              Tipp: Eine Kategorie ist im Pool zu knapp besetzt für die geforderten Min-Werte.
-              Senke `min` oder erweitere den Pool.
+              Tipp: Eine Kategorie ist im Pool zu knapp besetzt für die geforderten Min-Werte. Senke
+              `min` oder erweitere den Pool.
             </p>
           </Show>
         </div>
@@ -160,7 +167,8 @@ export const RunPanel: Component<RunPanelProps> = (props) => {
                   <span class="tabular-nums">{r.timing.num_committees}</span>
                 </div>
                 <div>
-                  <span class="text-slate-500">Engine:</span> {r.engine_meta.engine_id}@{r.engine_meta.engine_version}
+                  <span class="text-slate-500">Engine:</span> {r.engine_meta.engine_id}@
+                  {r.engine_meta.engine_version}
                 </div>
                 <div>
                   <span class="text-slate-500">Solver:</span> {r.engine_meta.solver}
@@ -210,13 +218,19 @@ export const RunPanel: Component<RunPanelProps> = (props) => {
               </div>
 
               <div class="border rounded">
-                <h3 class="text-sm font-semibold p-2 bg-slate-100">Ausgewähltes Panel ({r.selected.length})</h3>
+                <h3 class="text-sm font-semibold p-2 bg-slate-100">
+                  Ausgewähltes Panel ({r.selected.length})
+                </h3>
                 <table class="w-full text-xs">
                   <thead class="bg-slate-50">
                     <tr>
                       <th class="text-left p-1">person_id</th>
                       <th class="text-right p-1">π_i</th>
-                      <For each={Object.keys(props.pool.people[0] ?? {}).filter((k) => k !== 'person_id')}>
+                      <For
+                        each={Object.keys(props.pool.people[0] ?? {}).filter(
+                          (k) => k !== 'person_id',
+                        )}
+                      >
                         {(k) => <th class="text-left p-1">{k}</th>}
                       </For>
                     </tr>
@@ -228,8 +242,14 @@ export const RunPanel: Component<RunPanelProps> = (props) => {
                         return (
                           <tr>
                             <td class="p-1 font-mono">{id}</td>
-                            <td class="p-1 text-right tabular-nums">{(r.marginals[id] ?? 0).toFixed(4)}</td>
-                            <For each={Object.keys(props.pool.people[0] ?? {}).filter((k) => k !== 'person_id')}>
+                            <td class="p-1 text-right tabular-nums">
+                              {(r.marginals[id] ?? 0).toFixed(4)}
+                            </td>
+                            <For
+                              each={Object.keys(props.pool.people[0] ?? {}).filter(
+                                (k) => k !== 'person_id',
+                              )}
+                            >
                               {(k) => <td class="p-1">{String(person?.[k] ?? '')}</td>}
                             </For>
                           </tr>
