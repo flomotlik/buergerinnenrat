@@ -1,5 +1,5 @@
 import type { Component } from 'solid-js';
-import { For } from 'solid-js';
+import { For, Show } from 'solid-js';
 
 export interface AxisPickerProps {
   /** All CSV column headers in original order. */
@@ -10,6 +10,24 @@ export interface AxisPickerProps {
   selected: () => string[];
   /** Called when a checkbox is toggled. */
   onToggle: (header: string) => void;
+  /**
+   * Headers synthesized by the parser (e.g. `altersgruppe`). Marked with a
+   * "berechnet" badge so the operator can tell pure CSV columns apart from
+   * derived ones. (Issue #62.)
+   */
+  derivedColumns?: string[];
+  /**
+   * Per-axis description used as the `title` attribute on the small `?`
+   * info icon next to the axis label. Headers without an entry render no
+   * icon. (Issue #62.)
+   */
+  axisDescriptions?: Record<string, string>;
+  /**
+   * Per-axis distinct-value count for the loaded CSV. When a selected axis
+   * has > 15 distinct values, the picker renders an amber warning under the
+   * checkbox list. (Issue #62.)
+   */
+  distinctValueCounts?: Record<string, number>;
 }
 
 /**
@@ -22,6 +40,18 @@ export interface AxisPickerProps {
 export const AxisPicker: Component<AxisPickerProps> = (props) => {
   const isSelected = (h: string) => props.selected().includes(h);
   const isDefault = (h: string) => props.defaultAxes.includes(h);
+  const isDerived = (h: string) => props.derivedColumns?.includes(h) ?? false;
+  const description = (h: string) => props.axisDescriptions?.[h];
+
+  // Issue #62: distinct-value warnings only show for axes the user has
+  // currently selected — listing every header would be noise.
+  const highCardinalityWarnings = () => {
+    const counts = props.distinctValueCounts ?? {};
+    return props
+      .selected()
+      .filter((h) => (counts[h] ?? 0) > 15)
+      .map((h) => ({ axis: h, n: counts[h]! }));
+  };
 
   return (
     <fieldset class="space-y-1" data-testid="stage1-axis-picker">
@@ -38,14 +68,43 @@ export const AxisPicker: Component<AxisPickerProps> = (props) => {
               data-testid={`axis-checkbox-${h}`}
             />
             <span class={isSelected(h) ? 'font-medium' : ''}>{h}</span>
-            {isDefault(h) ? (
+            <Show when={isDefault(h)}>
               <span class="ml-1 px-1.5 py-0.5 text-[10px] rounded bg-emerald-100 text-emerald-800">
                 vorgeschlagen
               </span>
-            ) : null}
+            </Show>
+            <Show when={isDerived(h)}>
+              <span
+                class="ml-1 px-1.5 py-0.5 text-[10px] rounded bg-sky-100 text-sky-800"
+                data-testid={`axis-badge-derived-${h}`}
+              >
+                berechnet
+              </span>
+            </Show>
+            <Show when={description(h)}>
+              <span
+                class="ml-1 inline-block w-4 h-4 text-[10px] text-slate-500 cursor-help text-center"
+                title={description(h)}
+                data-testid={`axis-info-${h}`}
+              >
+                ?
+              </span>
+            </Show>
           </label>
         )}
       </For>
+      <Show when={highCardinalityWarnings().length > 0}>
+        <div class="mt-2 space-y-1">
+          <For each={highCardinalityWarnings()}>
+            {(w) => (
+              <p data-testid={`axis-warn-distinct-${w.axis}`} class="text-xs text-amber-700">
+                Achse `{w.axis}` hat {w.n} verschiedene Werte. Viele Strata werden 0 Personen
+                erhalten. Erwägen Sie, ähnliche Werte zusammenzufassen (Feature kommt mit #63).
+              </p>
+            )}
+          </For>
+        </div>
+      </Show>
     </fieldset>
   );
 };

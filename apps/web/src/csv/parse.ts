@@ -4,6 +4,7 @@
 // iteration 1, not fight every legacy encoding.
 
 import Papa from 'papaparse';
+import { DEFAULT_AGE_BANDS, deriveAltersgruppe } from './derive';
 
 export type SupportedEncoding = 'utf-8' | 'windows-1252' | 'iso-8859-1';
 
@@ -13,6 +14,12 @@ export interface ParsedCsv {
   separator: ',' | ';' | '\t';
   encoding: SupportedEncoding;
   warnings: string[];
+  /**
+   * Headers in `headers[]` that were not present in the raw file but were
+   * synthesized by the parse pipeline (e.g. `altersgruppe` derived from
+   * `geburtsjahr`). Empty when nothing was derived.
+   */
+  derivedColumns: string[];
 }
 
 const BOM = 0xfeff;
@@ -57,12 +64,12 @@ function detectSeparator(headerLine: string): ',' | ';' | '\t' {
   return best;
 }
 
-export async function parseCsvFile(file: File): Promise<ParsedCsv> {
+export async function parseCsvFile(file: File, refYear?: number): Promise<ParsedCsv> {
   const buf = await file.arrayBuffer();
-  return parseCsvBuffer(buf);
+  return parseCsvBuffer(buf, refYear);
 }
 
-export function parseCsvBuffer(buf: ArrayBuffer): ParsedCsv {
+export function parseCsvBuffer(buf: ArrayBuffer, refYear?: number): ParsedCsv {
   const { text: rawText, encoding } = decodeBuffer(buf);
   const text = stripBom(rawText);
 
@@ -94,7 +101,29 @@ export function parseCsvBuffer(buf: ArrayBuffer): ParsedCsv {
     })
     .filter((r) => Object.values(r).some((v) => v.length > 0));
 
-  return { headers, rows, separator, encoding, warnings };
+  // Derive `altersgruppe` from `geburtsjahr` when present and not already
+  // supplied by the upload. Detection is case-insensitive on a normalized
+  // copy of headers; the original-case header is preserved in the output.
+  const refYearResolved = refYear ?? new Date().getFullYear();
+  const lowerHeaders = headers.map((h) => h.trim().toLowerCase());
+  const hasGeburtsjahr = lowerHeaders.includes('geburtsjahr');
+  const hasAltersgruppe = lowerHeaders.includes('altersgruppe');
+  const derivedColumns: string[] = [];
+
+  if (hasGeburtsjahr && !hasAltersgruppe) {
+    for (const row of rows) {
+      const label = deriveAltersgruppe(row.geburtsjahr ?? '', refYearResolved, DEFAULT_AGE_BANDS);
+      row.altersgruppe = label ?? '';
+    }
+    headers.push('altersgruppe');
+    derivedColumns.push('altersgruppe');
+  } else if (hasGeburtsjahr && hasAltersgruppe) {
+    warnings.push(
+      "CSV enthält bereits 'altersgruppe' — keine automatische Berechnung aus geburtsjahr.",
+    );
+  }
+
+  return { headers, rows, separator, encoding, warnings, derivedColumns };
 }
 
 // --- mapping ----------------------------------------------------------------
@@ -120,6 +149,7 @@ const DEFAULT_GUESS: Record<string, SemanticField> = {
   age_band: 'age_band',
   alter: 'age_band',
   altersband: 'age_band',
+  altersgruppe: 'age_band',
   bildung: 'education',
   education: 'education',
   migration: 'migration_background',

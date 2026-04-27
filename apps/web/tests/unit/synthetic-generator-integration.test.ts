@@ -37,8 +37,13 @@ describe('synthetic generator integration', () => {
     expect(parsed.rows.length).toBeLessThanOrEqual(8000);
   });
 
-  it('header order equals STAGE1_HEADERS', () => {
-    expect(parsed.headers).toEqual([...STAGE1_HEADERS]);
+  it('header order equals STAGE1_HEADERS (plus the derived altersgruppe column)', () => {
+    // Issue #62: parseCsvBuffer now derives an `altersgruppe` column when
+    // `geburtsjahr` is present. The first N headers must still match the
+    // generator's STAGE1_HEADERS one-for-one.
+    expect(parsed.headers.slice(0, STAGE1_HEADERS.length)).toEqual([...STAGE1_HEADERS]);
+    expect(parsed.headers[STAGE1_HEADERS.length]).toBe('altersgruppe');
+    expect(parsed.derivedColumns).toEqual(['altersgruppe']);
   });
 
   it('gender split matches profile within ±2%', () => {

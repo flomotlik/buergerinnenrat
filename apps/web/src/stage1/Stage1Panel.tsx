@@ -2,16 +2,25 @@ import type { Component } from 'solid-js';
 import { createEffect, createMemo, createSignal, For, on, Show } from 'solid-js';
 import { autoGuessMapping, parseCsvFile } from '../csv/parse';
 import type { ParsedCsv } from '../csv/parse';
+import {
+  DEFAULT_AGE_BANDS,
+  recomputeAltersgruppe,
+  validateBands,
+  type AgeBand,
+} from '../csv/derive';
 import { downloadBlob } from '../run/audit';
 import { runStage1 } from './runStage1';
 import type { RunStage1Output } from './runStage1';
 import { AxisPicker } from './AxisPicker';
+import { AgeBandsEditor } from './AgeBandsEditor';
 import { AxisBreakdown } from './AxisBreakdown';
 import { AuditFooter } from './AuditFooter';
+import { StratificationExplainer } from './StratificationExplainer';
 import TrustStrip from './TrustStrip';
 import { CsvPreview } from '../csv/CsvPreview';
 import {
   coverageMetric,
+  infoOnlyBandsReport,
   marginalAggregates,
   previewAllocation,
   sortUnderfillsByGap,
@@ -23,6 +32,20 @@ import type {
   MarginalsForAxis,
   Stage1SeedSource,
 } from '@sortition/core';
+
+// German per-axis tooltips. Headers without an entry render no info icon.
+const AXIS_DESCRIPTIONS: Record<string, string> = {
+  geschlecht:
+    'Geschlecht (m/w/d laut Melderegister) — Standard-Stratifikation in jeder Bürgerrats-Methodik.',
+  gender:
+    'Geschlecht (m/w/d laut Melderegister) — Standard-Stratifikation in jeder Bürgerrats-Methodik.',
+  altersgruppe:
+    'Altersgruppe (berechnet aus geburtsjahr) — kontrolliert Generationen-Repräsentation.',
+  age_band: 'Altersgruppe — kontrolliert Generationen-Repräsentation.',
+  sprengel: 'Geographische Untergliederung — sichert lokale Vielfalt.',
+  bezirk: 'Geographische Untergliederung — sichert lokale Vielfalt.',
+  district: 'Geographische Untergliederung — sichert lokale Vielfalt.',
+};
 
 /** Default seed factory: Unix-seconds is uint32-safe for Mulberry32 until 2106. */
 function defaultSeed(): number {
@@ -62,6 +85,42 @@ export const Stage1Panel: Component = () => {
   const [output, setOutput] = createSignal<RunStage1Output | null>(null);
   const [error, setError] = createSignal<string | null>(null);
   const [strataExpanded, setStrataExpanded] = createSignal(false);
+  // Age-band configuration (Issue #62). Bands live only in-session — not
+  // persisted across reloads. Each new upload resets to DEFAULT_AGE_BANDS.
+  const [bands, setBands] = createSignal<AgeBand[]>([...DEFAULT_AGE_BANDS]);
+  const refYear = new Date().getFullYear();
+  const [explainerOpen, setExplainerOpen] = createSignal(true);
+
+  // Distinct-value counts for the currently selected axes only — counting
+  // every header would be wasteful on 8000-row pools.
+  const distinctValueCounts = createMemo<Record<string, number>>(() => {
+    const p = parsed();
+    const out: Record<string, number> = {};
+    if (!p) return out;
+    for (const axis of selectedAxes()) {
+      const seen = new Set<string>();
+      for (const r of p.rows) seen.add(r[axis] ?? '');
+      out[axis] = seen.size;
+    }
+    return out;
+  });
+
+  // When the user edits the bands, re-derive the altersgruppe column on the
+  // parsed rows. `defer: true` avoids firing on mount before the user
+  // touched anything. We bail out when no altersgruppe column was derived
+  // (e.g. CSV had no geburtsjahr).
+  createEffect(
+    on(
+      bands,
+      (b) => {
+        const p = parsed();
+        if (!p || !p.derivedColumns.includes('altersgruppe')) return;
+        const newRows = recomputeAltersgruppe(p.rows, b, refYear);
+        setParsed({ ...p, rows: newRows });
+      },
+      { defer: true },
+    ),
+  );
 
   // Cheap pre-run preview: cross-product allocation without RNG / shuffle.
   // Recomputed reactively when CSV, axes, or N change. We keep it inside a
@@ -137,6 +196,10 @@ export const Stage1Panel: Component = () => {
       setParsed(p);
       setDefaultAxes(recs);
       setSelectedAxes(recs);
+      // Each upload restarts band configuration from scratch — keeps the
+      // editor in sync with the per-file derived altersgruppe column and
+      // avoids stale bands from a previous session bleeding over.
+      setBands([...DEFAULT_AGE_BANDS]);
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
     }
@@ -158,7 +221,11 @@ export const Stage1Panel: Component = () => {
   }
 
   const canRun = () =>
-    parsed() !== null && targetN() !== null && (targetN() ?? 0) > 0 && !running();
+    parsed() !== null &&
+    targetN() !== null &&
+    (targetN() ?? 0) > 0 &&
+    !running() &&
+    validateBands(bands()) === null;
 
   async function start() {
     const p = parsed();
@@ -169,6 +236,11 @@ export const Stage1Panel: Component = () => {
     setOutput(null);
     setRunning(true);
     try {
+      // Issue #62: only pass bands when an altersgruppe column was derived
+      // AND the user actually selected it as an axis. Otherwise the bands
+      // are inert (no allocator effect, no audit metadata).
+      const passBands =
+        p.derivedColumns.includes('altersgruppe') && selectedAxes().includes('altersgruppe');
       const out = await runStage1({
         file: f,
         parsed: p,
@@ -176,6 +248,9 @@ export const Stage1Panel: Component = () => {
         targetN: n,
         seed: seed(),
         seedSource: seedSource(),
+        ...(passBands
+          ? { bands: bands(), ageBandColumn: 'altersgruppe', bandsRefYear: refYear }
+          : {}),
       });
       setOutput(out);
     } catch (e) {
@@ -332,14 +407,26 @@ export const Stage1Panel: Component = () => {
 
       <Show when={parsed()}>
         {(p) => (
-          <section>
+          <section class="space-y-3">
             <h2 class="text-xl font-semibold mb-3">2. Stratifikation konfigurieren</h2>
+            <StratificationExplainer
+              selectedAxes={selectedAxes}
+              rows={() => parsed()?.rows ?? []}
+              open={explainerOpen}
+              onToggle={setExplainerOpen}
+            />
             <AxisPicker
               headers={p().headers}
               defaultAxes={defaultAxes()}
               selected={selectedAxes}
               onToggle={toggleAxis}
+              derivedColumns={p().derivedColumns}
+              axisDescriptions={AXIS_DESCRIPTIONS}
+              distinctValueCounts={distinctValueCounts()}
             />
+            <Show when={p().derivedColumns.includes('altersgruppe')}>
+              <AgeBandsEditor bands={bands} onBandsChange={setBands} refYear={refYear} />
+            </Show>
           </section>
         )}
       </Show>
@@ -564,6 +651,11 @@ export const Stage1Panel: Component = () => {
                 <polyline points="12 5 19 12 12 19" />
               </svg>
             </button>
+            <Show when={parsed() && validateBands(bands()) !== null}>
+              <p class="mt-1 text-xs text-amber-800" data-testid="stage1-run-bands-block">
+                Run deaktiviert: Altersgruppen-Bänder sind ungültig — siehe oben.
+              </p>
+            </Show>
           </div>
         </section>
       </Show>
@@ -688,6 +780,63 @@ export const Stage1Panel: Component = () => {
                 <h3 class="text-sm font-semibold">Verteilung pro Merkmal</h3>
                 <For each={resultMarginals()}>{(m) => <AxisBreakdown marginals={m} />}</For>
               </section>
+            </Show>
+
+            {/* Issue #62: "Nicht in Auswahl einbezogen" — surfaces the pool
+                presence of display-only bands without filtering them out.
+                Renders only when the audit reports at least one forced-zero
+                stratum, which by construction means at least one band was
+                in display-only mode. */}
+            <Show
+              when={
+                (out().signedAudit.doc.forced_zero_strata?.length ?? 0) > 0 && parsed() !== null
+              }
+            >
+              {(() => {
+                const report = infoOnlyBandsReport(
+                  parsed()!.rows,
+                  bands(),
+                  'altersgruppe',
+                  out().signedAudit.doc.target_n,
+                  out().signedAudit.doc.pool_size,
+                );
+                return (
+                  <section
+                    class="border-l-4 border-sky-400 bg-sky-50 p-3 rounded space-y-2"
+                    data-testid="stage1-info-only-bands-report"
+                  >
+                    <h3 class="text-sm font-semibold">Nicht in Auswahl einbezogen</h3>
+                    <table class="text-xs">
+                      <thead>
+                        <tr>
+                          <th class="text-left px-2 py-1 font-semibold">Band</th>
+                          <th class="text-right px-2 py-1 font-semibold">Im Pool</th>
+                          <th class="text-right px-2 py-1 font-semibold">
+                            Hypothetisch (Soll-Proportion)
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <For each={report}>
+                          {(row) => (
+                            <tr>
+                              <td class="px-2 py-1 font-mono">{row.label}</td>
+                              <td class="px-2 py-1 text-right tabular-nums">{row.poolCount}</td>
+                              <td class="px-2 py-1 text-right tabular-nums">
+                                {row.hypotheticalSoll}
+                              </td>
+                            </tr>
+                          )}
+                        </For>
+                      </tbody>
+                    </table>
+                    <p class="text-xs italic text-slate-700">
+                      Diese Personen wurden nicht gezogen — eigene Verfahrenswege denkbar (z.B.
+                      Kinderrat).
+                    </p>
+                  </section>
+                );
+              })()}
             </Show>
 
             {/* Detailed cross-product strata table — collapsible to keep the

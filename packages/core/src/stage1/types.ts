@@ -2,6 +2,8 @@
 // All shapes are framework-agnostic plain TS interfaces so this module
 // can be consumed both from Vitest (Node) and from the Solid web app.
 
+import type { AgeBand } from './age-bands';
+
 /** A single stratum: cross-product key + indices into the original input rows. */
 export interface Stratum {
   /** Key map of axis-name → cell value (e.g. { district: '01-zentrum', age_band: '25-34' }). */
@@ -18,6 +20,14 @@ export interface StratifyOpts {
   targetN: number;
   /** Mulberry32 seed (any JS number — normalized to uint32 internally). */
   seed: number;
+  /**
+   * Optional (Issue #62): canonical stratum-key strings that must receive
+   * n_h_target=0. Used by the Stage1Panel pipeline to implement the
+   * "display-only" age-band mode without filtering the underlying pool.
+   * Keys are produced via the same `JSON.stringify([[axis, value], …])`
+   * encoding that {@link bucketize} emits.
+   */
+  forcedZeroStrataKeys?: ReadonlySet<string>;
 }
 
 /** Per-stratum allocation result. */
@@ -31,6 +41,13 @@ export interface StratumResult {
   n_h_actual: number;
   /** True iff `n_h_actual < n_h_target` (pool was too small for the target). */
   underfilled: boolean;
+  /**
+   * Optional (Issue #62): present and `true` for strata whose n_h_target was
+   * forced to 0 via {@link StratifyOpts.forcedZeroStrataKeys} (typically the
+   * "display-only" age band). Omitted when false to keep canonical JSON
+   * minimal.
+   */
+  forced_zero?: boolean;
 }
 
 /** Full result of {@link stratify}. */
@@ -53,14 +70,17 @@ export type Stage1SeedSource = 'user' | 'unix-time-default';
 /** Stage 1 audit JSON document. Signature fields are filled in by the web layer. */
 export interface Stage1AuditDoc {
   /** Schema version of the audit document itself. Bump on breaking shape changes. */
-  schema_version: '0.2';
+  schema_version: '0.3';
   operation: 'stage1-versand';
   /**
    * Algorithm version: identifier of the algorithm + tie-break + key-encoding
    * convention used to produce this output. Bump if any of those change so
    * that older audit docs cannot be silently re-played with the new code.
+   *
+   * 1.1.0 (Issue #62): adds optional `forcedZeroStrataKeys` allocator branch.
+   * Behavior is byte-identical to 1.0.0 when no keys are forced.
    */
-  algorithm_version: 'stage1@1.0.0';
+  algorithm_version: 'stage1@1.1.0';
   /** PRNG identifier — currently always 'mulberry32'. */
   prng: 'mulberry32';
   /**
@@ -102,9 +122,32 @@ export interface Stage1AuditDoc {
     n_h_target: number;
     n_h_actual: number;
     underfilled: boolean;
+    /** Set to true when this stratum was forced to n_h_target=0 (Issue #62). */
+    forced_zero?: boolean;
   }>;
   /** Human-readable warnings (1:1 from StratifyResult.warnings). */
   warnings: string[];
+  /**
+   * Optional (Issue #62): documentation for columns synthesized by the
+   * upload pipeline (e.g. `altersgruppe` derived from `geburtsjahr`). Each
+   * entry includes the raw source column, a German description, and — for
+   * age-band derivations — the band configuration used at draw time.
+   */
+  derived_columns?: Record<
+    string,
+    {
+      source: string;
+      description: string;
+      bands?: AgeBand[];
+    }
+  >;
+  /**
+   * Optional (Issue #62): canonical stratum-key strings whose n_h_target
+   * was forced to 0 (e.g. age bands with mode 'display-only'). The pool
+   * itself is unchanged — these strata simply never receive an allocation.
+   * Sorted ascending by codepoint for stable canonical JSON.
+   */
+  forced_zero_strata?: string[];
   /** ISO 8601 UTC timestamp when the audit doc was built. */
   timestamp_iso: string;
   /** Wall-clock duration in milliseconds for the full Stage 1 pipeline. */
@@ -130,4 +173,12 @@ export interface BuildStage1AuditArgs {
   poolSize: number;
   result: StratifyResult;
   durationMs: number;
+  /**
+   * Optional (Issue #62): see {@link Stage1AuditDoc.derived_columns}.
+   */
+  derivedColumns?: Stage1AuditDoc['derived_columns'];
+  /**
+   * Optional (Issue #62): see {@link Stage1AuditDoc.forced_zero_strata}.
+   */
+  forcedZeroStrata?: string[];
 }

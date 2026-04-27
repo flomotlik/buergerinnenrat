@@ -4,6 +4,7 @@ export { rfc4180Quote, stage1ResultToCsv } from './csv-export';
 export {
   marginalAggregates,
   coverageMetric,
+  infoOnlyBandsReport,
   previewAllocation,
   sortUnderfillsByGap,
   stage1ToMarkdownReport,
@@ -22,6 +23,8 @@ export type {
   MarginalBucket,
   MarginalsForAxis,
   CoverageMetric,
+  InfoOnlyBandsReportRow,
   PreviewRow,
   AllocationPreview,
 } from './reporting';
+export type { AgeBand } from './age-bands';
