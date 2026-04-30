@@ -8,6 +8,7 @@ import type { CategoryQuota, QuotaConfig } from './quotas/model';
 import { validateQuotas } from './quotas/model';
 import { RunPanel } from './run/RunPanel';
 import { Stage1Panel } from './stage1/Stage1Panel';
+import { Sidebar } from './shell/Sidebar';
 import type { Pool, Quotas as EngineQuotas } from '@sortition/engine-contract';
 
 // Docs-Hub is the only docs entry point exposed at the App-level. Every docs
@@ -155,159 +156,138 @@ export const App: Component = () => {
   }
 
   return (
-    <main class="mx-auto max-w-5xl px-4 sm:px-6 py-8 sm:py-10 space-y-8">
-      <header class="space-y-5 pb-6 border-b border-slate-200">
-        {/* Brand block: logo + headings. Mobile stacks vertically; ≥sm goes
-            horizontal so the logo sits next to the title on desktop. */}
-        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
-          {/* Inline-SVG logo: assembly icon (one filled circle surrounded by
-              six smaller circles). Same shape as favicon for brand recognition. */}
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            class="h-12 w-12 text-brand-accent shrink-0"
-            aria-hidden="true"
+    <div class="md:pl-sidebar-w">
+      <Sidebar mode={mode} />
+      <main class="mx-auto max-w-5xl px-4 sm:px-6 py-8 sm:py-10 space-y-8">
+        {/* Top navigation: pill-button tab bar. Visible at <md only — at md+
+            the sidebar is the primary navigation. The pill-bar remains in
+            the DOM at all breakpoints (display:none above md) because the
+            mobile-touch-targets contract asserts the tabs are present and
+            ≥44×44 at 375px viewport. On mobile it becomes a horizontal
+            scroll container so the pills stay on a single line. Subtitles
+            moved out of the visual DOM into title attributes so they remain
+            available for screen readers / hover tooltips on desktop. */}
+        <nav
+          class="md:hidden flex gap-2 overflow-x-auto pb-2 sm:pb-0 [scroll-snap-type:x_mandatory] -mx-4 px-4 sm:mx-0 sm:px-0"
+          role="tablist"
+          data-testid="main-nav"
+          aria-label="Mobile-Navigation"
+        >
+          <button
+            type="button"
+            role="tab"
+            aria-current={mode() === 'stage1' ? 'page' : undefined}
+            aria-selected={mode() === 'stage1'}
+            title="Stage 1 — Versand-Liste aus Melderegister"
+            class="pill-tab [scroll-snap-align:start]"
+            classList={{
+              'pill-tab-active': mode() === 'stage1',
+              'pill-tab-inactive': mode() !== 'stage1',
+            }}
+            onClick={() => navigateMode('stage1')}
+            data-testid="tab-stage1"
           >
-            <circle cx="12" cy="12" r="4" fill="currentColor" />
-            <circle cx="12" cy="3" r="1.5" />
-            <circle cx="20" cy="7.5" r="1.5" />
-            <circle cx="20" cy="16.5" r="1.5" />
-            <circle cx="12" cy="21" r="1.5" />
-            <circle cx="4" cy="16.5" r="1.5" />
-            <circle cx="4" cy="7.5" r="1.5" />
-          </svg>
-          <div>
-            <h1 class="text-3xl sm:text-4xl font-bold tracking-tight text-brand">
-              Bürger:innenrat
-            </h1>
-            <p class="mt-1 text-base text-slate-600">Versand-Liste &amp; Panel-Auswahl</p>
-          </div>
-        </div>
-        <p class="text-base text-slate-700 max-w-2xl leading-relaxed">
-          Open-Source-Werkzeug für Verwaltungen — stratifizierte Auswahl ohne Backend, ohne
-          Datenversand.
-        </p>
-      </header>
+            Stage 1 / Versand-Liste
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-current={mode() === 'docs' ? 'page' : undefined}
+            aria-selected={mode() === 'docs'}
+            title="Dokumentation — Algorithmus, Technik, Verifikation"
+            class="pill-tab [scroll-snap-align:start]"
+            classList={{
+              'pill-tab-active': mode() === 'docs',
+              'pill-tab-inactive': mode() !== 'docs',
+            }}
+            onClick={() => navigateMode('docs')}
+            data-testid="tab-docs"
+          >
+            Dokumentation
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-current={mode() === 'stage3' ? 'page' : undefined}
+            aria-selected={mode() === 'stage3'}
+            title="Stage 3 — Panel ziehen aus Antwortenden"
+            class="pill-tab [scroll-snap-align:start]"
+            classList={{
+              'pill-tab-active': mode() === 'stage3',
+              'pill-tab-inactive': mode() !== 'stage3',
+            }}
+            onClick={() => navigateMode('stage3')}
+            data-testid="tab-stage3"
+          >
+            Stage 3 / Panel ziehen
+          </button>
+        </nav>
 
-      {/* Top navigation: pill-button tab bar. On mobile the bar becomes a
-          horizontal scroll container (overflow-x-auto + scroll-snap) so the
-          pills stay on a single line instead of wrapping. Subtitles moved
-          out of the visual DOM into title attributes so they remain available
-          for screen readers / hover tooltips on desktop. */}
-      <nav
-        class="flex gap-2 overflow-x-auto pb-2 sm:pb-0 [scroll-snap-type:x_mandatory] -mx-4 px-4 sm:mx-0 sm:px-0"
-        role="tablist"
-        data-testid="main-nav"
-      >
-        <button
-          type="button"
-          role="tab"
-          aria-current={mode() === 'stage1' ? 'page' : undefined}
-          aria-selected={mode() === 'stage1'}
-          title="Stage 1 — Versand-Liste aus Melderegister"
-          class="pill-tab [scroll-snap-align:start]"
-          classList={{
-            'pill-tab-active': mode() === 'stage1',
-            'pill-tab-inactive': mode() !== 'stage1',
-          }}
-          onClick={() => navigateMode('stage1')}
-          data-testid="tab-stage1"
-        >
-          Stage 1 / Versand-Liste
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-current={mode() === 'docs' ? 'page' : undefined}
-          aria-selected={mode() === 'docs'}
-          title="Dokumentation — Algorithmus, Technik, Verifikation"
-          class="pill-tab [scroll-snap-align:start]"
-          classList={{
-            'pill-tab-active': mode() === 'docs',
-            'pill-tab-inactive': mode() !== 'docs',
-          }}
-          onClick={() => navigateMode('docs')}
-          data-testid="tab-docs"
-        >
-          Dokumentation
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-current={mode() === 'stage3' ? 'page' : undefined}
-          aria-selected={mode() === 'stage3'}
-          title="Stage 3 — Panel ziehen aus Antwortenden"
-          class="pill-tab [scroll-snap-align:start]"
-          classList={{
-            'pill-tab-active': mode() === 'stage3',
-            'pill-tab-inactive': mode() !== 'stage3',
-          }}
-          onClick={() => navigateMode('stage3')}
-          data-testid="tab-stage3"
-        >
-          Stage 3 / Panel ziehen
-        </button>
-      </nav>
+        {/* Single <h1> per route. Docs route owns its <h1> via DocsLayout
+            (page-title), so we only emit one here on non-docs routes. The
+            Brand wordmark in Sidebar is a <span class="font-serif">, NOT
+            an <h1>, so a11y.spec.ts ("h1 must exist and be unique") and
+            csv-import/smoke specs (getByRole('heading', { name:
+            'Bürger:innenrat' })) both pass on Stage 1 + Stage 3. */}
+        <Show when={mode() !== 'docs'}>
+          <h1 class="sr-only">Bürger:innenrat</h1>
+        </Show>
 
-      <Show when={mode() === 'stage1'}>
-        <Stage1Panel />
-      </Show>
+        <Show when={mode() === 'stage1'}>
+          <Stage1Panel />
+        </Show>
 
-      <Show when={mode() === 'docs'}>
-        <Suspense fallback={<p>Lade…</p>}>
-          <DocsHub docsRoute={docsRoute} setDocsRoute={navigateDocsRoute} />
-        </Suspense>
-      </Show>
+        <Show when={mode() === 'docs'}>
+          <Suspense fallback={<p>Lade…</p>}>
+            <DocsHub docsRoute={docsRoute} setDocsRoute={navigateDocsRoute} />
+          </Suspense>
+        </Show>
 
-      <Show when={mode() === 'stage3'}>
-        <div class="space-y-8">
-          <section>
-            <h2 class="text-xl font-semibold mb-3">1. Pool importieren</h2>
-            <CsvImport
-              onLoaded={({ parsed, mapping }) => {
-                setPool({ parsed, mapping, rows: applyMapping(parsed.rows, mapping) });
-                setQuotas(null);
-              }}
-            />
-          </section>
+        <Show when={mode() === 'stage3'}>
+          <div class="space-y-8">
+            <section>
+              <h2 class="text-xl font-semibold mb-3">1. Pool importieren</h2>
+              <CsvImport
+                onLoaded={({ parsed, mapping }) => {
+                  setPool({ parsed, mapping, rows: applyMapping(parsed.rows, mapping) });
+                  setQuotas(null);
+                }}
+              />
+            </section>
 
-          <Show when={pool()}>
-            {(p) => (
+            <Show when={pool()}>
+              {(p) => (
+                <section>
+                  <h2 class="text-xl font-semibold mb-3">2. Quoten konfigurieren</h2>
+                  <p class="text-sm text-slate-600 mb-3" data-testid="pool-summary">
+                    {p().rows.length} Personen importiert.
+                  </p>
+                  <QuotaEditor
+                    rows={p().rows}
+                    candidateColumns={Object.keys(p().rows[0] ?? {}).filter((c) => c !== 'person_id')}
+                    onChange={(cfg) => setQuotas(cfg)}
+                  />
+                </section>
+              )}
+            </Show>
+
+            <Show when={quotaValid() && enginePool() && engineQuotas()}>
               <section>
-                <h2 class="text-xl font-semibold mb-3">2. Quoten konfigurieren</h2>
-                <p class="text-sm text-slate-600 mb-3" data-testid="pool-summary">
-                  {p().rows.length} Personen importiert.
-                </p>
-                <QuotaEditor
-                  rows={p().rows}
-                  candidateColumns={Object.keys(p().rows[0] ?? {}).filter((c) => c !== 'person_id')}
-                  onChange={(cfg) => setQuotas(cfg)}
-                />
+                <h2 class="text-xl font-semibold mb-3">3. Lauf starten</h2>
+                <RunPanel pool={enginePool()!} quotas={engineQuotas()!} />
               </section>
-            )}
-          </Show>
+            </Show>
 
-          <Show when={quotaValid() && enginePool() && engineQuotas()}>
-            <section>
-              <h2 class="text-xl font-semibold mb-3">3. Lauf starten</h2>
-              <RunPanel pool={enginePool()!} quotas={engineQuotas()!} />
-            </section>
-          </Show>
-
-          <Show when={pool() && quotas() && !quotaValid()}>
-            <section>
-              <p class="text-sm text-slate-500" data-testid="run-stub">
-                Quoten-Konfiguration noch nicht gültig — bitte Eingaben prüfen.
-              </p>
-            </section>
-          </Show>
-        </div>
-      </Show>
-    </main>
+            <Show when={pool() && quotas() && !quotaValid()}>
+              <section>
+                <p class="text-sm text-slate-500" data-testid="run-stub">
+                  Quoten-Konfiguration noch nicht gültig — bitte Eingaben prüfen.
+                </p>
+              </section>
+            </Show>
+          </div>
+        </Show>
+      </main>
+    </div>
   );
 };
