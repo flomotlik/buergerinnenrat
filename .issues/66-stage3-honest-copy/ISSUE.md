@@ -1,7 +1,7 @@
 ---
 id: '66'
 title: 'Stage-3 Copy: Falsche Leximin/HiGHS-''Bereit''-Claim entfernen'
-status: open
+status: done
 priority: critical
 labels:
 - ui
