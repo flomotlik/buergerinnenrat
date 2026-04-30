@@ -1,19 +1,178 @@
+/*
+ * Visual redesign — issue #65 (supersedes #56).
+ * Tokens & shell derived from design_handoff_buergerinnenrat/.
+ * DO NOT import from design_handoff_buergerinnenrat/reference/ — it is a React/Babel wireframe.
+ */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* ----------------------------------------------------------------------- *
- * Base layer — body defaults, smooth scroll, Inter stylistic set
+ * Self-hosted fonts (SIL OFL 1.1) — see apps/web/public/fonts/<family>/OFL.txt.
+ *   - Source Serif 4 v4.005R (Adobe) — Reserved Font Name "Source"
+ *   - Inter v3.19 (Rasmus Andersson) — locked to v3.19; v4 renamed cv11 → cv01
+ *   - JetBrains Mono v2.304 (JetBrains)
+ * Capital ẞ (U+1E9E) verified present in Source Serif 4 v4.005 Regular + Semibold via ttx.
+ * ----------------------------------------------------------------------- */
+@font-face {
+  font-family: 'Source Serif 4';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/source-serif-4/SourceSerif4-Regular.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Source Serif 4';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/source-serif-4/SourceSerif4-Semibold.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/inter/Inter-Regular.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/inter/Inter-Medium.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/inter/Inter-SemiBold.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/jetbrains-mono/JetBrainsMono-Regular.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/jetbrains-mono/JetBrainsMono-Medium.woff2') format('woff2');
+}
+
+/* ----------------------------------------------------------------------- *
+ * Base layer — design tokens (CSS variables) + body defaults
  * ----------------------------------------------------------------------- */
 @layer base {
+  :root {
+    /* Hue indirection (preserved for #67 themability) */
+    --hue: 145;
+
+    /* Surfaces — warm-neutral */
+    --bg: oklch(98.4% 0.006 80);
+    --bg-sunken: oklch(96.5% 0.008 80);
+    --bg-card: oklch(100% 0 0);
+    --line: oklch(91% 0.005 80);
+    --line-strong: oklch(82% 0.008 80);
+
+    /* Ink scale */
+    --ink: oklch(20% 0.01 80);
+    --ink-2: oklch(35% 0.01 80);
+    --ink-3: oklch(50% 0.01 80);
+    --ink-4: oklch(65% 0.01 80);
+
+    /* Accent (civic-green) — pre-computed soft variants, NO color-mix() */
+    --accent: oklch(48% 0.14 var(--hue));
+    --accent-strong: oklch(40% 0.16 var(--hue));
+    --accent-soft: oklch(94% 0.04 var(--hue));
+    --accent-line: oklch(85% 0.06 var(--hue));
+    --accent-ink: oklch(28% 0.13 var(--hue));
+
+    /* State tokens */
+    --ok: oklch(55% 0.13 145);
+    --ok-soft: oklch(94% 0.04 145);
+    --warn: oklch(58% 0.13 60);
+    --warn-soft: oklch(94% 0.06 60);
+    --err: oklch(54% 0.20 25);
+    --err-soft: oklch(95% 0.04 25);
+
+    /* Spacing & radii */
+    --gap-1: 4px;
+    --gap-2: 8px;
+    --gap-3: 12px;
+    --gap-4: 16px;
+    --gap-5: 24px;
+    --gap-6: 32px;
+    --gap-7: 48px;
+    --pad-card: 24px;
+    --row-h: 44px; /* override handoff 40px to satisfy ≥44×44 mobile-touch-targets rule */
+    --radius: 8px;
+    --radius-lg: 14px;
+
+    /* Layout */
+    --sidebar-w: 256px;
+
+    /* Fonts (CSS variables — actual @font-face above) */
+    --serif: 'Source Serif 4', 'Vollkorn', Georgia, serif;
+    --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  }
+
+  [data-theme='dark'] {
+    --bg: oklch(18% 0.01 80);
+    --bg-sunken: oklch(14% 0.008 80);
+    --bg-card: oklch(22% 0.01 80);
+    --line: oklch(30% 0.008 80);
+    --line-strong: oklch(40% 0.012 80);
+    --ink: oklch(96% 0.005 80);
+    --ink-2: oklch(82% 0.008 80);
+    --ink-3: oklch(65% 0.01 80);
+    --ink-4: oklch(50% 0.012 80);
+    --accent: oklch(68% 0.12 var(--hue)); /* NOT 72% — too bright at hue 145 */
+    --accent-strong: oklch(78% 0.14 var(--hue));
+    --accent-soft: oklch(28% 0.06 var(--hue));
+    --accent-line: oklch(40% 0.08 var(--hue));
+    --accent-ink: oklch(88% 0.10 var(--hue));
+  }
+
+  [data-density='compact'] {
+    --gap-3: 8px;
+    --gap-4: 12px;
+    --gap-5: 16px;
+    --gap-6: 24px;
+    --pad-card: 16px;
+    --row-h: 40px;
+  }
+
+  /* OkLCH guard — Firefox ESR 102 etc. without oklch support fall through to a banner. */
+  @supports not (color: oklch(0 0 0)) {
+    body::before {
+      content: 'Dieser Browser unterstützt OkLCH-Farben nicht. Bitte aktualisieren.';
+      display: block;
+      padding: 12px;
+      background: #fde68a;
+      color: #000;
+      font-family: system-ui, sans-serif;
+    }
+  }
+
   html {
     scroll-behavior: smooth;
   }
 
   body {
-    /* cv11 = Inter stylistic set for legible 1/I/l differentiation. */
+    /* cv11 = Inter v3 stylistic set for legible 1/I/l differentiation.
+       Locked to Inter v3.19 — v4 renamed cv11 → cv01. */
+    font-family: var(--sans);
     font-feature-settings: 'cv11', 'ss01', 'ss03';
     text-rendering: optimizeLegibility;
+    background: var(--bg);
+    color: var(--ink);
   }
 
   /* Larger touch surface for buttons by default — overridden by .btn-*

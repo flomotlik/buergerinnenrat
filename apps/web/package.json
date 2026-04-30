@@ -41,5 +41,11 @@
     "vite": "^6.0.7",
     "vite-plugin-solid": "^2.11.0",
     "vitest": "^2.1.8"
-  }
+  },
+  "browserslist": [
+    "chrome >= 111",
+    "firefox >= 113",
+    "safari >= 15.4",
+    "edge >= 111"
+  ]
 }

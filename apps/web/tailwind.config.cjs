@@ -1,10 +1,18 @@
+/*
+ * Tokens & font stack defined in apps/web/src/index.css; see issue #65 +
+ * design_handoff_buergerinnenrat/. The brand.* aliases below are kept for
+ * backward-compat during the redesign sweep; new code should reference the
+ * token-aliased colors (bg, ink, accent, ok, warn, err …) which read CSS
+ * variables from :root / [data-theme="dark"] in index.css.
+ */
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ['./index.html', './src/**/*.{ts,tsx}'],
   theme: {
     extend: {
       colors: {
-        // Brand-Familie für "Bürger:innenrat":
+        // Brand-Familie für "Bürger:innenrat" — kept for backward-compat.
         // - DEFAULT: dunkler, seriöser Grundton (Slate-900-Variante) für H1/Logo
         // - fg: Vordergrundfarbe auf Brand-Hintergrund (weiß)
         // - muted: ganz leichter Brand-Tint für Card-Hintergründe
@@ -19,6 +27,27 @@ module.exports = {
         },
         'accent-warm': '#d97706',
         'accent-cool': '#2563eb',
+        // === Token-aliased colors (read CSS variables from index.css) ===
+        bg: 'var(--bg)',
+        'bg-sunken': 'var(--bg-sunken)',
+        'bg-card': 'var(--bg-card)',
+        line: 'var(--line)',
+        'line-strong': 'var(--line-strong)',
+        ink: 'var(--ink)',
+        'ink-2': 'var(--ink-2)',
+        'ink-3': 'var(--ink-3)',
+        'ink-4': 'var(--ink-4)',
+        accent: 'var(--accent)',
+        'accent-strong': 'var(--accent-strong)',
+        'accent-soft': 'var(--accent-soft)',
+        'accent-line': 'var(--accent-line)',
+        'accent-ink': 'var(--accent-ink)',
+        ok: 'var(--ok)',
+        'ok-soft': 'var(--ok-soft)',
+        warn: 'var(--warn)',
+        'warn-soft': 'var(--warn-soft)',
+        err: 'var(--err)',
+        'err-soft': 'var(--err-soft)',
       },
       fontFamily: {
         sans: [
@@ -29,6 +58,23 @@ module.exports = {
           'Segoe UI',
           'sans-serif',
         ],
+        serif: ['Source Serif 4', 'Vollkorn', 'Georgia', 'serif'],
+        mono: ['JetBrains Mono', 'ui-monospace', 'SF Mono', 'Menlo', 'monospace'],
+      },
+      spacing: {
+        'gap-1': 'var(--gap-1)',
+        'gap-2': 'var(--gap-2)',
+        'gap-3': 'var(--gap-3)',
+        'gap-4': 'var(--gap-4)',
+        'gap-5': 'var(--gap-5)',
+        'gap-6': 'var(--gap-6)',
+        'gap-7': 'var(--gap-7)',
+        'row-h': 'var(--row-h)',
+        'sidebar-w': 'var(--sidebar-w)',
+      },
+      borderRadius: {
+        DEFAULT: 'var(--radius)',
+        lg: 'var(--radius-lg)',
       },
       boxShadow: {
         // Subtle civic-tech card shadows — not the heavy material drop-shadow
