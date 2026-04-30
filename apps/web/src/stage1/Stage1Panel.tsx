@@ -180,6 +180,26 @@ export const Stage1Panel: Component = () => {
     return sortUnderfillsByGap(o.result.strata.filter((s) => s.underfilled));
   });
 
+  /**
+   * Issue #65: 6-step rail above the page header. The current step is a
+   * cheap derived signal off the existing state — purely visual hint, no
+   * gating logic depends on it.
+   *   1 Eingabe         — no parsed CSV yet
+   *   2 Bemessung       — parsed but no sample-size proposal accepted
+   *   3 Achsen          — proposal accepted (or skipped) but no axes
+   *   4 Parameter       — axes chosen but never run
+   *   5 Ziehen          — currently running
+   *   6 Audit & Export  — output() exists
+   */
+  const currentStep = createMemo<number>(() => {
+    if (!parsed()) return 1;
+    if (!sampleSizeProposal() && targetN() === null) return 2;
+    if (selectedAxes().length === 0) return 3;
+    if (running()) return 5;
+    if (output()) return 6;
+    return 4;
+  });
+
   // Clear stale result when any input parameter changes after a successful
   // run. `defer: true` prevents mount-time fire which would wipe state on
   // first render. Only setOutput(null) when output() is non-null to avoid
@@ -336,11 +356,49 @@ export const Stage1Panel: Component = () => {
 
   return (
     <div class="space-y-6" data-testid="stage1-panel">
+      {/* 6-step progress rail (issue #65). Visual hint only — no gating
+          logic. Resp 6→3→1 cols across breakpoints. */}
+      <ol class="step-rail" aria-label="Stage-1-Schritte">
+        <li
+          class="step"
+          classList={{ 'is-current': currentStep() === 1, 'is-done': currentStep() > 1 }}
+        >
+          <span class="step-num">1</span> Eingabe
+        </li>
+        <li
+          class="step"
+          classList={{ 'is-current': currentStep() === 2, 'is-done': currentStep() > 2 }}
+        >
+          <span class="step-num">2</span> Bemessung
+        </li>
+        <li
+          class="step"
+          classList={{ 'is-current': currentStep() === 3, 'is-done': currentStep() > 3 }}
+        >
+          <span class="step-num">3</span> Achsen
+        </li>
+        <li
+          class="step"
+          classList={{ 'is-current': currentStep() === 4, 'is-done': currentStep() > 4 }}
+        >
+          <span class="step-num">4</span> Parameter
+        </li>
+        <li
+          class="step"
+          classList={{ 'is-current': currentStep() === 5, 'is-done': currentStep() > 5 }}
+        >
+          <span class="step-num">5</span> Ziehen
+        </li>
+        <li class="step" classList={{ 'is-current': currentStep() === 6 }}>
+          <span class="step-num">6</span> Audit &amp; Export
+        </li>
+      </ol>
+
       {/* Workflow context for the operator (issue #53 F): the page is one
           step of a three-stage process; the prefix orients the operator
           before the upload section. */}
       <header data-testid="stage1-step-header">
-        <p class="text-xs uppercase tracking-wide text-slate-500">
+        <p class="text-xs uppercase tracking-wide text-ink-3">
           Schritt 1 von 3 — Versand-Liste ziehen
         </p>
       </header>
@@ -353,8 +411,12 @@ export const Stage1Panel: Component = () => {
           file input. Clicking the label triggers the picker; tests still
           target the input via [data-testid="stage1-csv-upload"]. Drag-drop
           functionality is out of scope (tracked separately). */}
-      <section>
-        <h2 class="text-xl font-semibold mb-3">1. Melderegister-CSV hochladen</h2>
+      <section class="card">
+        <div class="card-head">
+          <span class="card-eyebrow">Schritt 1</span>
+          <h2 class="card-title">1. Melderegister-CSV hochladen</h2>
+          <p class="card-help">CSV-Datei mit Bevölkerungsdaten gemäß § 46 BMG.</p>
+        </div>
         <label class="dropzone" data-testid="stage1-csv-dropzone">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -375,9 +437,7 @@ export const Stage1Panel: Component = () => {
           <span class="dropzone-hint">CSV mit Header-Zeile, UTF-8 oder Latin-1</span>
           <Show when={file()}>
             {(f) => (
-              <span class="text-xs text-brand-accent-strong font-medium mt-1">
-                Geladen: {f().name}
-              </span>
+              <span class="text-xs text-accent-strong font-medium mt-1">Geladen: {f().name}</span>
             )}
           </Show>
           <input
@@ -394,11 +454,11 @@ export const Stage1Panel: Component = () => {
         {/* Issue #57: low-friction onramp for users without their own CSV.
             Hash-routing handles the click — App.tsx hashchange listener
             navigates to the new docs subpage. */}
-        <p class="mt-2 text-sm text-slate-600">
+        <p class="mt-2 text-sm text-ink-3">
           Keine eigenen Daten?{' '}
           <a
             href="#/docs/beispiele"
-            class="underline text-brand-accent-strong hover:text-brand"
+            class="underline text-accent hover:text-accent-strong"
             data-testid="stage1-beispiele-link"
           >
             Beispiel-Datei verwenden →
@@ -407,7 +467,7 @@ export const Stage1Panel: Component = () => {
         <Show when={parsed()}>
           {(p) => (
             <>
-              <p class="mt-2 text-sm text-slate-700" data-testid="stage1-pool-summary">
+              <p class="mt-2 text-sm text-ink-2" data-testid="stage1-pool-summary">
                 {p().rows.length} Zeilen geladen ({p().headers.length} Spalten,{' '}
                 {p().separator === '\t' ? 'TAB' : p().separator}-getrennt, Encoding{' '}
                 <code>{p().encoding}</code>).
@@ -421,38 +481,37 @@ export const Stage1Panel: Component = () => {
           )}
         </Show>
         <Show when={error()}>
-          <p class="mt-2 text-sm text-red-700" data-testid="stage1-error">
+          <div class="banner err mt-3" data-testid="stage1-error">
             {error()}
-          </p>
+          </div>
         </Show>
       </section>
 
       <Show when={parsed()}>
         {/* BMG §46 hint (Task 6) — informational, no hard block */}
-        <aside
-          data-testid="stage1-bmg-hint"
-          class="border-l-4 border-amber-500 bg-amber-50 p-3 rounded text-sm text-amber-900"
-        >
-          <p>
-            <strong>Hinweis:</strong> Stratifikation kann nur über Felder erfolgen, die im
-            Melderegister enthalten sind. Bildung, Migrationshintergrund, Beruf sind nicht im
-            Melderegister — diese kommen erst nach Selbstauskunft hinzu.
-          </p>
-          <p class="mt-1 text-xs">
-            Quelle:{' '}
-            <a
-              href="https://www.gesetze-im-internet.de/bmg/__46.html"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="underline"
-            >
-              § 46 BMG
-            </a>
-            {' | '}
-            <a href="#/docs/bmg46" class="underline">
-              Mehr im Glossar zu § 46 BMG
-            </a>
-          </p>
+        <aside class="banner info" data-testid="stage1-bmg-hint">
+          <div>
+            <p>
+              <strong>Hinweis:</strong> Stratifikation kann nur über Felder erfolgen, die im
+              Melderegister enthalten sind. Bildung, Migrationshintergrund, Beruf sind nicht im
+              Melderegister — diese kommen erst nach Selbstauskunft hinzu.
+            </p>
+            <p class="mt-1 text-xs">
+              Quelle:{' '}
+              <a
+                href="https://www.gesetze-im-internet.de/bmg/__46.html"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="underline"
+              >
+                § 46 BMG
+              </a>
+              {' | '}
+              <a href="#/docs/bmg46" class="underline">
+                Mehr im Glossar zu § 46 BMG
+              </a>
+            </p>
+          </div>
         </aside>
       </Show>
 
@@ -461,8 +520,11 @@ export const Stage1Panel: Component = () => {
           input below stays manually editable; this section just provides a
           starting point for users who don't already know N. */}
       <Show when={parsed()}>
-        <section class="space-y-3">
-          <h2 class="text-xl font-semibold mb-1">2. Bemessung der Stichprobe</h2>
+        <section class="card space-y-3">
+          <div class="card-head">
+            <span class="card-eyebrow">Schritt 2</span>
+            <h2 class="card-title">2. Bemessung der Stichprobe</h2>
+          </div>
           <SampleSizeCalculator
             poolSize={() => parsed()?.rows.length ?? null}
             onAccept={handleSampleSizeAccept}
@@ -472,8 +534,11 @@ export const Stage1Panel: Component = () => {
 
       <Show when={parsed()}>
         {(p) => (
-          <section class="space-y-3">
-            <h2 class="text-xl font-semibold mb-3">3. Stratifikation konfigurieren</h2>
+          <section class="card space-y-3">
+            <div class="card-head">
+              <span class="card-eyebrow">Schritt 3</span>
+              <h2 class="card-title">3. Stratifikation konfigurieren</h2>
+            </div>
             <StratificationExplainer
               selectedAxes={selectedAxes}
               rows={() => parsed()?.rows ?? []}
@@ -497,8 +562,11 @@ export const Stage1Panel: Component = () => {
       </Show>
 
       <Show when={parsed()}>
-        <section class="space-y-3">
-          <h2 class="text-xl font-semibold mb-1">4. Stichprobengröße und Seed</h2>
+        <section class="card space-y-3">
+          <div class="card-head">
+            <span class="card-eyebrow">Schritt 4</span>
+            <h2 class="card-title">4. Stichprobengröße und Seed</h2>
+          </div>
           {/* Inputs grid: 2 columns on ≥sm, stacked on mobile. Both inputs
               share the .input-base style so they render at identical height. */}
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -535,29 +603,28 @@ export const Stage1Panel: Component = () => {
           <div class="flex flex-wrap items-center gap-3">
             <button
               type="button"
-              class="text-xs underline text-slate-500 hover:text-slate-700"
+              class="text-xs underline text-ink-3 hover:text-ink"
               onClick={newDefaultSeed}
               disabled={running()}
             >
               Neuer Default-Seed (Unix-Sekunde)
             </button>
-            <span class="text-xs text-slate-500" data-testid="stage1-seed-source">
+            <span class="text-xs text-ink-3" data-testid="stage1-seed-source">
               {seedSource() === 'user' ? '(manuell)' : '(Default — editierbar)'}
             </span>
           </div>
-          <aside
-            class="text-xs text-slate-600 bg-slate-50 border border-slate-200 rounded p-3"
-            data-testid="stage1-seed-hint"
-          >
-            <strong>Hinweis zum Seed:</strong> Der Default-Seed ist sofort einsatzbereit — Sie
-            können ihn übernehmen oder mit einem gemeinsam vereinbarten Wert (z.B. Lottozahlen,
-            Datum, Würfelwurf) überschreiben. Der gewählte Seed steht im signierten Audit-Protokoll
-            und macht den Lauf reproduzierbar.
+          <aside class="banner info text-xs" data-testid="stage1-seed-hint">
+            <div>
+              <strong>Hinweis zum Seed:</strong> Der Default-Seed ist sofort einsatzbereit — Sie
+              können ihn übernehmen oder mit einem gemeinsam vereinbarten Wert (z.B. Lottozahlen,
+              Datum, Würfelwurf) überschreiben. Der gewählte Seed steht im signierten
+              Audit-Protokoll und macht den Lauf reproduzierbar.
+            </div>
           </aside>
           <Show when={preview().error}>
-            <p class="text-sm text-red-700" data-testid="stage1-preview-error">
+            <div class="banner err" data-testid="stage1-preview-error">
               {preview().error}
-            </p>
+            </div>
           </Show>
           <Show when={preview().result !== null}>
             <div class="border rounded p-3 bg-slate-50 space-y-3" data-testid="stage1-preview">
@@ -688,7 +755,15 @@ export const Stage1Panel: Component = () => {
               white background spans the full section width. Print drops
               sticky and renders statically so the button does not float at
               the bottom of every printed page. */}
-          <div class="sticky [bottom:env(safe-area-inset-bottom,0)] -mx-4 px-4 pt-3 pb-3 bg-white border-t border-slate-200 z-10 print:static print:border-0 print:p-0 print:bg-transparent">
+          {/* Sticky run-button wrapper — ALSO carries an inline
+              style="padding-bottom: env(safe-area-inset-bottom)" so iOS
+              Safari with home-indicator doesn't cover the button on
+              scroll-bottom. mobile-touch-targets.spec asserts the regex
+              /safe-area-inset-bottom/ matches the wrapper outerHTML. */}
+          <div
+            class="sticky [bottom:env(safe-area-inset-bottom,0)] -mx-4 px-4 pt-3 pb-3 bg-bg border-t border-line z-10 print:static print:border-0 print:p-0 print:bg-transparent"
+            style="padding-bottom: env(safe-area-inset-bottom)"
+          >
             <button
               type="button"
               class="btn-primary w-full sm:w-auto"
@@ -714,9 +789,9 @@ export const Stage1Panel: Component = () => {
               </svg>
             </button>
             <Show when={parsed() && validateBands(bands()) !== null}>
-              <p class="mt-1 text-xs text-amber-800" data-testid="stage1-run-bands-block">
+              <div class="banner warn mt-2 text-xs" data-testid="stage1-run-bands-block">
                 Run deaktiviert: Altersgruppen-Bänder sind ungültig — siehe oben.
-              </p>
+              </div>
             </Show>
           </div>
         </section>
@@ -724,114 +799,97 @@ export const Stage1Panel: Component = () => {
 
       <Show when={output()}>
         {(out) => (
-          <section class="space-y-4 stage1-report" data-testid="stage1-result">
-            <h2 class="text-xl font-semibold">5. Ergebnis</h2>
+          <section class="space-y-4 stage1-report card" data-testid="stage1-result">
+            <div class="card-head">
+              <span class="card-eyebrow">Schritt 5–6</span>
+              <h2 class="card-title">5. Ergebnis</h2>
+            </div>
 
-            {/* Top-line summary cards: hero "Gezogen" card spans 2 cols on
-                md+, secondary coverage + underfill cards each span 1.
-                Mobile stacks all three. Brand-accent left border + larger
-                display type elevate the hero. */}
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-3" data-testid="stage1-summary-cards">
-              <div class="card md:col-span-3 border-l-4 border-l-brand-accent flex flex-col sm:flex-row sm:items-baseline sm:gap-6">
-                <div class="flex-1">
-                  <div class="text-xs text-slate-500 uppercase tracking-wide font-semibold">
-                    Gezogen
-                  </div>
-                  <div class="text-4xl font-bold tabular-nums text-brand mt-1">
-                    {out().result.selected.length}
-                  </div>
-                </div>
-                <div class="text-sm text-slate-600">von {parsed()?.rows.length ?? 0} im Pool</div>
+            {/* Top-line summary cards as a 4-cell .stats-grid (Gezogen,
+                Gruppen-Abdeckung, Unterbesetzt, Dauer). Existing testids
+                stage1-summary-cards / stage1-coverage-card /
+                stage1-underfill-card preserved at the same DOM-nesting level
+                — just visually re-laid via .stats-grid + .stat. */}
+            <div class="stats-grid" data-testid="stage1-summary-cards">
+              <div class="stat">
+                <div class="k">Gezogen</div>
+                <div class="v">{out().result.selected.length}</div>
+                <div class="delta">von {parsed()?.rows.length ?? 0} im Pool</div>
               </div>
               <Show when={coverage()}>
                 {(c) => (
-                  <div class="card" data-testid="stage1-coverage-card">
-                    <div class="text-xs text-slate-500 uppercase tracking-wide font-semibold">
-                      Gruppen-Abdeckung
+                  <div class="stat" data-testid="stage1-coverage-card">
+                    <div class="k">Gruppen-Abdeckung</div>
+                    <div class="v">
+                      {c().coveredStrata} <span class="text-base text-ink-3">/ {c().totalStrata}</span>
                     </div>
-                    <div class="text-2xl font-semibold tabular-nums text-slate-900 mt-1">
-                      {c().coveredStrata}{' '}
-                      <span class="text-base text-slate-500">/ {c().totalStrata}</span>
-                    </div>
-                    <div class="text-xs text-slate-500 mt-1">
+                    <div class="delta">
                       {Number.isNaN(c().coverageRatio)
                         ? '–'
-                        : `${(c().coverageRatio * 100).toFixed(1)} % der Bevölkerungsgruppen mit mind. 1 gezogener Person`}
+                        : `${(c().coverageRatio * 100).toFixed(1)} % mit ≥ 1 Person`}
                     </div>
                   </div>
                 )}
               </Show>
-              <div
-                class={`card md:col-span-2 ${
-                  (coverage()?.underfilledStrata ?? 0) > 0 ? 'bg-amber-50 border-amber-300' : ''
-                }`}
-                data-testid="stage1-underfill-card"
-              >
-                <div class="flex items-center gap-2">
-                  <span class="text-xs text-slate-500 uppercase tracking-wide font-semibold">
-                    Unterbesetzt
-                  </span>
+              <div class="stat" data-testid="stage1-underfill-card">
+                <div class="k">
+                  Unterbesetzt{' '}
                   <Show when={(coverage()?.underfilledStrata ?? 0) > 0}>
-                    <span class="status-pill-warn">Hinweis</span>
+                    <span class="status-pill status-pill-warn ml-1">Hinweis</span>
                   </Show>
                   <Show when={(coverage()?.underfilledStrata ?? 0) === 0}>
-                    <span class="status-pill-ok">OK</span>
+                    <span class="status-pill status-pill-ok ml-1">OK</span>
                   </Show>
                 </div>
-                <div class="text-2xl font-semibold tabular-nums text-slate-900 mt-1">
-                  {coverage()?.underfilledStrata ?? 0}
-                </div>
-                <div class="text-xs text-slate-500 mt-1">
-                  Bevölkerungsgruppen mit weniger Personen als angefragt
-                </div>
+                <div class="v">{coverage()?.underfilledStrata ?? 0}</div>
+                <div class="delta">Gruppen unter Soll</div>
+              </div>
+              <div class="stat">
+                <div class="k">Dauer · Seed</div>
+                <div class="v">{Math.round(out().durationMs)} ms</div>
+                <div class="delta">Seed {out().signedAudit.doc.seed}</div>
               </div>
             </div>
 
-            <p class="text-xs text-slate-500">
-              Laufzeit: <span class="tabular-nums">{Math.round(out().durationMs)} ms</span>
-              {' · '}Seed: <span class="font-mono">{out().signedAudit.doc.seed}</span>
-            </p>
-
             <Show when={underfills().length > 0}>
-              <section
-                class="border-l-4 border-amber-500 bg-amber-50 p-3 rounded space-y-2"
-                data-testid="stage1-underfill-list"
-              >
-                <h3 class="font-semibold text-amber-900 text-sm">
-                  Unterbesetzte Bevölkerungsgruppen
-                </h3>
-                <p class="text-xs text-amber-900">
-                  Diese Bevölkerungsgruppen bekamen weniger Personen als die proportionale
-                  Allokation vorgesehen hat — Pool zu klein. Im echten Verfahren bedeutet das: bei
-                  diesen Gruppen wurden alle verfügbaren Personen angeschrieben.
-                </p>
-                <ul class="text-xs text-amber-900 space-y-1">
-                  <For each={underfills()}>
-                    {(s) => (
-                      <li class="font-mono">
-                        {Object.entries(s.key)
-                          .map(([k, v]) => `${k}=${v}`)
-                          .join(', ')}{' '}
-                        — Soll {s.n_h_target}, Ist {s.n_h_actual} (Pool nur {s.n_h_pool})
-                      </li>
-                    )}
-                  </For>
-                </ul>
+              <section class="banner warn flex-col" data-testid="stage1-underfill-list">
+                <div>
+                  <h3 class="font-semibold text-sm mb-1">Unterbesetzte Bevölkerungsgruppen</h3>
+                  <p class="text-xs">
+                    Diese Bevölkerungsgruppen bekamen weniger Personen als die proportionale
+                    Allokation vorgesehen hat — Pool zu klein. Im echten Verfahren bedeutet das: bei
+                    diesen Gruppen wurden alle verfügbaren Personen angeschrieben.
+                  </p>
+                  <ul class="text-xs space-y-1 mt-2">
+                    <For each={underfills()}>
+                      {(s) => (
+                        <li class="font-mono">
+                          {Object.entries(s.key)
+                            .map(([k, v]) => `${k}=${v}`)
+                            .join(', ')}{' '}
+                          — Soll {s.n_h_target}, Ist {s.n_h_actual} (Pool nur {s.n_h_pool})
+                        </li>
+                      )}
+                    </For>
+                  </ul>
+                </div>
               </section>
             </Show>
 
             <Show when={out().result.warnings.length > 0 && underfills().length === 0}>
-              <div class="border-l-4 border-red-600 bg-red-50 p-3 text-sm rounded">
-                <p class="font-semibold text-red-800">Weitere Warnungen:</p>
-                <ul class="list-disc pl-5 text-red-800">
-                  <For each={out().result.warnings}>{(w) => <li>{w}</li>}</For>
-                </ul>
+              <div class="banner err">
+                <div>
+                  <p class="font-semibold">Weitere Warnungen:</p>
+                  <ul class="list-disc pl-5">
+                    <For each={out().result.warnings}>{(w) => <li>{w}</li>}</For>
+                  </ul>
+                </div>
               </div>
             </Show>
 
             <Show when={out().csvWarnings.length > 0}>
-              <div class="border-l-4 border-amber-500 bg-amber-50 p-3 text-sm rounded">
-                <ul class="list-disc pl-5 text-amber-900">
+              <div class="banner warn">
+                <ul class="list-disc pl-5">
                   <For each={out().csvWarnings}>{(w) => <li>{w}</li>}</For>
                 </ul>
               </div>
@@ -863,36 +921,31 @@ export const Stage1Panel: Component = () => {
                   out().signedAudit.doc.pool_size,
                 );
                 return (
-                  <section
-                    class="border-l-4 border-sky-400 bg-sky-50 p-3 rounded space-y-2"
-                    data-testid="stage1-info-only-bands-report"
-                  >
+                  <section class="callout space-y-2" data-testid="stage1-info-only-bands-report">
                     <h3 class="text-sm font-semibold">Nicht in Auswahl einbezogen</h3>
-                    <table class="text-xs">
-                      <thead>
-                        <tr>
-                          <th class="text-left px-2 py-1 font-semibold">Band</th>
-                          <th class="text-right px-2 py-1 font-semibold">Im Pool</th>
-                          <th class="text-right px-2 py-1 font-semibold">
-                            Hypothetisch (Soll-Proportion)
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <For each={report}>
-                          {(row) => (
-                            <tr>
-                              <td class="px-2 py-1 font-mono">{row.label}</td>
-                              <td class="px-2 py-1 text-right tabular-nums">{row.poolCount}</td>
-                              <td class="px-2 py-1 text-right tabular-nums">
-                                {row.hypotheticalSoll}
-                              </td>
-                            </tr>
-                          )}
-                        </For>
-                      </tbody>
-                    </table>
-                    <p class="text-xs italic text-slate-700">
+                    <div class="overflow-x-auto">
+                      <table class="tbl text-xs">
+                        <thead>
+                          <tr>
+                            <th>Band</th>
+                            <th class="text-right">Im Pool</th>
+                            <th class="text-right">Hypothetisch (Soll-Proportion)</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <For each={report}>
+                            {(row) => (
+                              <tr>
+                                <td class="tnum">{row.label}</td>
+                                <td class="text-right tnum">{row.poolCount}</td>
+                                <td class="text-right tnum">{row.hypotheticalSoll}</td>
+                              </tr>
+                            )}
+                          </For>
+                        </tbody>
+                      </table>
+                    </div>
+                    <p class="text-xs italic text-ink-3">
                       Diese Personen wurden nicht gezogen — eigene Verfahrenswege denkbar (z.B.
                       Kinderrat).
                     </p>
@@ -907,57 +960,49 @@ export const Stage1Panel: Component = () => {
                 glossary (Bevölkerungsgruppe instead of Stratum); statistics
                 terms appear in parentheses for auditors. */}
             <details
-              class="border rounded"
+              class="border border-line rounded"
               open={strataExpanded()}
               onToggle={(e) => setStrataExpanded((e.currentTarget as HTMLDetailsElement).open)}
             >
               <summary
-                class="text-sm font-semibold p-2 bg-slate-100 cursor-pointer select-none"
+                class="text-sm font-semibold p-2 bg-bg-sunken cursor-pointer select-none"
                 data-testid="stage1-strata-toggle"
               >
                 Detail-Tabelle (Bevölkerungsgruppen, {out().result.strata.length} Zeilen)
               </summary>
               {/* Mobile: horizontal scroll container so the table doesn't
-                  break into wrap-salat. Desktop: inline. */}
+                  break into wrap-salat. Desktop: inline. The parent div MUST
+                  have overflow-x: auto — mobile-touch-targets.spec asserts
+                  getComputedStyle(parent).overflowX === 'auto'. */}
               <div class="overflow-x-auto">
-                <table class="min-w-full text-xs" data-testid="stage1-strata-table">
-                  <thead class="bg-slate-100">
+                <table class="tbl min-w-full text-xs" data-testid="stage1-strata-table">
+                  <thead>
                     <tr>
-                      <th class="text-left px-3 py-2 font-semibold text-slate-700 uppercase tracking-wide text-[11px]">
-                        Bevölkerungsgruppe (Stratum)
-                      </th>
-                      <th class="text-right px-3 py-2 font-semibold text-slate-700 uppercase tracking-wide text-[11px]">
-                        Pool
-                      </th>
-                      <th class="text-right px-3 py-2 font-semibold text-slate-700 uppercase tracking-wide text-[11px]">
-                        Soll
-                      </th>
-                      <th class="text-right px-3 py-2 font-semibold text-slate-700 uppercase tracking-wide text-[11px]">
-                        Ist
-                      </th>
-                      <th class="text-center px-3 py-2 font-semibold text-slate-700 uppercase tracking-wide text-[11px]">
-                        Status
-                      </th>
+                      <th>Bevölkerungsgruppe (Stratum)</th>
+                      <th class="text-right">Pool</th>
+                      <th class="text-right">Soll</th>
+                      <th class="text-right">Ist</th>
+                      <th class="text-center">Status</th>
                     </tr>
                   </thead>
                   <tbody>
                     <For each={out().result.strata}>
-                      {(s, i) => (
-                        <tr
-                          class={s.underfilled ? 'bg-amber-50' : i() % 2 === 0 ? '' : 'bg-slate-50'}
-                        >
-                          <td class="px-3 py-2 font-mono whitespace-nowrap">
+                      {(s) => (
+                        <tr classList={{ 'bg-warn-soft': s.underfilled }}>
+                          <td class="font-mono whitespace-nowrap">
                             {Object.entries(s.key).length === 0
                               ? '(gesamt)'
                               : Object.entries(s.key)
                                   .map(([k, v]) => `${k}=${v}`)
                                   .join(', ')}
                           </td>
-                          <td class="px-3 py-2 text-right tabular-nums">{s.n_h_pool}</td>
-                          <td class="px-3 py-2 text-right tabular-nums">{s.n_h_target}</td>
-                          <td class="px-3 py-2 text-right tabular-nums">{s.n_h_actual}</td>
-                          <td class="px-3 py-2 text-center">
-                            <span class={s.underfilled ? 'status-pill-warn' : 'status-pill-ok'}>
+                          <td class="text-right tnum">{s.n_h_pool}</td>
+                          <td class="text-right tnum">{s.n_h_target}</td>
+                          <td class="text-right tnum">{s.n_h_actual}</td>
+                          <td class="text-center">
+                            <span
+                              class={`status-pill ${s.underfilled ? 'status-pill-warn' : 'status-pill-ok'}`}
+                            >
                               {s.underfilled ? 'unterbesetzt' : 'ok'}
                             </span>
                           </td>

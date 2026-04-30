@@ -22,7 +22,7 @@ const CARDS: ReadonlyArray<CardDef> = [
     title: 'Algorithmus seit 1792',
     sub: 'Hamilton-Methode (Largest-Remainder)',
     hash: '#/docs/algorithmus',
-    iconColor: 'text-brand-accent',
+    iconColor: 'text-accent',
     // Open book icon: signals "public/documented method".
     icon: (
       <svg
@@ -50,7 +50,7 @@ const CARDS: ReadonlyArray<CardDef> = [
     // from a stats.json once the CI run produces one.
     sub: '21/21 byte-identisch mit Python-Referenz',
     hash: '#/docs/verifikation',
-    iconColor: 'text-brand-accent',
+    iconColor: 'text-accent',
     // Check-circle icon: signals "verified/passing".
     icon: (
       <svg
@@ -74,7 +74,7 @@ const CARDS: ReadonlyArray<CardDef> = [
     title: 'Signiertes Audit-Protokoll',
     sub: 'Vollständig nachprüfbar (Ed25519/ECDSA)',
     hash: '#/docs/verifikation',
-    iconColor: 'text-brand-accent',
+    iconColor: 'text-accent',
     // Shield icon: signals "tamper-evident / cryptographically protected".
     icon: (
       <svg
@@ -97,32 +97,26 @@ const CARDS: ReadonlyArray<CardDef> = [
 
 /**
  * Three trust-signal cards directly under the Stage-1 step header. Each card
- * has an inline-SVG icon (~28px), title, and one-line subtitle. Card uses the
- * shared `card card-hover` classes for a subtle border + hover-lift; subtle
- * brand-muted background tint keeps the strip cohesive without competing
- * with the rest of the page. Each card writes a hash that the App router
- * picks up and switches to the corresponding docs page.
+ * has an inline-SVG icon (~28px), title, and one-line subtitle. Cards are
+ * real <a href="#/docs/<slug>"> anchors (NOT onClick buttons) — this keeps
+ * URL-change-on-click testable via toHaveURL() and lets browser middle-click
+ * + ctrl-click open in new tab. Visual styling shared via `card card-hover`.
  */
 const TrustStrip: Component = () => {
-  function open(hash: string) {
-    window.location.hash = hash;
-  }
-
   return (
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4" data-testid="stage1-trust-strip">
       {CARDS.map((card) => (
-        <button
-          type="button"
-          class="card card-hover bg-brand-muted/40 text-left flex flex-col gap-3 items-start"
-          onClick={() => open(card.hash)}
+        <a
+          href={card.hash}
+          class="card card-hover text-left flex flex-col gap-3 items-start no-underline"
           data-testid={card.testid}
         >
           <span class={card.iconColor}>{card.icon}</span>
           <div class="space-y-1">
-            <div class="font-semibold text-slate-900 text-sm">{card.title}</div>
-            <div class="text-xs text-slate-600">{card.sub}</div>
+            <div class="font-semibold text-ink text-sm">{card.title}</div>
+            <div class="text-xs text-ink-3">{card.sub}</div>
           </div>
-        </button>
+        </a>
       ))}
     </div>
   );

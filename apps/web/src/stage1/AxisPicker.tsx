@@ -54,50 +54,60 @@ export const AxisPicker: Component<AxisPickerProps> = (props) => {
   };
 
   return (
-    <fieldset class="space-y-1" data-testid="stage1-axis-picker">
-      <legend class="text-sm font-semibold mb-2">
+    <fieldset class="space-y-3" data-testid="stage1-axis-picker">
+      <legend class="text-sm font-semibold mb-2 text-ink">
         Aufteilungs-Merkmale (Stratifikations-Achsen)
       </legend>
-      <For each={props.headers}>
-        {(h) => (
-          <label class="flex items-center gap-2 text-sm">
-            <input
-              type="checkbox"
-              checked={isSelected(h)}
-              onChange={() => props.onToggle(h)}
-              data-testid={`axis-checkbox-${h}`}
-            />
-            <span class={isSelected(h) ? 'font-medium' : ''}>{h}</span>
-            <Show when={isDefault(h)}>
-              <span class="ml-1 px-1.5 py-0.5 text-[10px] rounded bg-emerald-100 text-emerald-800">
-                vorgeschlagen
-              </span>
-            </Show>
-            <Show when={isDerived(h)}>
-              <span
-                class="ml-1 px-1.5 py-0.5 text-[10px] rounded bg-sky-100 text-sky-800"
-                data-testid={`axis-badge-derived-${h}`}
-              >
-                berechnet
-              </span>
-            </Show>
-            <Show when={description(h)}>
-              <span
-                class="ml-1 inline-block w-4 h-4 text-[10px] text-slate-500 cursor-help text-center"
-                title={description(h)}
-                data-testid={`axis-info-${h}`}
-              >
-                ?
-              </span>
-            </Show>
-          </label>
-        )}
-      </For>
+      {/* Chip-styled checkboxes — the underlying <input type="checkbox"> is
+          preserved (axis-checkbox-<h> testid) but visually hidden via
+          .sr-only; the .chip wrapper is the visible tap surface. */}
+      <div class="flex flex-wrap gap-2">
+        <For each={props.headers}>
+          {(h) => (
+            <label
+              class="chip"
+              classList={{ 'is-on': isSelected(h) }}
+              data-testid={`stage1-axis-pill-${h}`}
+            >
+              <input
+                type="checkbox"
+                class="sr-only"
+                checked={isSelected(h)}
+                onChange={() => props.onToggle(h)}
+                data-testid={`axis-checkbox-${h}`}
+              />
+              <span>{h}</span>
+              <Show when={isDefault(h)}>
+                <span class="ml-1 px-1.5 py-0.5 text-[10px] rounded bg-ok-soft text-ok">
+                  vorgeschlagen
+                </span>
+              </Show>
+              <Show when={isDerived(h)}>
+                <span
+                  class="ml-1 px-1.5 py-0.5 text-[10px] rounded bg-accent-soft text-accent-ink"
+                  data-testid={`axis-badge-derived-${h}`}
+                >
+                  berechnet
+                </span>
+              </Show>
+              <Show when={description(h)}>
+                <span
+                  class="ml-1 inline-block w-4 h-4 text-[10px] text-ink-3 cursor-help text-center"
+                  title={description(h)}
+                  data-testid={`axis-info-${h}`}
+                >
+                  ?
+                </span>
+              </Show>
+            </label>
+          )}
+        </For>
+      </div>
       <Show when={highCardinalityWarnings().length > 0}>
         <div class="mt-2 space-y-1">
           <For each={highCardinalityWarnings()}>
             {(w) => (
-              <p data-testid={`axis-warn-distinct-${w.axis}`} class="text-xs text-amber-700">
+              <p data-testid={`axis-warn-distinct-${w.axis}`} class="text-xs text-warn">
                 Achse `{w.axis}` hat {w.n} verschiedene Werte. Viele Strata werden 0 Personen
                 erhalten. Erwägen Sie, ähnliche Werte zusammenzufassen (Feature kommt mit #63).
               </p>

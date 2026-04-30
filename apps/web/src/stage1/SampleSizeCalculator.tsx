@@ -88,7 +88,7 @@ export const SampleSizeCalculator: Component<SampleSizeCalculatorProps> = (props
       data-testid="stage1-sample-size-section"
       aria-label="Bemessung der Stichprobe"
     >
-      <p class="text-sm text-slate-600">
+      <p class="text-sm text-ink-3">
         Wieviele Personen sollen am Ende im Panel sitzen, und über welchen Weg werden sie
         eingeladen? Daraus schlagen wir eine Versand-Stichprobe vor.
       </p>
@@ -218,10 +218,7 @@ export const SampleSizeCalculator: Component<SampleSizeCalculatorProps> = (props
       <Show
         when={proposal()}
         fallback={
-          <div
-            class="border rounded p-3 bg-amber-50 border-amber-300 text-sm text-amber-900"
-            data-testid="stage1-sample-suggestion"
-          >
+          <div class="banner warn" data-testid="stage1-sample-suggestion">
             Vorschlag nicht berechenbar — bitte Eingaben prüfen (z.B. min ≤ max, Werte zwischen 0
             und 100 %).
           </div>
@@ -229,18 +226,20 @@ export const SampleSizeCalculator: Component<SampleSizeCalculatorProps> = (props
       >
         {(p) => (
           <div
-            class="border rounded p-3 bg-slate-50 space-y-2"
+            class="rounded p-3 bg-bg-sunken border border-line space-y-2"
             data-testid="stage1-sample-suggestion"
           >
             <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-              <span class="text-sm text-slate-600">Empfohlen:</span>
-              <span class="text-2xl font-semibold tabular-nums text-brand">~{p().recommended}</span>
-              <span class="text-sm text-slate-600">Briefe</span>
-              <span class="text-sm text-slate-500">
+              <span class="text-sm text-ink-3">Empfohlen:</span>
+              <span class="text-2xl font-semibold tabular-nums text-accent">
+                ~{p().recommended}
+              </span>
+              <span class="text-sm text-ink-3">Briefe</span>
+              <span class="text-sm text-ink-3">
                 — Range {p().range[0]}–{p().range[1]}
               </span>
             </div>
-            <details class="text-xs text-slate-600">
+            <details class="text-xs text-ink-3">
               <summary class="cursor-pointer underline">Wie wird das berechnet?</summary>
               <div class="mt-2 space-y-1 font-mono">
                 <p>
@@ -251,18 +250,15 @@ export const SampleSizeCalculator: Component<SampleSizeCalculatorProps> = (props
                   {formatPercent(p().rateUsed.max)} (Mittel {formatPercent(p().rateUsed.avg)})
                 </p>
                 <p>Sicherheitspuffer: × {p().safetyFactor}</p>
-                <p class="text-slate-700">
+                <p class="text-ink-2">
                   Empfohlen = round(Panel ÷ Mittel × Faktor / 10) × 10 = {p().recommended}
                 </p>
-                <p class="text-slate-700">Range_min = ⌈Panel ÷ max⌉ = {p().range[0]}</p>
-                <p class="text-slate-700">Range_max = ⌈Panel ÷ min × Faktor⌉ = {p().range[1]}</p>
+                <p class="text-ink-2">Range_min = ⌈Panel ÷ max⌉ = {p().range[0]}</p>
+                <p class="text-ink-2">Range_max = ⌈Panel ÷ min × Faktor⌉ = {p().range[1]}</p>
               </div>
             </details>
             <Show when={poolTooSmall()}>
-              <p
-                class="text-xs text-amber-900 bg-amber-50 border border-amber-300 rounded p-2"
-                data-testid="stage1-pool-too-small-warning"
-              >
+              <p class="banner warn text-xs" data-testid="stage1-pool-too-small-warning">
                 <strong>Hinweis:</strong> Pool hat nur {props.poolSize()} Personen, der Vorschlag
                 wäre {p().recommended}. Empfohlen: kleinere Panelgröße, bessere Outreach-Methode
                 oder größerer Pool.

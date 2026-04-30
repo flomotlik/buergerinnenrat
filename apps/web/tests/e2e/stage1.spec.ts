@@ -17,7 +17,13 @@ test('stage 1: upload → defaults → ziehen → download', async ({ page, brow
   await page.goto('/');
 
   // Switch to the Stage 1 tab.
-  await page.getByTestId('tab-stage1').click();
+  // #65: pill-tabs are md:hidden at desktop viewport; the visible primary
+  // nav at md+ is the sidebar. Drive route via the URL hash (the production
+  // path) so the test is viewport-agnostic. The hashchange listener wires
+  // the signal as if a nav-item or pill-tab had been clicked.
+  await page.evaluate(() => {
+    window.location.hash = '#/stage1';
+  });
   await expect(page.getByTestId('stage1-panel')).toBeVisible();
 
   // Upload the fixture CSV.
@@ -109,7 +115,13 @@ test('stage 1: upload → defaults → ziehen → download', async ({ page, brow
 
 test('stage 1: Stichprobengröße-Input ist via Label erreichbar (a11y)', async ({ page }) => {
   await page.goto('/');
-  await page.getByTestId('tab-stage1').click();
+  // #65: pill-tabs are md:hidden at desktop viewport; the visible primary
+  // nav at md+ is the sidebar. Drive route via the URL hash (the production
+  // path) so the test is viewport-agnostic. The hashchange listener wires
+  // the signal as if a nav-item or pill-tab had been clicked.
+  await page.evaluate(() => {
+    window.location.hash = '#/stage1';
+  });
   await page.locator('[data-testid="stage1-csv-upload"]').setInputFiles({
     name: 'pool.csv',
     mimeType: 'text/csv',
@@ -125,7 +137,13 @@ test('stage 1: Stichprobengröße-Input ist via Label erreichbar (a11y)', async 
 
 test('stage 1: Stale Result wird gecleart wenn N nach Run geändert wird (H)', async ({ page }) => {
   await page.goto('/');
-  await page.getByTestId('tab-stage1').click();
+  // #65: pill-tabs are md:hidden at desktop viewport; the visible primary
+  // nav at md+ is the sidebar. Drive route via the URL hash (the production
+  // path) so the test is viewport-agnostic. The hashchange listener wires
+  // the signal as if a nav-item or pill-tab had been clicked.
+  await page.evaluate(() => {
+    window.location.hash = '#/stage1';
+  });
   await page.locator('[data-testid="stage1-csv-upload"]').setInputFiles({
     name: 'pool.csv',
     mimeType: 'text/csv',
@@ -148,7 +166,13 @@ test('stage 1: Run-Button ist sofort klickbar nach N-Eingabe — kein Seed-Gatin
   page,
 }) => {
   await page.goto('/');
-  await page.getByTestId('tab-stage1').click();
+  // #65: pill-tabs are md:hidden at desktop viewport; the visible primary
+  // nav at md+ is the sidebar. Drive route via the URL hash (the production
+  // path) so the test is viewport-agnostic. The hashchange listener wires
+  // the signal as if a nav-item or pill-tab had been clicked.
+  await page.evaluate(() => {
+    window.location.hash = '#/stage1';
+  });
   await page.locator('[data-testid="stage1-csv-upload"]').setInputFiles({
     name: 'pool.csv',
     mimeType: 'text/csv',
@@ -175,7 +199,13 @@ test('stage 1: Run-Button ist sofort klickbar nach N-Eingabe — kein Seed-Gatin
 
 test('stage 1: Run-Button ist sticky positioniert (D)', async ({ page }) => {
   await page.goto('/');
-  await page.getByTestId('tab-stage1').click();
+  // #65: pill-tabs are md:hidden at desktop viewport; the visible primary
+  // nav at md+ is the sidebar. Drive route via the URL hash (the production
+  // path) so the test is viewport-agnostic. The hashchange listener wires
+  // the signal as if a nav-item or pill-tab had been clicked.
+  await page.evaluate(() => {
+    window.location.hash = '#/stage1';
+  });
   await page.locator('[data-testid="stage1-csv-upload"]').setInputFiles({
     name: 'pool.csv',
     mimeType: 'text/csv',
@@ -191,7 +221,13 @@ test('stage 1: Run-Button ist sticky positioniert (D)', async ({ page }) => {
 
 test('stage 1: SVG-Bars haben title-Children und Pattern-Defs (E, a11y)', async ({ page }) => {
   await page.goto('/');
-  await page.getByTestId('tab-stage1').click();
+  // #65: pill-tabs are md:hidden at desktop viewport; the visible primary
+  // nav at md+ is the sidebar. Drive route via the URL hash (the production
+  // path) so the test is viewport-agnostic. The hashchange listener wires
+  // the signal as if a nav-item or pill-tab had been clicked.
+  await page.evaluate(() => {
+    window.location.hash = '#/stage1';
+  });
   await page.locator('[data-testid="stage1-csv-upload"]').setInputFiles({
     name: 'pool.csv',
     mimeType: 'text/csv',
@@ -226,7 +262,13 @@ test('stage 1: SVG-Bars haben title-Children und Pattern-Defs (E, a11y)', async 
 
 test('stage 1: CSV-Vorschau-Tabelle erscheint nach Upload (I)', async ({ page }) => {
   await page.goto('/');
-  await page.getByTestId('tab-stage1').click();
+  // #65: pill-tabs are md:hidden at desktop viewport; the visible primary
+  // nav at md+ is the sidebar. Drive route via the URL hash (the production
+  // path) so the test is viewport-agnostic. The hashchange listener wires
+  // the signal as if a nav-item or pill-tab had been clicked.
+  await page.evaluate(() => {
+    window.location.hash = '#/stage1';
+  });
   await page.locator('[data-testid="stage1-csv-upload"]').setInputFiles({
     name: 'pool.csv',
     mimeType: 'text/csv',
@@ -252,7 +294,13 @@ test('stage 1: Tabs tragen Untertitel als Tooltip + Schritt-Header (F)', async (
     'title',
     /Antwortenden/,
   );
-  await page.getByTestId('tab-stage1').click();
+  // #65: pill-tabs are md:hidden at desktop viewport; the visible primary
+  // nav at md+ is the sidebar. Drive route via the URL hash (the production
+  // path) so the test is viewport-agnostic. The hashchange listener wires
+  // the signal as if a nav-item or pill-tab had been clicked.
+  await page.evaluate(() => {
+    window.location.hash = '#/stage1';
+  });
   await expect(page.getByTestId('stage1-step-header')).toContainText(
     'Schritt 1 von 3',
   );
