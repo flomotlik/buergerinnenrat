@@ -2,7 +2,7 @@
 id: '65'
 title: 'Visual Redesign — Design-Handoff (Solid+Tailwind, mobile-first, supersedes
   #56)'
-status: open
+status: done
 priority: high
 labels:
 - ui
