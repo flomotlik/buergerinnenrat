@@ -148,13 +148,55 @@ jobs:
           path: apps/web/playwright-report/
           if-no-files-found: ignore
 
+  cross-runtime-parity:
+    # Cross-validates the Stage 1 TypeScript implementation byte-for-byte
+    # against the Python reference (scripts/stage1_reference.py). 21 cases
+    # covering seed sweep, target_n sweep, axes sweep, pool-size sweep,
+    # edge cases (target=0, target=N, fine stratification with underfills),
+    # umlaut codepoint-sort robustness. Independent of e2e — runs in
+    # parallel after build.
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install pnpm dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Provision /opt/sortition-venv (script hard-codes this path)
+        # scripts/stage1_cross_validate.sh expects /opt/sortition-venv/bin/python.
+        # The Python ref impl uses only stdlib (csv, json, math, argparse) so
+        # we just symlink to the runner's Python — no pip install needed.
+        run: |
+          sudo mkdir -p /opt/sortition-venv/bin
+          sudo ln -sf "$(which python3)" /opt/sortition-venv/bin/python
+
+      - name: Run cross-runtime parity sweep
+        run: bash scripts/stage1_cross_validate.sh
+
   deploy:
     # NOTE: Do not rewrite this `if:` to use always() / !cancelled() — the
     # implicit success() over `needs: [build, e2e]` is what gates deploy on a
     # green e2e. A status-function expression here would let deploy run even
     # if e2e fails.
     if: github.event_name == 'push'
-    needs: [build, e2e]
+    needs: [build, e2e, cross-runtime-parity]
     runs-on: ubuntu-latest
     timeout-minutes: 10
     environment:
