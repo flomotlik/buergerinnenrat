@@ -1,7 +1,7 @@
 ---
 id: '70'
 title: 'Test Coverage Sprint — close #68 P0 #2 + all P1 items'
-status: open
+status: done
 priority: high
 labels:
 - testing
