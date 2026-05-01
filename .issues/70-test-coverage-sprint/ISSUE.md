@@ -2,6 +2,7 @@
 id: '70'
 title: 'Test Coverage Sprint — close #68 P0 #2 + all P1 items'
 status: done
+ship_state: pr_open
 priority: high
 labels:
 - testing
