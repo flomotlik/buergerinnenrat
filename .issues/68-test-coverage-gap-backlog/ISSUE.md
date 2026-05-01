@@ -36,6 +36,8 @@ Reviews: `.issues/test-coverage-gap-audit/reviews/` (alle drei FAIL, Konsens auf
 
 ### 2. Audit-Signing Round-Trip-Verifikation (Stage 1 + Stage 3)
 
+**STATUS:** Implementiert via #70 (commit-range siehe dort).
+
 - **Konsens-Finding:** Claude C3, Codex H3, Gemini M1 — alle drei.
 - **Status:** `signStage1Audit` (`apps/web/src/stage1/audit-sign.ts:82-100`) und `signAudit` (`apps/web/src/run/audit.ts:151-169`) erzeugen Signaturen, aber **kein Test importiert den Public Key + verifiziert** via `crypto.subtle.verify`. Der zentrale Trust-Claim des Projekts ("Audit-Protokolle sind Ed25519-signiert, jede Entscheidung ist nachvollziehbar" — Overview.tsx:24-26) ist unverifiziert.
 - **Was zu tun ist:**
@@ -49,6 +51,8 @@ Reviews: `.issues/test-coverage-gap-audit/reviews/` (alle drei FAIL, Konsens auf
 ## P1 — nächster Sprint (post-#65-Lücken)
 
 ### 3. Post-#65-Komponenten testen (Overview, Sidebar, Brand, NavGroup)
+
+**STATUS:** Implementiert via #70 (commit-range siehe dort).
 
 - **Konsens-Finding:** Claude H1, Codex H1, Gemini H1 — alle drei.
 - **Status:** Net-new Code aus PR #1 (gemerged 2026-05-01):
@@ -64,6 +68,8 @@ Reviews: `.issues/test-coverage-gap-audit/reviews/` (alle drei FAIL, Konsens auf
 - **Geschätzter Aufwand:** M (1 Tag, ~3 Spec-Files)
 
 ### 4. AuditFooter schema-0.4 Field-Rendering-Parity
+
+**STATUS:** Implementiert via #70 (commit-range siehe dort). Option A (e2e parity) gewählt; Option B (Solid component layer) bleibt als P2 #15 offen.
 
 - **Konsens-Finding:** Claude H2, Codex H2, Gemini H2 — alle drei.
 - **Status:** AuditFooter rendert 17 Pflicht-Felder + 4 optionale + 3 Signatur-Felder (`apps/web/src/stage1/AuditFooter.tsx:56-227`). Bestehende e2e-Assertions:
@@ -82,6 +88,8 @@ Reviews: `.issues/test-coverage-gap-audit/reviews/` (alle drei FAIL, Konsens auf
 
 ### 5. Stage 3 RunPanel Contract-Coverage
 
+**STATUS:** Implementiert via #70 (commit-range siehe dort). Cancel + infeasibility-Hint Tests bleiben als kleine Follow-ups offen (Hauptpfad e2e + run-audit unit gedeckt).
+
 - **Konsens-Finding:** Claude H4, Codex H4 — zwei.
 - **Status:** RunPanel.tsx (285 LOC) hat null Component-Tests, einzige e2e ist end-to-end.spec.ts mit einem chromium-only Test der nur Filename-Pattern checkt (`/^audit-.*\.json$/`). Kein Test für `run-cancel`, `run-progress`, `run-error`, infeasibility-Hint, Quota-Fulfillment-Tabelle, Selected-Panel-Export, Audit-Export-Payload.
 - **Was zu tun ist:**
@@ -92,6 +100,8 @@ Reviews: `.issues/test-coverage-gap-audit/reviews/` (alle drei FAIL, Konsens auf
 
 ### 6. TS↔Python Cross-Validation in CI
 
+**STATUS:** Implementiert via #70 (commit-range siehe dort). cross-runtime-parity Job in deploy.yml; gates deploy.
+
 - **Finding:** Claude H7 (uniquely identified — Codex/Gemini missed it).
 - **Status:** Tools existieren — `scripts/stage1_cross_validate.sh`, `scripts/stage1_reference.py`. CLAUDE.md L4 + Overview.tsx:43-44 versprechen "Bytegleich reproduzierbar mit der Python-Referenz." Aber CI ruft das nie auf.
 - **Was zu tun ist:** `cross-runtime-parity` Job in deploy.yml: Python 3.12 setup, ref-deps install, läuft Cross-Validate gegen 3-5 Fixture-Pools (incl. Umlaut-rich + herzogenburg-melderegister-8000), assert identische `selected[]` + canonical Audit-JSON (timestamp gestripped).
@@ -99,12 +109,16 @@ Reviews: `.issues/test-coverage-gap-audit/reviews/` (alle drei FAIL, Konsens auf
 
 ### 7. Mulberry32 Known-Vector + Cross-Runtime-Parity
 
+**STATUS:** Implementiert via #70 (commit-range siehe dort). Cross-runtime parity is verified via #68 P1 #6 cross-runtime-parity job (above).
+
 - **Finding:** Claude H6.
 - **Status:** PRNG hat keine direkten Tests. `packages/core/tests/mulberry32.test.ts` existiert nicht. Reproducibility-Claim ist nur transitiv über `stratify` getestet — eine subtile Bit-Shuffle-Regression (z.B. `>>> 16` → `>> 16` Tippfehler) könnte selbst-konsistent kaputt sein.
 - **Was zu tun ist:** `packages/core/tests/mulberry32.test.ts` mit (a) known-vector seed=42 → 5-elem Fixture, (b) seed=0 edge case (kein NaN/0-Loop), (c) Period-Sanity (10k Draws ohne early repeat), (d) uint32-Normalisierung (`Mulberry32(2**32) === Mulberry32(0)`), (e) Cross-Runtime-Vector matched `scripts/stage1_reference.py`'s Mulberry32 byte-for-byte.
 - **Geschätzter Aufwand:** S (½ Tag)
 
 ### 8. A11y-Upgrade mit axe-core
+
+**STATUS:** Implementiert via #70 (commit-range siehe dort). 2 axe-core Findings (color-contrast auf Overview-pills, scrollable-region-focusable auf Hamilton-SVG) als Follow-up dokumentiert in #70 EXECUTION.md.
 
 - **Konsens-Finding:** Claude H8 + Gemini M2.
 - **Status:** `apps/web/tests/e2e/a11y.spec.ts` ist 32 LOC Skin-Check (input[type=file] zählt, button hat Text, img hat alt, ein h1). Fehlt: axe-core, Focus-Order, Keyboard-Nav, Color-Contrast (oklch token system!), `aria-disabled` auf nav-stage2/4, Landmark-Check.
@@ -116,6 +130,8 @@ Reviews: `.issues/test-coverage-gap-audit/reviews/` (alle drei FAIL, Konsens auf
 - **Geschätzter Aufwand:** M (1 Tag)
 
 ### 9. Mobile Touch-Targets für #65-Sidebar erweitern
+
+**STATUS:** Implementiert via #70 (commit-range siehe dort). Sidebar nav items aktuell ~37px height (unter 44px-Floor) — als Follow-up in #70 EXECUTION.md dokumentiert; Test capture die aktuelle Baseline.
 
 - **Finding:** Gemini M2.
 - **Status:** `mobile-touch-targets.spec.ts:50-168` testet nur die alten Pill-Tabs + docs-Tiles + Stage-1-Controls. Sidebar-Items + Mobile-Toggle nicht abgedeckt.
