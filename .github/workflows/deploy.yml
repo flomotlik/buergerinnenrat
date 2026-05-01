@@ -110,11 +110,17 @@ jobs:
         # We install the matrix browser only — the other one waits its turn.
         run: pnpm --filter @sortition/web exec playwright install --with-deps ${{ matrix.browser }}
 
-      - name: Build web bundle
+      - name: Build web bundle (root-base for vite preview)
         # Required for vite preview to serve dist/. Build is fast (~5s warm).
         # We don't reuse the build job's pages artifact because that artifact
         # is gated on push events; running our own build keeps PR/push paths
         # symmetric.
+        # VITE_BASE_PATH=/ overrides the production /buergerinnenrat/ base so
+        # vite preview serves assets from / (matches playwright.config.ts
+        # webServer.env). Without this, asset URLs in dist/index.html still
+        # resolve under /buergerinnenrat/ even though preview serves from /.
+        env:
+          VITE_BASE_PATH: '/'
         run: pnpm --filter @sortition/web build
 
       - name: Run Playwright e2e (${{ matrix.browser }})
