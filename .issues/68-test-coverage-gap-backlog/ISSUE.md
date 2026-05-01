@@ -25,6 +25,8 @@ Reviews: `.issues/test-coverage-gap-audit/reviews/` (alle drei FAIL, Konsens auf
 
 ### 1. Volle Playwright e2e-Suite in CI gaten (PR + push)
 
+**STATUS:** Implementiert via #69 (commit-range siehe dort).
+
 - **Konsens-Finding:** Claude C1, Codex C1, Gemini C1 — alle drei stimmen.
 - **Status:** Build-Job in `.github/workflows/deploy.yml` läuft `lint → typecheck → vitest run → build`. **Kein** `playwright test` (default config). 12 e2e-Specs / ~80 Tests laufen nur lokal.
 - **Was zu tun ist:** Neuen `e2e`-Job in deploy.yml nach build, der `pnpm --filter @sortition/web exec playwright test --config=playwright.config.ts` auf chromium + firefox läuft. Trace-Upload bei Failure via `actions/upload-artifact@v4`. Trigger auf `pull_request` UND `push`.
