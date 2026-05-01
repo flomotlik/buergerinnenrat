@@ -15,6 +15,9 @@ import type { Pool, Quotas as EngineQuotas } from '@sortition/engine-contract';
 // subpage is loaded lazily from inside DocsHub itself, so the docs route only
 // pulls its bundle when the user actually navigates to the Dokumentation tab.
 const DocsHub = lazy(() => import('./docs/DocsHub'));
+// Overview lives on its own lazy chunk so the default Stage-3 landing does
+// not pay for its bytes. Reached only via #/overview (sidebar nav).
+const Overview = lazy(() => import('./Overview'));
 
 interface ImportedPool {
   parsed: ParsedCsv;
@@ -39,7 +42,7 @@ function toEngineQuotas(cfg: QuotaConfig): EngineQuotas {
   };
 }
 
-type AppMode = 'stage1' | 'stage3' | 'docs';
+type AppMode = 'overview' | 'stage1' | 'stage3' | 'docs';
 
 // Allowed docs routes. The docs hub itself is route 'hub'; every other value
 // corresponds to a subpage component lazy-loaded by DocsHub.
@@ -82,6 +85,7 @@ function parseHash(hash: string): ParsedHash {
   const stripped = hash.replace(/^#\/?/, '');
   const parts = stripped.split('/');
   const head = parts[0];
+  if (head === 'overview') return { mode: 'overview', docsRoute: 'hub' };
   if (head === 'stage1') return { mode: 'stage1', docsRoute: 'hub' };
   if (head === 'stage3') return { mode: 'stage3', docsRoute: 'hub' };
   if (head === 'docs') {
@@ -91,10 +95,13 @@ function parseHash(hash: string): ParsedHash {
     }
     return { mode: 'docs', docsRoute: 'hub' };
   }
+  // Catch-all stays Stage 3 per CONTEXT.md L21 — overview is reachable
+  // only via explicit #/overview, NOT as the default landing.
   return { mode: 'stage3', docsRoute: 'hub' };
 }
 
 function hashFor(mode: AppMode, docsRoute: DocsRoute): string {
+  if (mode === 'overview') return '#/overview';
   if (mode === 'stage1') return '#/stage1';
   if (mode === 'stage3') return '#/stage3';
   return docsRoute === 'hub' ? '#/docs' : `#/docs/${docsRoute}`;
@@ -224,13 +231,20 @@ export const App: Component = () => {
         </nav>
 
         {/* Single <h1> per route. Docs route owns its <h1> via DocsLayout
-            (page-title), so we only emit one here on non-docs routes. The
-            Brand wordmark in Sidebar is a <span class="font-serif">, NOT
-            an <h1>, so a11y.spec.ts ("h1 must exist and be unique") and
+            (page-title); Overview owns its own visible <h1> too. So we only
+            emit a hidden <h1> here on Stage 1 + Stage 3 routes. The Brand
+            wordmark in Sidebar is a <span class="font-serif">, NOT an <h1>,
+            so a11y.spec.ts ("h1 must exist and be unique") and
             csv-import/smoke specs (getByRole('heading', { name:
             'Bürger:innenrat' })) both pass on Stage 1 + Stage 3. */}
-        <Show when={mode() !== 'docs'}>
+        <Show when={mode() !== 'docs' && mode() !== 'overview'}>
           <h1 class="sr-only">Bürger:innenrat</h1>
+        </Show>
+
+        <Show when={mode() === 'overview'}>
+          <Suspense fallback={<p>Lade…</p>}>
+            <Overview />
+          </Suspense>
         </Show>
 
         <Show when={mode() === 'stage1'}>

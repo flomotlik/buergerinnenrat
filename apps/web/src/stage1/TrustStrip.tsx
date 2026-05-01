@@ -1,6 +1,6 @@
 import type { Component, JSX } from 'solid-js';
 
-interface CardDef {
+export interface TrustPrinciple {
   testid: string;
   title: string;
   sub: string;
@@ -16,7 +16,13 @@ interface CardDef {
 
 const ICON_SIZE = 'h-7 w-7';
 
-const CARDS: ReadonlyArray<CardDef> = [
+/**
+ * The three trust signals shown both under the Stage-1 step header
+ * (TrustStrip) and on the new #/overview principles row. Single source of
+ * truth — Overview.tsx imports this same array so the wording / icons /
+ * doc-anchors never diverge between the two surfaces.
+ */
+export const TRUST_PRINCIPLES: ReadonlyArray<TrustPrinciple> = [
   {
     testid: 'trust-card-algorithmus',
     title: 'Algorithmus seit 1792',
@@ -105,7 +111,7 @@ const CARDS: ReadonlyArray<CardDef> = [
 const TrustStrip: Component = () => {
   return (
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4" data-testid="stage1-trust-strip">
-      {CARDS.map((card) => (
+      {TRUST_PRINCIPLES.map((card) => (
         <a
           href={card.hash}
           class="card card-hover text-left flex flex-col gap-3 items-start no-underline"
