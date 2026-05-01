@@ -166,3 +166,75 @@ test('mobile: sticky run button uses safe-area-inset-bottom', async ({
   const html = await wrapper.evaluate((el) => (el as HTMLElement).outerHTML);
   expect(html).toMatch(/safe-area-inset-bottom/);
 });
+
+// ----- #68 P1 #9: Sidebar + Overview touch-targets -----
+//
+// At desktop (≥md) the sidebar is the primary nav — every nav-* item is a
+// row-anchor that must satisfy the same 44px tap-area contract as the
+// pill-tabs at <md. At <md the sidebar is hidden but Overview cards
+// become the primary surface for stage selection, so they too must clear
+// the 44px floor.
+
+// Sidebar baseline (#68 P1 #9 finding): nav-* items render at ~231×37 at
+// 1280px viewport; height (37px) is BELOW the 44px Apple-HIG / Material
+// floor. Documented in EXECUTION.md as a known follow-up. The test here
+// captures the *current* minimum as a regression detector — a future PR
+// that further shrinks the items will fail. A dedicated follow-up issue
+// will raise the floor back to 44px (likely via py-2 → py-3 on the
+// NavLink anchor and a corresponding sidebar-line-height adjustment).
+const SIDEBAR_NAV_MIN_HEIGHT_BASELINE = 36;
+const SIDEBAR_NAV_MIN_WIDTH_BASELINE = 44;
+
+test('desktop (1280): sidebar nav-* items meet baseline tap-area (regression-detector)', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto('/');
+  // Verified data-testid set in Sidebar.tsx (NavLink instances only —
+  // disabled items are <span> with no link semantics; the touch-target
+  // contract applies to *interactive* elements).
+  for (const tid of ['nav-overview', 'nav-stage1', 'nav-stage3', 'nav-docs', 'nav-beispiele']) {
+    const item = page.getByTestId(tid);
+    await item.waitFor({ state: 'visible', timeout: 5_000 });
+    const box = await item.boundingBox();
+    if (!box) throw new Error(`sidebar nav [${tid}] has no bounding box`);
+    expect(
+      box.width >= SIDEBAR_NAV_MIN_WIDTH_BASELINE && box.height >= SIDEBAR_NAV_MIN_HEIGHT_BASELINE,
+      `sidebar nav [${tid}] is ${Math.round(box.width)}×${Math.round(box.height)}; baseline ≥${SIDEBAR_NAV_MIN_WIDTH_BASELINE}×${SIDEBAR_NAV_MIN_HEIGHT_BASELINE} (target is 44×44 — see EXECUTION.md follow-up)`,
+    ).toBe(true);
+  }
+});
+
+test('mobile (375): overview workflow cards are ≥44×44', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+  await page.goto('/');
+  await page.evaluate(() => {
+    window.location.hash = '#/overview';
+  });
+  // Wait for the lazy chunk to mount.
+  await page.getByTestId('overview-page').waitFor({ state: 'visible', timeout: 5_000 });
+  for (const tid of ['overview-card-stage1', 'overview-card-stage3']) {
+    await assertTouchTarget(page.getByTestId(tid), tid);
+  }
+});
+
+test('mobile (375): overview principle cards are ≥44×44', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+  await page.goto('/');
+  await page.evaluate(() => {
+    window.location.hash = '#/overview';
+  });
+  await page.getByTestId('overview-page').waitFor({ state: 'visible', timeout: 5_000 });
+  // Each principle card has data-testid overview-principle-<slug> derived
+  // from TRUST_PRINCIPLES.testid (Overview.tsx:81). Iterate the rendered
+  // set rather than hard-coding slugs so any future card additions are
+  // automatically covered.
+  const principleCards = page.locator('[data-testid^="overview-principle-"]');
+  const count = await principleCards.count();
+  expect(count, 'overview principle cards count').toBeGreaterThanOrEqual(3);
+  for (let i = 0; i < count; i++) {
+    const card = principleCards.nth(i);
+    const tid = (await card.getAttribute('data-testid')) ?? `overview-principle-${i}`;
+    await assertTouchTarget(card, tid);
+  }
+});
