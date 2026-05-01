@@ -1,10 +1,14 @@
 name: Deploy
 
 # Triggers:
-# - push to main: runs build → deploys to GitHub Pages → live-smoke
-# - pull_request: runs build only (lint, typecheck, unit tests, web build).
-#   Deploy + smoke jobs are gated to push events so PRs don't deploy.
+# - pull_request: build + e2e (no deploy/smoke)
+# - push to main: build + e2e → deploy → live-smoke
 # - workflow_dispatch: manual re-run.
+#
+# Job graph: build → e2e → deploy → smoke
+# e2e covers preview-server contract surface (apps/web/tests/e2e, ~44 tests
+# × 2 browsers); live-smoke covers production-deploy surface (CDN headers,
+# GitHub-Pages path, woff2 delivery).
 on:
   push:
     branches: [main]
@@ -69,9 +73,72 @@ jobs:
         with:
           path: apps/web/dist
 
+  e2e:
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            playwright-${{ runner.os }}-
+
+      - name: Install Playwright browsers (with deps)
+        # --with-deps installs system libs; harmless if already cached.
+        # We install the matrix browser only — the other one waits its turn.
+        run: pnpm --filter @sortition/web exec playwright install --with-deps ${{ matrix.browser }}
+
+      - name: Build web bundle
+        # Required for vite preview to serve dist/. Build is fast (~5s warm).
+        # We don't reuse the build job's pages artifact because that artifact
+        # is gated on push events; running our own build keeps PR/push paths
+        # symmetric.
+        run: pnpm --filter @sortition/web build
+
+      - name: Run Playwright e2e (${{ matrix.browser }})
+        run: pnpm --filter @sortition/web exec playwright test --project=${{ matrix.browser }}
+
+      - name: Upload Playwright traces on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-${{ matrix.browser }}-traces-${{ github.run_attempt }}
+          path: apps/web/test-results/
+          if-no-files-found: ignore
+
+      - name: Upload Playwright HTML report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-${{ matrix.browser }}-report-${{ github.run_attempt }}
+          path: apps/web/playwright-report/
+          if-no-files-found: ignore
+
   deploy:
     if: github.event_name == 'push'
-    needs: build
+    needs: [build, e2e]
     runs-on: ubuntu-latest
     environment:
       name: github-pages
