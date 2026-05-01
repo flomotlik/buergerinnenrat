@@ -21,9 +21,8 @@ const Overview: Component = () => {
       <header class="overview-hero space-y-3">
         <h1 class="text-4xl font-serif font-semibold text-ink">Bürger:innenrat</h1>
         <p class="text-lg text-ink-2 max-w-prose">
-          Browser-natives Werkzeug für stratifizierte Zufallsauswahl in Bürgerräten. Daten
-          bleiben lokal, Audit-Protokolle sind Ed25519-signiert, jede Entscheidung ist
-          nachvollziehbar.
+          Browser-natives Werkzeug für stratifizierte Zufallsauswahl in Bürgerräten. Daten bleiben
+          lokal, Audit-Protokolle sind Ed25519-signiert, jede Entscheidung ist nachvollziehbar.
         </p>
       </header>
 
@@ -36,9 +35,7 @@ const Overview: Component = () => {
             data-testid="overview-card-stage1"
           >
             <div class="flex items-center justify-between gap-2">
-              <span class="text-xs font-semibold uppercase tracking-wide text-ink-3">
-                Stage 1
-              </span>
+              <span class="text-xs font-semibold uppercase tracking-wide text-ink-3">Stage 1</span>
               <span class="status-pill status-pill-ok">verfügbar</span>
             </div>
             <h3 class="text-lg font-serif font-semibold text-ink">Versand-Liste ziehen</h3>
@@ -53,15 +50,13 @@ const Overview: Component = () => {
             data-testid="overview-card-stage3"
           >
             <div class="flex items-center justify-between gap-2">
-              <span class="text-xs font-semibold uppercase tracking-wide text-ink-3">
-                Stage 3
-              </span>
+              <span class="text-xs font-semibold uppercase tracking-wide text-ink-3">Stage 3</span>
               <span class="status-pill status-pill-warn">Konzept</span>
             </div>
             <h3 class="text-lg font-serif font-semibold text-ink">Panel-Auswahl</h3>
             <p class="text-sm text-ink-2">
-              Maximin-Heuristik aus den Antwortenden. Solver-Wahl S-2 ist offen — derzeit
-              HiGHS via WASM, ohne Leximin.
+              Maximin-Heuristik aus den Antwortenden. Solver-Wahl S-2 ist offen — derzeit HiGHS via
+              WASM, ohne Leximin.
             </p>
           </a>
         </div>
@@ -70,8 +65,8 @@ const Overview: Component = () => {
             <strong>Stage 2 (Outreach + Selbstauskunft)</strong> und{' '}
             <strong>Stage 4 (Reserve / Nachholung)</strong> liegen außerhalb des aktuellen
             Funktionsumfangs. Sie werden manuell oder mit anderen Werkzeugen abgewickelt — der
-            Versand der Einladungen, das Einsammeln der Selbstauskünfte sowie das Nachziehen
-            bei Drop-outs sind organisatorische Aufgaben des Trägers.
+            Versand der Einladungen, das Einsammeln der Selbstauskünfte sowie das Nachziehen bei
+            Drop-outs sind organisatorische Aufgaben des Trägers.
           </div>
         </aside>
       </section>

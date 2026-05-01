@@ -63,8 +63,7 @@ export const AuditFooter: Component<Props> = (props) => {
 
           <dt>Algorithmus-Version</dt>
           <dd>
-            {props.doc.algorithm_version}{' '}
-            <span class="text-ink-3">(PRNG {props.doc.prng})</span>
+            {props.doc.algorithm_version} <span class="text-ink-3">(PRNG {props.doc.prng})</span>
           </dd>
 
           <dt>Tool-Version</dt>

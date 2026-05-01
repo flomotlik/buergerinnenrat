@@ -112,7 +112,10 @@ const DocsLayout: Component<Props> = (props) => {
           {props.children}
         </div>
       </div>
-      <footer class="text-xs text-ink-3 border-t border-line pt-3 mt-8" data-testid="docs-build-footer">
+      <footer
+        class="text-xs text-ink-3 border-t border-line pt-3 mt-8"
+        data-testid="docs-build-footer"
+      >
         Diese Doku gehört zu Build <code class="font-mono">{__GIT_SHA__}</code> vom{' '}
         <code class="font-mono">{__BUILD_DATE__}</code>.
       </footer>

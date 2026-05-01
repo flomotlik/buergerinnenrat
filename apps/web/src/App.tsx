@@ -278,7 +278,9 @@ export const App: Component = () => {
                   </p>
                   <QuotaEditor
                     rows={p().rows}
-                    candidateColumns={Object.keys(p().rows[0] ?? {}).filter((c) => c !== 'person_id')}
+                    candidateColumns={Object.keys(p().rows[0] ?? {}).filter(
+                      (c) => c !== 'person_id',
+                    )}
                     onChange={(cfg) => setQuotas(cfg)}
                   />
                 </section>

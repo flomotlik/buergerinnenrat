@@ -69,7 +69,11 @@ export const Sidebar: Component<Props> = (props) => {
       <div class="p-4">
         <Brand />
       </div>
-      <nav class="flex-1 px-3 overflow-y-auto" data-testid="primary-nav" aria-label="Hauptnavigation">
+      <nav
+        class="flex-1 px-3 overflow-y-auto"
+        data-testid="primary-nav"
+        aria-label="Hauptnavigation"
+      >
         <NavGroup label="Übersicht">
           <NavLink href="#/overview" testid="nav-overview" active={props.mode() === 'overview'}>
             Übersicht
@@ -79,13 +83,19 @@ export const Sidebar: Component<Props> = (props) => {
           <NavLink href="#/stage1" testid="nav-stage1" active={props.mode() === 'stage1'}>
             Stage 1 — Versand-Liste
           </NavLink>
-          <NavDisabled testid="nav-stage2" hint="Outreach erfolgt außerhalb dieses Tools (Versand, Rückmeldung).">
+          <NavDisabled
+            testid="nav-stage2"
+            hint="Outreach erfolgt außerhalb dieses Tools (Versand, Rückmeldung)."
+          >
             Stage 2 — Outreach (außerhalb Tool)
           </NavDisabled>
           <NavLink href="#/stage3" testid="nav-stage3" active={props.mode() === 'stage3'}>
             Stage 3 — Panel-Auswahl
           </NavLink>
-          <NavDisabled testid="nav-stage4" hint="Reserve-Pool / Drop-out-Replacement — Iteration 2.">
+          <NavDisabled
+            testid="nav-stage4"
+            hint="Reserve-Pool / Drop-out-Replacement — Iteration 2."
+          >
             Stage 4 — Reserve (geplant)
           </NavDisabled>
         </NavGroup>

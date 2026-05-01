@@ -98,7 +98,7 @@
     --ok-soft: oklch(94% 0.04 145);
     --warn: oklch(58% 0.13 60);
     --warn-soft: oklch(94% 0.06 60);
-    --err: oklch(54% 0.20 25);
+    --err: oklch(54% 0.2 25);
     --err-soft: oklch(95% 0.04 25);
 
     /* Spacing & radii */
@@ -137,7 +137,7 @@
     --accent-strong: oklch(78% 0.14 var(--hue));
     --accent-soft: oklch(28% 0.06 var(--hue));
     --accent-line: oklch(40% 0.08 var(--hue));
-    --accent-ink: oklch(88% 0.10 var(--hue));
+    --accent-ink: oklch(88% 0.1 var(--hue));
   }
 
   [data-density='compact'] {
@@ -564,7 +564,9 @@
     font-size: 13px;
     font-variant-numeric: tabular-nums;
     /* Disable code ligatures in SHA hashes — JetBrains Mono OpenType. */
-    font-feature-settings: 'tnum' 1, 'calt' 0;
+    font-feature-settings:
+      'tnum' 1,
+      'calt' 0;
     background: var(--bg-sunken);
     border: 1px solid var(--line);
     border-radius: var(--radius);
@@ -596,7 +598,9 @@
     border-radius: 9999px;
     font-family: var(--mono);
     font-size: 12px;
-    font-feature-settings: 'tnum' 1, 'calt' 0;
+    font-feature-settings:
+      'tnum' 1,
+      'calt' 0;
   }
   .sig-pill::before {
     content: '';

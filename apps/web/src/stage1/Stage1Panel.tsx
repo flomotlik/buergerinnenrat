@@ -821,7 +821,8 @@ export const Stage1Panel: Component = () => {
                   <div class="stat" data-testid="stage1-coverage-card">
                     <div class="k">Gruppen-Abdeckung</div>
                     <div class="v">
-                      {c().coveredStrata} <span class="text-base text-ink-3">/ {c().totalStrata}</span>
+                      {c().coveredStrata}{' '}
+                      <span class="text-base text-ink-3">/ {c().totalStrata}</span>
                     </div>
                     <div class="delta">
                       {Number.isNaN(c().coverageRatio)
