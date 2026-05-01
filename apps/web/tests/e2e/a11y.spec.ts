@@ -16,29 +16,37 @@ import AxeBuilder from '@axe-core/playwright';
 
 interface RouteCfg {
   hash: string;
-  /** Expected count of axe-core violations at WCAG 2.1 AA. */
-  baseline: number;
+  /**
+   * Expected violation rule-ids at WCAG 2.1 AA. The set (not just the
+   * count) is asserted so a regression that swaps one violation for an
+   * unrelated other one still fails the test.
+   */
+  expectedViolationIds: string[];
 }
 
 // Baselines captured during #70. Documented in EXECUTION.md:
-//   #/overview — 1 violation (color-contrast on .status-pill-ok and
-//     .status-pill-warn). Status-pill design tokens fail 4.5:1 at 9pt.
+//   #/overview — 1 violation: color-contrast on .status-pill-ok and
+//     .status-pill-warn. Status-pill design tokens fail 4.5:1 at 9pt.
 //     Follow-up: design ticket to bump contrast on the 'verfügbar' /
 //     'Konzept' pill foreground colors.
-//   #/docs/algorithmus — 1 violation (scrollable-region-focusable on
-//     hamilton-svg-container). The overflow-x-auto wrapper is not
+//   #/docs/algorithmus — 1 violation: scrollable-region-focusable on
+//     hamilton-svg-container. The overflow-x-auto wrapper is not
 //     keyboard-focusable. Follow-up: add tabindex="0" to the wrapper or
 //     refactor the SVG to fit without horizontal scroll.
 const ROUTES: RouteCfg[] = [
-  { hash: '#/stage1', baseline: 0 },
-  { hash: '#/stage3', baseline: 0 },
-  { hash: '#/overview', baseline: 1 },
-  { hash: '#/docs', baseline: 0 },
-  { hash: '#/docs/algorithmus', baseline: 1 },
+  { hash: '#/stage1', expectedViolationIds: [] },
+  { hash: '#/stage3', expectedViolationIds: [] },
+  { hash: '#/overview', expectedViolationIds: ['color-contrast'] },
+  { hash: '#/docs', expectedViolationIds: [] },
+  { hash: '#/docs/algorithmus', expectedViolationIds: ['scrollable-region-focusable'] },
 ];
 
-for (const { hash, baseline } of ROUTES) {
-  test(`a11y: ${hash} — axe-core violations matches baseline (${baseline})`, async ({ page }) => {
+for (const { hash, expectedViolationIds } of ROUTES) {
+  const baselineLabel =
+    expectedViolationIds.length === 0
+      ? 'no violations'
+      : `expected violations: ${expectedViolationIds.join(', ')}`;
+  test(`a11y: ${hash} — ${baselineLabel}`, async ({ page }) => {
     await page.goto('/');
     await page.evaluate((h) => {
       window.location.hash = h;
@@ -52,10 +60,14 @@ for (const { hash, baseline } of ROUTES) {
       .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
       .analyze();
 
-    // Surface the violation list in the failure message so any regression
-    // gets a fully-actionable diagnostic out of the box.
+    // Assert the SET of violation ids matches the baseline — not just the
+    // count. This catches the failure mode where an existing baseline
+    // violation gets fixed but a new unrelated one is introduced (the
+    // count is unchanged but the regression is real).
+    const actualIds = results.violations.map((v) => v.id).sort();
+    const expectedIds = [...expectedViolationIds].sort();
     const summary = results.violations.map((v) => ({ id: v.id, nodes: v.nodes.length }));
-    expect(results.violations.length, JSON.stringify(summary, null, 2)).toBe(baseline);
+    expect(actualIds, JSON.stringify(summary, null, 2)).toEqual(expectedIds);
   });
 }
 

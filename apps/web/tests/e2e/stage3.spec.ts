@@ -97,10 +97,19 @@ test('stage 3: upload n=20 → quotas → run → audit JSON parses', async ({ p
   expect(audit.panel_size).toBe(10);
   expect(audit.pool_size).toBe(20);
 
-  // Selected panel: exactly panel_size members, sorted ascending.
+  // Selected panel: exactly panel_size members, sorted ascending,
+  // uniquely-valued, and every id maps to a real pool row (p001..p020).
   expect(audit.selected).toHaveLength(10);
   const sorted = [...audit.selected].sort();
   expect(audit.selected).toEqual(sorted);
+  // Uniqueness — engine must not return the same person twice.
+  expect(new Set(audit.selected).size).toBe(audit.selected.length);
+  // Every id is one of the 20 pool ids (guards against an off-by-one or
+  // ghost-id regression that would slip past length+sort+ok-only checks).
+  const validIds = new Set(Array.from({ length: 20 }, (_, i) => `p${String(i + 1).padStart(3, '0')}`));
+  for (const id of audit.selected) {
+    expect(validIds.has(id), `selected id ${id} not in pool`).toBe(true);
+  }
 
   // Every quota_fulfillment row passes (we set bounds that are obviously
   // satisfiable; if any row fails this is a real regression).

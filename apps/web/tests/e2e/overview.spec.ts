@@ -31,16 +31,20 @@ test.describe('Overview landing (#/overview)', () => {
     await expect(page.getByTestId('overview-card-stage3')).toContainText('Stage 3');
   });
 
-  test('renders 3 principle cards in the principles grid', async ({ page }) => {
+  test('renders ≥3 principle cards in the principles grid', async ({ page }) => {
     await page.goto('/');
     await page.evaluate(() => {
       window.location.hash = '#/overview';
     });
     const grid = page.getByTestId('overview-principles');
     await expect(grid).toBeVisible();
-    // Principle cards use overview-principle-<slug> testids — assert exactly 3.
+    // Principle cards use overview-principle-<slug> testids derived from
+    // TRUST_PRINCIPLES (Overview.tsx:81). Assert ≥3 to match the
+    // mobile-touch-targets spec's iteration semantics — both files now
+    // agree on "iterate whatever TRUST_PRINCIPLES contains, minimum 3."
     const cards = grid.locator('[data-testid^="overview-principle-"]');
-    await expect(cards).toHaveCount(3);
+    const count = await cards.count();
+    expect(count, 'overview principle cards count').toBeGreaterThanOrEqual(3);
   });
 
   test('renders Stage-2/4 outside-tool banner with explanatory text', async ({ page }) => {

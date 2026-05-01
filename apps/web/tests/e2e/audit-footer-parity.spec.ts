@@ -128,9 +128,23 @@ test('audit-footer parity: every mandatory schema-0.4 field is rendered', async 
   await expect(summary).toContainText(String(audit.selected_indices.length));
   expect(audit.selected_indices.length).toBe(audit.actual_n);
 
-  // ----- Signature triplet (sig-algo + sig present) -----
+  // ----- Signature triplet (sig-algo + sig + PK abbreviation present) -----
   await expect(footer.getByTestId('audit-footer-sig-algo')).not.toContainText('noch nicht signiert');
   await expect(footer.getByTestId('audit-footer-sig')).toBeVisible();
+  // public_key is rendered as a "PK: <abbrev>" span with the full key in
+  // the title attribute (AuditFooter.tsx:213-217). Assert both:
+  //   - the visible "PK:" prefix is rendered
+  //   - the full base64 public key is exposed via title attribute
+  const pkSpan = footer.locator('span[title]').filter({ hasText: 'PK:' });
+  await expect(pkSpan).toBeVisible();
+  // We download the audit and the JSON contains the full public_key —
+  // verify it round-trips into the title attribute on the rendered span.
+  const auditWithSig = JSON.parse(readFileSync(path!, 'utf8')) as Stage1Audit & {
+    public_key?: string;
+  };
+  if (auditWithSig.public_key) {
+    await expect(pkSpan).toHaveAttribute('title', auditWithSig.public_key);
+  }
 
   // ----- Optional fields when present -----
   // The 500-row fixture carries `age_band` directly so there should be no

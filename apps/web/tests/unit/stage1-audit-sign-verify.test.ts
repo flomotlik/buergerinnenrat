@@ -99,26 +99,26 @@ describe('signStage1Audit — round-trip verification', () => {
     expect(ok).toBe(false);
   });
 
-  it('detects signature tampering — flipping one byte in signature invalidates verify', async () => {
+  it('detects signature tampering — Ed25519 returns false (no throw)', async () => {
     const signed = await signStage1Audit(makeDoc());
-    const algo = signed.doc.signature_algo!;
-    const format = algo === 'Ed25519' ? 'raw' : 'spki';
-    const pubKey = await importPublicKey(format, algo, signed.doc.public_key!);
+    // This case targets Ed25519 specifically — the verifier is required
+    // to return false on a corrupted signature, NOT throw. Skip if the
+    // runtime fell back to ECDSA (which has different exception semantics
+    // on malformed signatures and is covered by the next test).
+    if (signed.doc.signature_algo !== 'Ed25519') {
+      return;
+    }
+    const pubKey = await importPublicKey('raw', 'Ed25519', signed.doc.public_key!);
     const sig = fromBase64(signed.doc.signature!);
     const body = new TextEncoder().encode(signed.bodyJson);
 
-    // XOR the first signature byte to flip its low bit.
     const tampered = new Uint8Array(sig);
     tampered[0] = tampered[0]! ^ 0x01;
 
-    // Some impls throw on a malformed ECDSA signature instead of returning
-    // false; either outcome counts as detection. Wrap and normalize.
-    let ok: boolean;
-    try {
-      ok = await verify(algo, pubKey, tampered, body);
-    } catch {
-      ok = false;
-    }
+    // Strict assertion: Ed25519 verify must RESOLVE to false, not throw.
+    // A regression where the verifier becomes exception-driven would slip
+    // past a try/catch normalization — this test catches that.
+    const ok = await verify('Ed25519', pubKey, tampered, body);
     expect(ok).toBe(false);
   });
 
