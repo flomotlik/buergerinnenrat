@@ -2,6 +2,7 @@
 id: '69'
 title: Wire Playwright e2e suite into CI gate (PR + push)
 status: done
+ship_state: pr_open
 priority: critical
 labels:
 - ci
