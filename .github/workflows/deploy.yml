@@ -1,7 +1,14 @@
 name: Deploy
 
+# Triggers:
+# - push to main: runs build → deploys to GitHub Pages → live-smoke
+# - pull_request: runs build only (lint, typecheck, unit tests, web build).
+#   Deploy + smoke jobs are gated to push events so PRs don't deploy.
+# - workflow_dispatch: manual re-run.
 on:
   push:
+    branches: [main]
+  pull_request:
     branches: [main]
   workflow_dispatch:
 
@@ -10,9 +17,11 @@ permissions:
   pages: write
   id-token: write
 
+# Limit Pages concurrency to push events only — multiple PRs running build in
+# parallel must NOT contend for the pages group, since they don't deploy.
 concurrency:
-  group: pages
-  cancel-in-progress: false
+  group: ${{ github.event_name == 'push' && 'pages' || format('pr-{0}', github.event.pull_request.number) }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   build:
@@ -48,15 +57,20 @@ jobs:
       - name: Build web bundle
         run: pnpm --filter @sortition/web build
 
+      # Pages artifact + deploy only run for push-to-main. PRs build but
+      # don't deploy.
       - name: Configure Pages
+        if: github.event_name == 'push'
         uses: actions/configure-pages@v5
 
       - name: Upload Pages artifact
+        if: github.event_name == 'push'
         uses: actions/upload-pages-artifact@v3
         with:
           path: apps/web/dist
 
   deploy:
+    if: github.event_name == 'push'
     needs: build
     runs-on: ubuntu-latest
     environment:
@@ -68,6 +82,7 @@ jobs:
         uses: actions/deploy-pages@v4
 
   smoke:
+    if: github.event_name == 'push'
     needs: deploy
     runs-on: ubuntu-latest
     steps:

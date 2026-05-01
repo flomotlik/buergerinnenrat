@@ -4,11 +4,19 @@ slug: ui-visual-redesign
 title: UI Visual Redesign — Branding, Tailwind v4, Desktop + Mobile, Screenshot-Iteration
 track: Z
 estimate_pt: 3
-status: planned
+status: superseded
+superseded_by: 65
 depends_on: [54, 55]
 priority: high
 priority_rationale: "Aktuelles UI ist funktional aber visuell unpoliert — würde Verwaltungen abschrecken bevor sie das eigentliche Tool sehen"
 ---
+
+> **SUPERSEDED — siehe Issue #65** (`.issues/archived/65-visual-redesign-design-handoff/` nach Merge).
+>
+> Diese Issue wurde nicht implementiert. Sie wurde 2026-04-30 abgelöst, nachdem ein hochauflösender
+> Design-Handoff (`design_handoff_buergerinnenrat/`) eintraf. #65 ist die kanonische Nachfolge-Issue
+> (gemerged via PR #1, 2026-05-01). #66 (Stage-3 Honest-Copy) wurde mitgemerged. Deferred Polish-Items
+> sind in #67 getrackt.
 
 # UI Visual Redesign
 
