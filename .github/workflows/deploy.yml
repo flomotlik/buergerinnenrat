@@ -76,6 +76,7 @@ jobs:
   e2e:
     needs: build
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:
@@ -101,9 +102,14 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+          # Per-browser cache key: each matrix leg installs a different browser
+          # binary; sharing one key would let only one browser persist.
+          # hashFiles uses apps/web/package.json (where @playwright/test is
+          # pinned) instead of pnpm-lock.yaml — narrower invalidation, only
+          # bumps when Playwright moves, not on every transitive dep change.
+          key: playwright-${{ runner.os }}-${{ matrix.browser }}-${{ hashFiles('apps/web/package.json') }}
           restore-keys: |
-            playwright-${{ runner.os }}-
+            playwright-${{ runner.os }}-${{ matrix.browser }}-
 
       - name: Install Playwright browsers (with deps)
         # --with-deps installs system libs; harmless if already cached.
@@ -143,9 +149,14 @@ jobs:
           if-no-files-found: ignore
 
   deploy:
+    # NOTE: Do not rewrite this `if:` to use always() / !cancelled() — the
+    # implicit success() over `needs: [build, e2e]` is what gates deploy on a
+    # green e2e. A status-function expression here would let deploy run even
+    # if e2e fails.
     if: github.event_name == 'push'
     needs: [build, e2e]
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -158,6 +169,7 @@ jobs:
     if: github.event_name == 'push'
     needs: deploy
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@v4
