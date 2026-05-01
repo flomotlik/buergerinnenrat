@@ -1,7 +1,7 @@
 ---
 id: '69'
 title: Wire Playwright e2e suite into CI gate (PR + push)
-status: open
+status: done
 priority: critical
 labels:
 - ci
