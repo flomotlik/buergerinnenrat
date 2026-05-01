@@ -53,73 +53,59 @@ function downloadHref(filename: string): string {
 const Beispiele: Component = () => {
   return (
     <div class="space-y-6" data-testid="docs-page-beispiele">
-      <aside
-        class="border-l-4 border-brand-accent bg-amber-50 p-3 rounded text-sm text-slate-800"
-        data-testid="beispiele-banner"
-      >
-        Diese Daten sind <strong>synthetisch erzeugt</strong>. Sie enthalten keine echten Personen.
-        Sie dürfen frei verwendet werden, um den Workflow auszuprobieren.
+      <aside class="banner info" data-testid="beispiele-banner">
+        <div>
+          Diese Daten sind <strong>synthetisch erzeugt</strong>. Sie enthalten keine echten Personen.
+          Sie dürfen frei verwendet werden, um den Workflow auszuprobieren.
+        </div>
       </aside>
 
       <section class="space-y-3">
-        <h2 class="text-xl font-semibold">Beispiel-Dateien zum Download</h2>
+        <h2 class="text-xl font-serif font-semibold">Beispiel-Dateien zum Download</h2>
         <p class="text-sm">
           Vier vor-generierte CSV-Dateien decken den vollen Stage-1- und Stage-3-Workflow ab. Klick
           auf eine Datei lädt sie direkt herunter — anschließend in den entsprechenden Stage-Reiter
           hochladen.
         </p>
-        <div class="overflow-x-auto">
-          <table class="min-w-full text-xs border" data-testid="beispiele-table">
-            <thead class="bg-slate-100">
-              <tr>
-                <th class="text-left px-3 py-2 font-semibold">Datei</th>
-                <th class="text-right px-3 py-2 font-semibold">Personen</th>
-                <th class="text-left px-3 py-2 font-semibold">Stage</th>
-                <th class="text-left px-3 py-2 font-semibold">Beschreibung</th>
-                <th class="text-left px-3 py-2 font-semibold">Download</th>
-              </tr>
-            </thead>
-            <tbody>
-              {FILES.map((f) => (
-                <tr class="border-t">
-                  <td class="px-3 py-2 font-mono">{f.filename}</td>
-                  <td class="px-3 py-2 text-right tabular-nums">{f.personen}</td>
-                  <td class="px-3 py-2">{f.stage}</td>
-                  <td class="px-3 py-2">{f.beschreibung}</td>
-                  <td class="px-3 py-2">
-                    <a
-                      class="btn-secondary inline-flex items-center gap-1"
-                      href={downloadHref(f.filename)}
-                      download={f.filename}
-                      data-testid={`download-${f.slug}`}
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        class="h-4 w-4"
-                        aria-hidden="true"
-                      >
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                        <polyline points="7 10 12 15 17 10" />
-                        <line x1="12" x2="12" y1="15" y2="3" />
-                      </svg>
-                      Download
-                    </a>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div class="sample-grid" data-testid="beispiele-table">
+          {FILES.map((f) => (
+            <a
+              class="sample-card no-underline flex flex-col gap-2"
+              href={downloadHref(f.filename)}
+              download={f.filename}
+              data-testid={`download-${f.slug}`}
+            >
+              <div class="flex items-center justify-between gap-2">
+                <span class="chip">{f.stage}</span>
+                <span class="text-xs tabular-nums text-ink-3">{f.personen} Personen</span>
+              </div>
+              <div class="font-mono text-xs text-ink break-all">{f.filename}</div>
+              <div class="text-sm text-ink-2">{f.beschreibung}</div>
+              <div class="mt-auto inline-flex items-center gap-1 text-xs font-semibold text-accent">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="h-4 w-4"
+                  aria-hidden="true"
+                >
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="7 10 12 15 17 10" />
+                  <line x1="12" x2="12" y1="15" y2="3" />
+                </svg>
+                Download
+              </div>
+            </a>
+          ))}
         </div>
       </section>
 
       <section class="space-y-2">
-        <h3 class="text-base font-semibold">Was steckt in den Spalten</h3>
+        <h3 class="text-base font-serif font-semibold">Was steckt in den Spalten</h3>
         <p class="text-sm">Stage-1-Felder (in den Melderegister-/Versand-/Kleinstadt-Dateien):</p>
         <ul class="list-disc pl-5 text-sm space-y-1">
           <li>
@@ -172,7 +158,7 @@ const Beispiele: Component = () => {
       </section>
 
       <section class="space-y-2">
-        <h3 class="text-base font-semibold">Warum synthetisch</h3>
+        <h3 class="text-base font-serif font-semibold">Warum synthetisch</h3>
         <p class="text-sm">
           Die Cluster-Verteilung (~85 % deutsch-österreichisch, ~5 % türkisch, ~3 % ex-jugoslawisch,
           ~3 % osteuropäisch, ~4 % sonstige) ist eine statistisch motivierte Schätzung auf Basis von

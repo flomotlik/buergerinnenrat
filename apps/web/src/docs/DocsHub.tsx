@@ -192,8 +192,8 @@ const DocsHub: Component<Props> = (props) => {
       fallback={
         <section class="space-y-6" data-testid="docs-hub">
           <header>
-            <h2 class="text-2xl font-semibold tracking-tight text-brand">Dokumentation</h2>
-            <p class="text-sm text-slate-600 mt-2 max-w-2xl">
+            <h2 class="text-2xl font-serif font-semibold tracking-tight text-ink">Dokumentation</h2>
+            <p class="text-sm text-ink-2 mt-2 max-w-2xl">
               Erklärungen zum Algorithmus, der eingesetzten Technik, dem Reproduktions-Pfad und den
               rechtlichen Grundlagen.
             </p>
@@ -209,15 +209,15 @@ const DocsHub: Component<Props> = (props) => {
                 >
                   {tile.icon}
                   <div>
-                    <div class="text-lg font-semibold text-slate-900">{tile.title}</div>
-                    <div class="text-sm text-slate-600 mt-1">{tile.description}</div>
+                    <div class="text-lg font-serif font-semibold text-ink">{tile.title}</div>
+                    <div class="text-sm text-ink-2 mt-1">{tile.description}</div>
                   </div>
                 </button>
               )}
             </For>
           </div>
           <footer
-            class="text-xs text-slate-500 border-t pt-3 mt-8"
+            class="text-xs text-ink-3 border-t border-line pt-3 mt-8"
             data-testid="docs-build-footer-hub"
           >
             Diese Doku gehört zu Build <code class="font-mono">{__GIT_SHA__}</code> vom{' '}
