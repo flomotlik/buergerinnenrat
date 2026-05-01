@@ -64,14 +64,15 @@ export const AgeBandsEditor: Component<AgeBandsEditorProps> = (props) => {
   };
 
   return (
-    <fieldset class="border rounded p-3 space-y-2" data-testid="stage1-age-bands-editor">
-      <legend class="text-sm font-semibold px-1">
-        Altersgruppen-Bänder (berechnet aus geburtsjahr)
-      </legend>
-      <p class="text-xs text-slate-600">
-        Stichtag: {props.refYear}. Bänder mit Modus 'nur Anzeige' werden nicht in die Auswahl
-        gezogen — die Personen bleiben aber im Pool.
-      </p>
+    <fieldset class="card space-y-3" data-testid="stage1-age-bands-editor">
+      <div class="card-head">
+        <span class="card-eyebrow">Schritt 3a</span>
+        <legend class="card-title px-0">Altersgruppen-Bänder (berechnet aus geburtsjahr)</legend>
+        <p class="card-help">
+          Stichtag: {props.refYear}. Bänder mit Modus 'nur Anzeige' werden nicht in die Auswahl
+          gezogen — die Personen bleiben aber im Pool.
+        </p>
+      </div>
       <ul class="space-y-2">
         <For each={props.bands()}>
           {(b, i) => (
@@ -177,10 +178,10 @@ export const AgeBandsEditor: Component<AgeBandsEditorProps> = (props) => {
       </div>
       <div data-testid="bands-validation">
         <Show when={validationMsg() !== null}>
-          <p class="text-sm text-red-700">{validationMsg()}</p>
+          <p class="text-sm text-err">{validationMsg()}</p>
         </Show>
         <Show when={validationMsg() === null}>
-          <p class="text-sm text-emerald-700">{summary()}</p>
+          <p class="text-sm text-ok">{summary()}</p>
         </Show>
       </div>
     </fieldset>

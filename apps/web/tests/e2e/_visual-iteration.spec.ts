@@ -57,7 +57,9 @@ interface StepDef {
 
 const STEPS: StepDef[] = [
   { name: '01-header', hash: '#/stage1', anchorTestId: 'stage1-panel' },
-  { name: '02-tabs', hash: '#/stage1', anchorTestId: 'main-nav' },
+  // #65: pill-tab nav is now hidden at md+ (desktop screenshots), so anchor
+  // on a stable always-visible element on the Stage 1 route instead.
+  { name: '02-tabs', hash: '#/stage1', anchorTestId: 'stage1-trust-strip' },
   // Trust strip: lives at the top of Stage 1 BEFORE upload (under step header)
   { name: '03-trust-strip', hash: '#/stage1', anchorTestId: 'stage1-trust-strip' },
   // Stage-1 form view with CSV loaded so inputs and dropzone are visible.
@@ -90,7 +92,9 @@ interface FinalShot {
 
 const FINAL_SHOTS: FinalShot[] = [
   // Mirror the before-screenshots/ filenames.
-  { name: '01-stage3-default', hash: '#/stage3', anchorTestId: 'main-nav' },
+  // #65: pill-tab nav is now hidden at md+; csv-dropzone is the stable
+  // Stage 3 anchor visible at all viewports.
+  { name: '01-stage3-default', hash: '#/stage3', anchorTestId: 'csv-dropzone' },
   { name: '02-stage1-empty', hash: '#/stage1', anchorTestId: 'stage1-trust-strip' },
   { name: '03-docs-hub', hash: '#/docs', anchorTestId: 'docs-hub' },
   {

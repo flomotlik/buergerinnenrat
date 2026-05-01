@@ -1,19 +1,178 @@
+/*
+ * Visual redesign — issue #65 (supersedes #56).
+ * Tokens & shell derived from design_handoff_buergerinnenrat/.
+ * DO NOT import from design_handoff_buergerinnenrat/reference/ — it is a React/Babel wireframe.
+ */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* ----------------------------------------------------------------------- *
- * Base layer — body defaults, smooth scroll, Inter stylistic set
+ * Self-hosted fonts (SIL OFL 1.1) — see apps/web/public/fonts/<family>/OFL.txt.
+ *   - Source Serif 4 v4.005R (Adobe) — Reserved Font Name "Source"
+ *   - Inter v3.19 (Rasmus Andersson) — locked to v3.19; v4 renamed cv11 → cv01
+ *   - JetBrains Mono v2.304 (JetBrains)
+ * Capital ẞ (U+1E9E) verified present in Source Serif 4 v4.005 Regular + Semibold via ttx.
+ * ----------------------------------------------------------------------- */
+@font-face {
+  font-family: 'Source Serif 4';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/source-serif-4/SourceSerif4-Regular.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Source Serif 4';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/source-serif-4/SourceSerif4-Semibold.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/inter/Inter-Regular.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/inter/Inter-Medium.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/inter/Inter-SemiBold.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/jetbrains-mono/JetBrainsMono-Regular.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/jetbrains-mono/JetBrainsMono-Medium.woff2') format('woff2');
+}
+
+/* ----------------------------------------------------------------------- *
+ * Base layer — design tokens (CSS variables) + body defaults
  * ----------------------------------------------------------------------- */
 @layer base {
+  :root {
+    /* Hue indirection (preserved for #67 themability) */
+    --hue: 145;
+
+    /* Surfaces — warm-neutral */
+    --bg: oklch(98.4% 0.006 80);
+    --bg-sunken: oklch(96.5% 0.008 80);
+    --bg-card: oklch(100% 0 0);
+    --line: oklch(91% 0.005 80);
+    --line-strong: oklch(82% 0.008 80);
+
+    /* Ink scale */
+    --ink: oklch(20% 0.01 80);
+    --ink-2: oklch(35% 0.01 80);
+    --ink-3: oklch(50% 0.01 80);
+    --ink-4: oklch(65% 0.01 80);
+
+    /* Accent (civic-green) — pre-computed soft variants, NO color-mix() */
+    --accent: oklch(48% 0.14 var(--hue));
+    --accent-strong: oklch(40% 0.16 var(--hue));
+    --accent-soft: oklch(94% 0.04 var(--hue));
+    --accent-line: oklch(85% 0.06 var(--hue));
+    --accent-ink: oklch(28% 0.13 var(--hue));
+
+    /* State tokens */
+    --ok: oklch(55% 0.13 145);
+    --ok-soft: oklch(94% 0.04 145);
+    --warn: oklch(58% 0.13 60);
+    --warn-soft: oklch(94% 0.06 60);
+    --err: oklch(54% 0.20 25);
+    --err-soft: oklch(95% 0.04 25);
+
+    /* Spacing & radii */
+    --gap-1: 4px;
+    --gap-2: 8px;
+    --gap-3: 12px;
+    --gap-4: 16px;
+    --gap-5: 24px;
+    --gap-6: 32px;
+    --gap-7: 48px;
+    --pad-card: 24px;
+    --row-h: 44px; /* override handoff 40px to satisfy ≥44×44 mobile-touch-targets rule */
+    --radius: 8px;
+    --radius-lg: 14px;
+
+    /* Layout */
+    --sidebar-w: 256px;
+
+    /* Fonts (CSS variables — actual @font-face above) */
+    --serif: 'Source Serif 4', 'Vollkorn', Georgia, serif;
+    --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  }
+
+  [data-theme='dark'] {
+    --bg: oklch(18% 0.01 80);
+    --bg-sunken: oklch(14% 0.008 80);
+    --bg-card: oklch(22% 0.01 80);
+    --line: oklch(30% 0.008 80);
+    --line-strong: oklch(40% 0.012 80);
+    --ink: oklch(96% 0.005 80);
+    --ink-2: oklch(82% 0.008 80);
+    --ink-3: oklch(65% 0.01 80);
+    --ink-4: oklch(50% 0.012 80);
+    --accent: oklch(68% 0.12 var(--hue)); /* NOT 72% — too bright at hue 145 */
+    --accent-strong: oklch(78% 0.14 var(--hue));
+    --accent-soft: oklch(28% 0.06 var(--hue));
+    --accent-line: oklch(40% 0.08 var(--hue));
+    --accent-ink: oklch(88% 0.10 var(--hue));
+  }
+
+  [data-density='compact'] {
+    --gap-3: 8px;
+    --gap-4: 12px;
+    --gap-5: 16px;
+    --gap-6: 24px;
+    --pad-card: 16px;
+    --row-h: 40px;
+  }
+
+  /* OkLCH guard — Firefox ESR 102 etc. without oklch support fall through to a banner. */
+  @supports not (color: oklch(0 0 0)) {
+    body::before {
+      content: 'Dieser Browser unterstützt OkLCH-Farben nicht. Bitte aktualisieren.';
+      display: block;
+      padding: 12px;
+      background: #fde68a;
+      color: #000;
+      font-family: system-ui, sans-serif;
+    }
+  }
+
   html {
     scroll-behavior: smooth;
   }
 
   body {
-    /* cv11 = Inter stylistic set for legible 1/I/l differentiation. */
+    /* cv11 = Inter v3 stylistic set for legible 1/I/l differentiation.
+       Locked to Inter v3.19 — v4 renamed cv11 → cv01. */
+    font-family: var(--sans);
     font-feature-settings: 'cv11', 'ss01', 'ss03';
     text-rendering: optimizeLegibility;
+    background: var(--bg);
+    color: var(--ink);
   }
 
   /* Larger touch surface for buttons by default — overridden by .btn-*
@@ -26,130 +185,607 @@
 /* ----------------------------------------------------------------------- *
  * Component layer — reusable visual primitives. Used across App.tsx,
  * Stage1Panel.tsx, TrustStrip.tsx, DocsHub.tsx, DocsLayout.tsx etc.
+ *
+ * Class names below match the legacy set (.btn-primary, .card, .dropzone,
+ * .pill-tab*, .input-base, .status-pill*, .prose-app, .dropzone-icon/-label
+ * /-hint) so consumers in *.tsx don't change. Visual definitions are now
+ * token-driven (CSS variables from :root) per issue #65 / handoff styles.css.
  * ----------------------------------------------------------------------- */
 @layer components {
   /* ---- Buttons ---- */
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2
-      rounded-lg bg-brand-accent px-6 py-3
-      text-base font-semibold text-white
-      shadow-sm
-      transition
-      hover:bg-brand-accent-strong
-      focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent focus-visible:ring-offset-2
-      disabled:cursor-not-allowed disabled:opacity-50;
+    @apply inline-flex items-center justify-center gap-2 px-5;
+    min-height: var(--row-h);
+    background: var(--accent);
+    color: white;
+    border-radius: var(--radius);
+    font-weight: 600;
+    transition: background 120ms ease;
+  }
+  .btn-primary:hover {
+    background: var(--accent-strong);
+  }
+  .btn-primary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  .btn-primary:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2
-      rounded-lg bg-slate-100 px-4 py-2.5
-      text-sm font-medium text-slate-800
-      border border-slate-200
-      transition
-      hover:bg-slate-200
-      focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent focus-visible:ring-offset-2
-      disabled:cursor-not-allowed disabled:opacity-50;
+    @apply inline-flex items-center justify-center gap-2 px-5;
+    min-height: var(--row-h);
+    background: var(--bg-card);
+    color: var(--ink);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius);
+    font-weight: 500;
+    transition: background 120ms ease;
+  }
+  .btn-secondary:hover {
+    background: var(--bg-sunken);
+  }
+  .btn-secondary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  .btn-secondary:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
   }
 
   .btn-ghost {
-    @apply inline-flex items-center gap-2
-      rounded-md px-3 py-2
-      text-sm font-medium text-slate-700
-      transition
-      hover:bg-slate-100 hover:text-slate-900
-      focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent focus-visible:ring-offset-2;
+    @apply inline-flex items-center justify-center gap-2 px-3;
+    min-height: var(--row-h);
+    background: transparent;
+    color: var(--ink-2);
+    border-radius: var(--radius);
+    font-weight: 500;
+    transition: background 120ms ease;
+  }
+  .btn-ghost:hover {
+    background: var(--bg-sunken);
+    color: var(--ink);
+  }
+  .btn-ghost:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
   }
 
   /* ---- Cards ---- */
   .card {
-    @apply rounded-lg border border-slate-200 bg-white p-4 shadow-card;
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    padding: var(--pad-card);
   }
-
   .card-hover {
-    @apply transition-all duration-150
-      hover:-translate-y-0.5 hover:shadow-card-hover hover:border-slate-300;
+    transition:
+      transform 120ms ease,
+      box-shadow 120ms ease,
+      border-color 120ms ease;
+  }
+  .card-hover:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px oklch(20% 0 0 / 0.06);
+    border-color: var(--line-strong);
+  }
+  .card-head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-1);
+    margin-bottom: var(--gap-4);
+  }
+  .card-eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .card-title {
+    font-family: var(--serif);
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .card-help {
+    color: var(--ink-3);
+    font-size: 14px;
   }
 
-  /* ---- Tab Pills (top navigation) ---- */
+  /* ---- Tab Pills (top navigation, kept for <md fallback nav) ---- */
   .pill-tab {
-    @apply inline-flex items-center gap-2
-      rounded-full px-5 py-3
-      text-sm font-medium
-      transition
-      whitespace-nowrap
-      min-h-[44px]
-      focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent focus-visible:ring-offset-2;
+    @apply inline-flex items-center justify-center px-4;
+    /* Hard-coded ≥44px for mobile-touch-targets.spec.ts. */
+    min-height: 44px;
+    border-radius: 9999px;
+    border: 1px solid var(--line-strong);
+    background: var(--bg-card);
+    color: var(--ink-2);
+    font-weight: 500;
+    white-space: nowrap;
+    transition: all 120ms ease;
   }
-
+  .pill-tab:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
   .pill-tab-active {
-    @apply bg-brand text-brand-fg shadow-sm;
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
   }
-
-  .pill-tab-inactive {
-    @apply bg-slate-100 text-slate-700 hover:bg-slate-200 hover:text-slate-900;
+  .pill-tab-inactive:hover {
+    background: var(--bg-sunken);
+    color: var(--ink);
   }
 
   /* ---- Status Pills (in tables / inline) ---- */
   .status-pill {
-    @apply inline-flex items-center gap-1
-      rounded-full px-2.5 py-0.5
-      text-xs font-medium;
-  }
-  .status-pill-warn {
-    @apply status-pill bg-amber-100 text-amber-900 border border-amber-200;
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium;
   }
   .status-pill-ok {
-    @apply status-pill bg-green-100 text-green-900 border border-green-200;
+    background: var(--ok-soft);
+    color: var(--ok);
+  }
+  .status-pill-warn {
+    background: var(--warn-soft);
+    color: var(--warn);
+  }
+  .status-pill-err {
+    background: var(--err-soft);
+    color: var(--err);
   }
 
   /* ---- Form Inputs ---- */
-  .input-base {
-    @apply block w-full
-      rounded-md border border-slate-300 bg-white
-      px-3 py-2.5
-      text-sm text-slate-900
-      shadow-sm
-      transition
-      placeholder:text-slate-400
-      focus:border-brand-accent focus:outline-none focus:ring-2 focus:ring-brand-accent focus:ring-offset-1
-      disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-500;
-    /* Ensure ≥44px touch target. */
-    min-height: 44px;
+  .input-base,
+  .input,
+  .select {
+    @apply w-full px-3;
+    /* min-height enforces ≥44px touch target via --row-h. */
+    min-height: var(--row-h);
+    background: var(--bg-card);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 15px;
   }
-
-  .input-label {
-    @apply block text-sm font-medium text-slate-700 mb-1.5;
+  .input-base:focus,
+  .input:focus,
+  .select:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-color: var(--accent);
+  }
+  .input-base:disabled,
+  .input:disabled,
+  .select:disabled {
+    background: var(--bg-sunken);
+    color: var(--ink-3);
+    cursor: not-allowed;
+  }
+  .input-label,
+  .field-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink-2);
+    margin-bottom: var(--gap-1);
+  }
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-1);
   }
 
   /* ---- Drop-Zone (CSV upload visual style) ---- */
   .dropzone {
-    @apply relative flex flex-col items-center justify-center gap-3
-      rounded-lg border-2 border-dashed border-slate-300 bg-white
-      px-6 py-10
-      text-center
-      cursor-pointer
-      transition
-      hover:border-brand-accent hover:bg-brand-muted
-      focus-within:border-brand-accent focus-within:bg-brand-muted;
+    @apply flex flex-col items-center justify-center gap-2 cursor-pointer text-center;
+    min-height: 176px;
+    padding: var(--gap-5);
+    background: var(--bg-sunken);
+    border: 2px dashed var(--line-strong);
+    border-radius: var(--radius-lg);
+    color: var(--ink-3);
+    transition:
+      border-color 120ms ease,
+      background 120ms ease;
   }
-
+  .dropzone:hover,
+  .dropzone:focus-within {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .dropzone.is-drag {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
   .dropzone-icon {
-    @apply h-10 w-10 text-brand-accent;
+    width: 32px;
+    height: 32px;
+    color: var(--ink-3);
   }
-
   .dropzone-label {
-    @apply text-base font-medium text-slate-800;
+    font-weight: 600;
+    color: var(--ink);
   }
-
   .dropzone-hint {
-    @apply text-xs text-slate-500;
+    font-size: 13px;
+    color: var(--ink-3);
   }
 
   /* ---- Prose wrapper for docs subpages ---- */
   .prose-app {
-    @apply prose prose-slate max-w-3xl
-      prose-headings:font-semibold
-      prose-a:text-brand-accent prose-a:no-underline hover:prose-a:underline;
+    @apply prose prose-neutral max-w-none;
+    color: var(--ink);
+  }
+  .prose-app h2,
+  .prose-app h3 {
+    font-family: var(--serif);
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .prose-app a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .prose-app code {
+    font-family: var(--mono);
+    font-size: 0.9em;
+    background: var(--bg-sunken);
+    padding: 0.1em 0.35em;
+    border-radius: 4px;
+    color: var(--ink);
+  }
+
+  /* ===================================================================== *
+   * NEW component classes (handoff styles.css → tokenised)
+   * ===================================================================== */
+
+  /* ---- Banner — .banner.info / .banner.warn / .banner.ok / .banner.err ---- */
+  .banner {
+    display: flex;
+    gap: var(--gap-3);
+    align-items: flex-start;
+    padding: var(--gap-3) var(--gap-4);
+    border-radius: var(--radius);
+    border: 1px solid;
+    font-size: 14px;
+  }
+  .banner.info {
+    background: var(--accent-soft);
+    border-color: var(--accent-line);
+    color: var(--accent-ink);
+  }
+  .banner.warn {
+    background: var(--warn-soft);
+    border-color: oklch(80% 0.1 60);
+    color: oklch(35% 0.13 60);
+  }
+  .banner.ok {
+    background: var(--ok-soft);
+    border-color: oklch(80% 0.08 145);
+    color: oklch(35% 0.12 145);
+  }
+  .banner.err {
+    background: var(--err-soft);
+    border-color: oklch(80% 0.1 25);
+    color: oklch(35% 0.18 25);
+  }
+
+  /* ---- Step rail — 6 steps (Stage 1) ---- */
+  .step-rail {
+    display: grid;
+    gap: var(--gap-2);
+    grid-template-columns: repeat(6, 1fr);
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  @media (max-width: 1024px) {
+    .step-rail {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  @media (max-width: 640px) {
+    .step-rail {
+      grid-template-columns: 1fr;
+    }
+  }
+  .step {
+    display: flex;
+    gap: var(--gap-2);
+    align-items: center;
+    padding: var(--gap-2) var(--gap-3);
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    font-size: 13px;
+    color: var(--ink-3);
+  }
+  .step.is-current {
+    background: var(--accent-soft);
+    border-color: var(--accent-line);
+    color: var(--accent-ink);
+  }
+  .step.is-done {
+    color: var(--ink);
+  }
+  .step .step-num {
+    font-family: var(--mono);
+    font-weight: 600;
+    color: var(--ink-3);
+  }
+  .step.is-current .step-num {
+    color: var(--accent);
+  }
+
+  /* ---- Tables ---- */
+  .tbl {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 14px;
+  }
+  .tbl thead th {
+    position: sticky;
+    top: 0;
+    background: var(--bg-sunken);
+    color: var(--ink-3);
+    font-weight: 500;
+    text-align: left;
+    padding: var(--gap-2) var(--gap-3);
+    border-bottom: 1px solid var(--line-strong);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .tbl tbody td {
+    padding: var(--gap-2) var(--gap-3);
+    border-bottom: 1px solid var(--line);
+    color: var(--ink);
+  }
+  .tbl tbody tr:hover td {
+    background: var(--bg-sunken);
+  }
+  .tbl .tnum {
+    font-variant-numeric: tabular-nums;
+    font-family: var(--mono);
+  }
+
+  /* ---- Audit panel mono block ---- */
+  .audit {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+    /* Disable code ligatures in SHA hashes — JetBrains Mono OpenType. */
+    font-feature-settings: 'tnum' 1, 'calt' 0;
+    background: var(--bg-sunken);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: var(--gap-4);
+    color: var(--ink);
+  }
+  .audit dl {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: var(--gap-1) var(--gap-3);
+  }
+  .audit dt {
+    color: var(--ink-3);
+  }
+  .audit dd {
+    color: var(--ink);
+    word-break: break-all;
+    margin: 0;
+  }
+
+  .sig-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--gap-2);
+    padding: var(--gap-1) var(--gap-3);
+    background: var(--ok-soft);
+    color: var(--ok);
+    border: 1px solid oklch(80% 0.08 145);
+    border-radius: 9999px;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-feature-settings: 'tnum' 1, 'calt' 0;
+  }
+  .sig-pill::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--ok);
+  }
+  .sig-pill.is-unsigned {
+    background: var(--warn-soft);
+    color: var(--warn);
+    border-color: oklch(80% 0.1 60);
+  }
+  .sig-pill.is-unsigned::before {
+    background: var(--warn);
+  }
+
+  /* ---- Stats grid: 4 cols ≥lg, 2 md→lg, 1 <md ---- */
+  .stats-grid {
+    display: grid;
+    gap: var(--gap-3);
+    grid-template-columns: repeat(4, 1fr);
+  }
+  @media (max-width: 1024px) {
+    .stats-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (max-width: 640px) {
+    .stats-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  .stat {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: var(--gap-3);
+  }
+  .stat .k {
+    font-size: 12px;
+    color: var(--ink-3);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .stat .v {
+    font-family: var(--mono);
+    font-size: 22px;
+    color: var(--ink);
+    margin-top: 2px;
+    font-variant-numeric: tabular-nums;
+  }
+  .stat .delta {
+    font-size: 12px;
+    color: var(--ink-3);
+  }
+
+  /* ---- Axis chips ---- */
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--gap-1);
+    padding: 6px var(--gap-3);
+    min-height: 36px;
+    background: var(--bg-card);
+    border: 1px solid var(--line-strong);
+    border-radius: 9999px;
+    font-size: 14px;
+    color: var(--ink-2);
+    cursor: pointer;
+    transition:
+      background 120ms ease,
+      border-color 120ms ease;
+  }
+  .chip:hover {
+    border-color: var(--ink-3);
+  }
+  .chip.is-on {
+    background: var(--accent-soft);
+    border-color: var(--accent-line);
+    color: var(--accent-ink);
+  }
+  .chip.is-on::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+  .chip[aria-disabled='true'] {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  /* ---- Sample picker grid + cards (Beispiele.tsx) ---- */
+  .sample-grid {
+    display: grid;
+    gap: var(--gap-3);
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+  .sample-card {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    padding: var(--gap-4);
+    cursor: pointer;
+    transition: border-color 120ms ease;
+  }
+  .sample-card:hover {
+    border-color: var(--accent);
+  }
+
+  /* ---- Doc grid: sticky 220px TOC + 68ch body ---- */
+  .doc-grid {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 68ch);
+    gap: var(--gap-6);
+    align-items: start;
+  }
+  @media (max-width: 1024px) {
+    .doc-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  .doc-toc {
+    position: sticky;
+    top: var(--gap-4);
+    font-size: 13px;
+    max-height: calc(100vh - 64px);
+    overflow-y: auto;
+    padding-right: var(--gap-2);
+    border-right: 1px solid var(--line);
+  }
+  .doc-toc ol {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: var(--gap-1);
+  }
+  .doc-toc a {
+    color: var(--ink-3);
+    text-decoration: none;
+  }
+  .doc-toc a:hover,
+  .doc-toc a.is-active {
+    color: var(--accent);
+  }
+  .doc-body {
+    color: var(--ink);
+  }
+  @media (max-width: 1024px) {
+    .doc-toc {
+      display: none;
+    }
+  }
+
+  .callout {
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    padding: var(--gap-3) var(--gap-4);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    margin: var(--gap-4) 0;
+  }
+
+  /* ---- Sidebar (md+ — wrapper class for shell + print rule) ---- */
+  .sidebar {
+    background: var(--bg-sunken);
+  }
+  .sidebar nav a {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-2);
+    padding: 8px 12px;
+    min-height: 36px;
+    border-radius: var(--radius);
+    font-size: 14px;
+    color: var(--ink-2);
+    text-decoration: none;
+    transition: background 120ms ease;
+  }
+  .sidebar nav a:hover {
+    background: var(--bg-card);
+    color: var(--ink);
+  }
+  .sidebar nav a.is-active {
+    background: var(--accent-soft);
+    color: var(--accent-ink);
+    font-weight: 500;
   }
 }
 
@@ -232,5 +868,24 @@
   }
   [data-testid^='docs-page-'] details > *:not(summary) {
     display: block !important;
+  }
+}
+
+/* ----------------------------------------------------------------------- *
+ * Print rules added by issue #65 — hide new shell chrome on print.
+ * Existing print rules above (lines 322–395, ported from #56) remain in
+ * force; this block only covers chrome introduced by the redesign.
+ * ----------------------------------------------------------------------- */
+@media print {
+  .sidebar,
+  .mobile-drawer,
+  .overview-hero,
+  .step-rail,
+  [data-testid='primary-nav'] {
+    display: none !important;
+  }
+  body {
+    background: white;
+    color: black;
   }
 }

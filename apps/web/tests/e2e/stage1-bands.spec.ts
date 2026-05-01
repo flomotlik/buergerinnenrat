@@ -17,7 +17,10 @@ test.describe.configure({ mode: 'serial' });
 
 async function uploadHerzogenburg(page: import('@playwright/test').Page) {
   await page.goto('/');
-  await page.getByTestId('tab-stage1').click();
+  // #65: pill-tabs are md:hidden at desktop viewport — drive route via URL hash.
+  await page.evaluate(() => {
+    window.location.hash = '#/stage1';
+  });
   await expect(page.getByTestId('stage1-panel')).toBeVisible();
   await page.locator('[data-testid="stage1-csv-upload"]').setInputFiles({
     name: 'herzogenburg-melderegister-8000.csv',

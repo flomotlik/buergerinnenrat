@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 import solid from 'vite-plugin-solid';
 import { resolve } from 'node:path';
 import { execSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
 
 // Build-time provenance globals. The git SHA falls back to 'unknown' when
 // the build runs outside a git checkout (e.g. inside a release tarball or a
@@ -15,6 +16,19 @@ const GIT_SHA = (() => {
   }
 })();
 const BUILD_DATE = new Date().toISOString();
+// Tool version sourced from this package's package.json so audit footers and
+// the sidebar stay in lockstep with the npm version. Imported via readFileSync
+// because Node 20 import-attribute support varies across runners.
+const APP_VERSION = (() => {
+  try {
+    const pkg = JSON.parse(readFileSync(resolve(__dirname, 'package.json'), 'utf8')) as {
+      version?: string;
+    };
+    return pkg.version ?? '0.0.0';
+  } catch {
+    return '0.0.0';
+  }
+})();
 
 export default defineConfig({
   // Base path for asset URLs. Defaults to the GitHub Pages project path so
@@ -24,6 +38,7 @@ export default defineConfig({
   define: {
     __GIT_SHA__: JSON.stringify(GIT_SHA),
     __BUILD_DATE__: JSON.stringify(BUILD_DATE),
+    'import.meta.env.VITE_APP_VERSION': JSON.stringify(APP_VERSION),
   },
   plugins: [solid()],
   resolve: {

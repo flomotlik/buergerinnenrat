@@ -3,7 +3,10 @@ import { test, expect } from '@playwright/test';
 test.describe('docs hub + subpages', () => {
   test('Tab-Switch funktioniert und setzt URL-Hash', async ({ page }) => {
     await page.goto('/');
-    await page.getByTestId('tab-docs').click();
+    // #65: pill-tabs are md:hidden at desktop viewport — drive route via URL hash.
+    await page.evaluate(() => {
+      window.location.hash = '#/docs';
+    });
     await expect(page).toHaveURL(/#\/docs$/);
     // Hub itself, before drilling into a subpage.
     await expect(page.getByTestId('docs-hub')).toBeVisible();

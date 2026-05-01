@@ -10,7 +10,10 @@ test('beispiele: download from /docs → upload into Stage 1 → run', async ({ 
   await page.goto('/');
 
   // Switch to Stage 1, click the new "Beispiel-Datei verwenden" hint link.
-  await page.getByTestId('tab-stage1').click();
+  // #65: pill-tabs are md:hidden at desktop viewport — drive route via URL hash.
+  await page.evaluate(() => {
+    window.location.hash = '#/stage1';
+  });
   await expect(page.getByTestId('stage1-panel')).toBeVisible();
   await page.getByTestId('stage1-beispiele-link').click();
 
@@ -38,7 +41,10 @@ test('beispiele: download from /docs → upload into Stage 1 → run', async ({ 
   expect(lines.length).toBeLessThanOrEqual(8100);
 
   // Navigate back to Stage 1 and upload the freshly-downloaded file.
-  await page.getByTestId('tab-stage1').click();
+  // #65: pill-tabs are md:hidden at desktop viewport — drive route via URL hash.
+  await page.evaluate(() => {
+    window.location.hash = '#/stage1';
+  });
   await expect(page.getByTestId('stage1-panel')).toBeVisible();
   await page.locator('[data-testid="stage1-csv-upload"]').setInputFiles({
     name: 'herzogenburg-melderegister-8000.csv',
