@@ -58,6 +58,13 @@ jobs:
       - name: Run unit tests (web)
         run: pnpm --filter @sortition/web test
 
+      # Issue #72: prevent drift between .csv and .xlsx beispiele. Re-parses
+      # each .xlsx and compares against the source CSV's normalized 2D array.
+      # If a CSV is updated without re-running `pnpm tsx scripts/csv-to-xlsx.ts`,
+      # this step fails the CI before the build.
+      - name: Verify xlsx beispiele in sync with CSV
+        run: pnpm tsx scripts/csv-to-xlsx.ts --check
+
       - name: Build web bundle
         run: pnpm --filter @sortition/web build
 
