@@ -1,3 +1,49 @@
+# Bundle Delta — Issue #72 (Excel-Upload + -Export via SheetJS)
+
+**Build:** `VITE_BASE_PATH=/ pnpm --filter @sortition/web build` (Vite 6, sourcemaps enabled).
+**Baseline:** post-#65 (`index-*.js` 137.40 KB raw / 44.84 KB gzip — siehe Eintrag unten).
+**Post:** commits 08df604..047b477 on `issue/72-excel-upload-support` (alle 16 Tasks aus Phasen A-F).
+**Date:** 2026-05-04.
+
+| Asset                          | Baseline (KB) | After (KB) | Delta (KB) |
+| ------------------------------ | ------------: | ---------: | ---------: |
+| dist/assets/index-*.js (raw)   |        137.40 |     142.17 |      +4.77 |
+| dist/assets/index-*.js (gzip)  |         44.84 |      46.36 |      +1.52 |
+| dist/assets/index-*.css (raw)  |         45.00 |      45.00 |       0.00 |
+| dist/assets/index-*.css (gzip) |          8.83 |       8.83 |       0.00 |
+| **JS+CSS combined (raw)**      |        182.40 |     187.17 |      +4.77 |
+| **JS+CSS combined (gzip)**     |         53.67 |      55.19 |      +1.52 |
+
+**Hard-Constraint (Plan Task 16):** main `index-*.js` Δ ≤ 5 KB raw. **Status: +4.77 KB raw — innerhalb des Budgets.** Gzip-Delta +1.52 KB ist die FileImport-Routing-Logik, der `selectedToXlsx`/`stage1ResultToXlsx`-Lazy-Wrapper und der `downloadBinaryBlob`-Helper. Kein top-level `xlsx`-Import in der main-Bundle.
+
+## Lazy chunks (separate from main-bundle budget)
+
+| Chunk             | Raw (KB) | Gzip (KB) | Status |
+| ----------------- | -------: | --------: | --- |
+| `xlsx-*.js` (NEW) |   499.91 |    163.13 | NEU — async, lädt nur bei `.xlsx`-Upload oder Excel-Download |
+| `Beispiele-*.js`  |     7.09 |      2.92 | +1.92 KB raw / +0.62 KB gzip (Excel-Format-Sektion) |
+
+Der xlsx-Chunk wird erst geladen wenn der User
+1. eine `.xlsx`-Datei in einer der Drop-Zonen auswählt (Stage 1 oder Stage 3), oder
+2. einen der zwei Excel-Download-Buttons klickt (Stage 1 Versand-Liste, Stage 3 Panel).
+
+CSV-only-User sehen keinen Bandwidth-Hit. Die echten Zahlen (~500 KB raw / ~163 KB gzip) liegen ~16 % über der RESEARCH.md-Schätzung (~430 / ~140) — die Diskrepanz kommt von SheetJS' eingebautem Encoding-Mapping (cptable). Innerhalb der Lazy-Strategie unkritisch.
+
+## Beispiel-Files-Delta (apps/web/public/beispiele/)
+
+Vier neue `.xlsx`-Files parallel zu den bestehenden CSVs (vom `csv-to-xlsx.ts`-Script generiert):
+
+| File | CSV (KB) | XLSX (KB) |
+| --- | ---: | ---: |
+| `herzogenburg-melderegister-8000` | 648 | 3 072 |
+| `kleinstadt-3000` | 232 | 1 126 |
+| `herzogenburg-versand-300` | 28 | 124 |
+| `herzogenburg-antwortende-60` | 8 | 44 |
+
+Excel-Files sind grösser als CSV (XML+ZIP statt plain text), werden aber nur on-demand vom Server geholt — kein Build-Time-Impact.
+
+---
+
 # Bundle Delta — Issue #65 (Visual redesign + design handoff adoption)
 
 **Build:** `VITE_BASE_PATH=/ pnpm --filter @sortition/web build` (Vite 6, sourcemaps enabled).
