@@ -92,6 +92,10 @@ importers:
         version: 2.1.9(@types/node@22.19.17)(jsdom@25.0.1)
 
   packages/core:
+    dependencies:
+      xlsx:
+        specifier: https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz
+        version: https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz
     devDependencies:
       typescript:
         specifier: ^5.6.3

@@ -1,6 +1,7 @@
 export { stratify, bucketize, largestRemainderAllocation } from './stratify';
 export { sha256Hex, buildStage1Audit, canonicalStage1Json } from './audit-builder';
 export { rfc4180Quote, stage1ResultToCsv } from './csv-export';
+export { stage1ResultToXlsx } from './xlsx-export';
 export {
   marginalAggregates,
   coverageMetric,
@@ -20,6 +21,7 @@ export type {
   BuildStage1AuditArgs,
 } from './types';
 export type { Stage1CsvOptions, Stage1CsvResult } from './csv-export';
+export type { Stage1XlsxResult } from './xlsx-export';
 export {
   suggestSampleSize,
   OUTREACH_DEFAULTS,
