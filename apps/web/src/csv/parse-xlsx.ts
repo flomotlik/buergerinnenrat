@@ -51,10 +51,7 @@ export async function parseXlsxFile(file: File, refYear?: number): Promise<Parse
   return parseXlsxBuffer(buf, refYear);
 }
 
-export async function parseXlsxBuffer(
-  buf: ArrayBuffer,
-  refYear?: number,
-): Promise<ParsedTable> {
+export async function parseXlsxBuffer(buf: ArrayBuffer, refYear?: number): Promise<ParsedTable> {
   // Lazy import — SheetJS chunk ships only when this function is actually
   // called (i.e. user uploaded .xlsx).
   const XLSX = await import('xlsx');

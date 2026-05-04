@@ -1,7 +1,8 @@
 import type { Component } from 'solid-js';
 import { createEffect, createMemo, createSignal, For, on, Show } from 'solid-js';
 import { autoGuessMapping, parseCsvFile } from '../csv/parse';
-import type { ParsedCsv } from '../csv/parse';
+import type { ParsedCsv, ParsedTable } from '../csv/parse';
+import { parseXlsxFile } from '../csv/parse-xlsx';
 import {
   DEFAULT_AGE_BANDS,
   recomputeAltersgruppe,
@@ -72,7 +73,7 @@ function recommendedAxes(headers: string[]): string[] {
 }
 
 export const Stage1Panel: Component = () => {
-  const [parsed, setParsed] = createSignal<ParsedCsv | null>(null);
+  const [parsed, setParsed] = createSignal<ParsedTable | null>(null);
   const [file, setFile] = createSignal<File | null>(null);
   const [defaultAxes, setDefaultAxes] = createSignal<string[]>([]);
   const [selectedAxes, setSelectedAxes] = createSignal<string[]>([]);
@@ -218,7 +219,10 @@ export const Stage1Panel: Component = () => {
     setError(null);
     setOutput(null);
     try {
-      const p = await parseCsvFile(f);
+      // Extension-based routing — locked decision in CONTEXT.md (kein
+      // Magic-Bytes-Check). SheetJS throws bubbled to the existing error slot.
+      const ext = f.name.toLowerCase().split('.').pop();
+      const p = ext === 'xlsx' ? await parseXlsxFile(f) : csvToTable(await parseCsvFile(f));
       const recs = recommendedAxes(p.headers);
       setFile(f);
       setParsed(p);
@@ -231,6 +235,20 @@ export const Stage1Panel: Component = () => {
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
     }
+  }
+
+  // Wrap a ParsedCsv as ParsedTable for the format-agnostic state shape;
+  // dropped in Phase E when parseCsvFile starts returning ParsedTable directly.
+  function csvToTable(p: ParsedCsv): ParsedTable {
+    return {
+      format: 'csv',
+      headers: p.headers,
+      rows: p.rows,
+      warnings: p.warnings,
+      derivedColumns: p.derivedColumns,
+      separator: p.separator,
+      encoding: p.encoding,
+    };
   }
 
   function toggleAxis(header: string) {
@@ -313,7 +331,10 @@ export const Stage1Panel: Component = () => {
         : undefined;
       const out = await runStage1({
         file: f,
-        parsed: p,
+        // runStage1 still expects ParsedCsv until Phase E migrates the type;
+        // ParsedTable is a runtime-superset (CSV-only fields optional, XLSX
+        // fields unused by runStage1), so the cast is safe here.
+        parsed: p as unknown as ParsedCsv,
         axes: selectedAxes(),
         targetN: n,
         seed: seed(),
@@ -433,8 +454,12 @@ export const Stage1Panel: Component = () => {
             <polyline points="17 8 12 3 7 8" />
             <line x1="12" x2="12" y1="3" y2="15" />
           </svg>
-          <span class="dropzone-label">Melderegister-CSV hochladen oder hier ablegen</span>
-          <span class="dropzone-hint">CSV mit Header-Zeile, UTF-8 oder Latin-1</span>
+          <span class="dropzone-label">
+            Melderegister-CSV oder Excel hochladen oder hier ablegen
+          </span>
+          <span class="dropzone-hint">
+            CSV (UTF-8/Latin-1) oder Excel (.xlsx) mit Header in Zeile 1
+          </span>
           <Show when={file()}>
             {(f) => (
               <span class="text-xs text-accent-strong font-medium mt-1">Geladen: {f().name}</span>
@@ -442,7 +467,7 @@ export const Stage1Panel: Component = () => {
           </Show>
           <input
             type="file"
-            accept=".csv,.txt,text/csv,text/plain"
+            accept=".csv,.txt,text/csv,text/plain,.xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             class="sr-only"
             data-testid="stage1-csv-upload"
             onChange={(e) => {
@@ -468,9 +493,21 @@ export const Stage1Panel: Component = () => {
           {(p) => (
             <>
               <p class="mt-2 text-sm text-ink-2" data-testid="stage1-pool-summary">
-                {p().rows.length} Zeilen geladen ({p().headers.length} Spalten,{' '}
-                {p().separator === '\t' ? 'TAB' : p().separator}-getrennt, Encoding{' '}
-                <code>{p().encoding}</code>).
+                <Show
+                  when={p().format === 'csv'}
+                  fallback={
+                    <>
+                      {p().rows.length} Zeilen geladen ({p().headers.length} Spalten, Worksheet{' '}
+                      <code>{p().sheetName}</code>
+                      <Show when={(p().sheetCount ?? 1) > 1}> — 1 von {p().sheetCount}</Show>
+                      ).
+                    </>
+                  }
+                >
+                  {p().rows.length} Zeilen geladen ({p().headers.length} Spalten,{' '}
+                  {p().separator === '\t' ? 'TAB' : p().separator}-getrennt, Encoding{' '}
+                  <code>{p().encoding}</code>).
+                </Show>
               </p>
               {/* CSV preview (issue #53 I): first 5 rows so the operator can
                   visually confirm the upload before configuring axes. */}

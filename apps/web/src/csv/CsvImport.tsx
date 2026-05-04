@@ -1,20 +1,25 @@
 import type { Component } from 'solid-js';
 import { createSignal, For, Show } from 'solid-js';
 import { autoGuessMapping, parseCsvFile, SEMANTIC_FIELDS, validateMapping } from './parse';
-import type { ColumnMapping, ParsedCsv, SemanticField } from './parse';
+import type { ColumnMapping, ParsedCsv, ParsedTable, SemanticField } from './parse';
+import { parseXlsxFile } from './parse-xlsx';
 
 export interface CsvImportProps {
   onLoaded: (data: { parsed: ParsedCsv; mapping: ColumnMapping }) => void;
 }
 
 export const CsvImport: Component<CsvImportProps> = (props) => {
-  const [parsed, setParsed] = createSignal<ParsedCsv | null>(null);
+  const [parsed, setParsed] = createSignal<ParsedTable | null>(null);
   const [mapping, setMapping] = createSignal<ColumnMapping>({});
   const [error, setError] = createSignal<string | null>(null);
 
   async function handleFile(file: File) {
     try {
-      const p = await parseCsvFile(file);
+      // Extension-based routing — locked decision in CONTEXT.md (kein
+      // Magic-Bytes-Check). SheetJS throws bubbled to the existing csv-error
+      // slot when the file is corrupt or password-protected.
+      const ext = file.name.toLowerCase().split('.').pop();
+      const p = ext === 'xlsx' ? await parseXlsxFile(file) : csvToTable(await parseCsvFile(file));
       const m = autoGuessMapping(p.headers);
       setParsed(p);
       setMapping(m);
@@ -22,6 +27,20 @@ export const CsvImport: Component<CsvImportProps> = (props) => {
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
     }
+  }
+
+  // Wrap a ParsedCsv as ParsedTable for the format-agnostic state shape;
+  // dropped in Phase E when parseCsvFile starts returning ParsedTable directly.
+  function csvToTable(p: ParsedCsv): ParsedTable {
+    return {
+      format: 'csv',
+      headers: p.headers,
+      rows: p.rows,
+      warnings: p.warnings,
+      derivedColumns: p.derivedColumns,
+      separator: p.separator,
+      encoding: p.encoding,
+    };
   }
 
   function onDrop(ev: DragEvent) {
@@ -42,7 +61,10 @@ export const CsvImport: Component<CsvImportProps> = (props) => {
       setError(v.errors.join(' '));
       return;
     }
-    props.onLoaded({ parsed: p, mapping: mapping() });
+    // Until Phase E lands ParsedTable as the public interface, downstream
+    // (App.tsx → applyMapping) only consumes .rows / .headers — both shared
+    // between ParsedCsv and ParsedTable. Cast is safe at runtime.
+    props.onLoaded({ parsed: p as unknown as ParsedCsv, mapping: mapping() });
   }
 
   const validation = () => {
@@ -76,11 +98,13 @@ export const CsvImport: Component<CsvImportProps> = (props) => {
           <polyline points="17 8 12 3 7 8" />
           <line x1="12" x2="12" y1="3" y2="15" />
         </svg>
-        <span class="dropzone-label">CSV hochladen oder hier ablegen</span>
-        <span class="dropzone-hint">CSV mit Header-Zeile, UTF-8 oder Latin-1</span>
+        <span class="dropzone-label">CSV oder Excel hochladen oder hier ablegen</span>
+        <span class="dropzone-hint">
+          CSV (UTF-8/Latin-1) oder Excel (.xlsx) mit Header in Zeile 1
+        </span>
         <input
           type="file"
-          accept=".csv,.txt,text/csv,text/plain"
+          accept=".csv,.txt,text/csv,text/plain,.xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
           class="sr-only"
           onChange={(e) => {
             const f = e.currentTarget.files?.[0];
@@ -99,9 +123,19 @@ export const CsvImport: Component<CsvImportProps> = (props) => {
         {(p) => (
           <div class="space-y-4">
             <div class="text-sm text-slate-700">
-              {p().rows.length} Zeilen, Trenner{' '}
-              <code>{p().separator === '\t' ? 'TAB' : p().separator}</code>, Encoding{' '}
-              <code>{p().encoding}</code>
+              <Show
+                when={p().format === 'csv'}
+                fallback={
+                  <>
+                    {p().rows.length} Zeilen, Worksheet <code>{p().sheetName}</code>
+                    <Show when={(p().sheetCount ?? 1) > 1}> (1 von {p().sheetCount})</Show>
+                  </>
+                }
+              >
+                {p().rows.length} Zeilen, Trenner{' '}
+                <code>{p().separator === '\t' ? 'TAB' : p().separator}</code>, Encoding{' '}
+                <code>{p().encoding}</code>
+              </Show>
             </div>
 
             {/* TODO(#53-followup): refactor inline preview to use shared
