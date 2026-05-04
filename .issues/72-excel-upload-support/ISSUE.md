@@ -1,7 +1,7 @@
 ---
 id: '72'
 title: 'Excel-Support: Upload (.xlsx) und Export für Ergebnis-Listen'
-status: open
+status: done
 priority: medium
 labels:
 - feature
