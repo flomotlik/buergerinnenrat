@@ -217,6 +217,14 @@ export const TECH_MANIFEST: TechEntry[] = [
     "sourceUrl": "https://vitest.dev/"
   },
   {
+    "name": "xlsx",
+    "version": "0.20.3",
+    "license": "Apache-2.0",
+    "kind": "runtime",
+    "purpose": "Excel-Parser und -Writer (SheetJS Community Edition) für .xlsx-Upload und -Export. Lazy-geladen, nur bei Bedarf.",
+    "sourceUrl": "https://sheetjs.com/"
+  },
+  {
     "name": "zod",
     "version": "3.25.76",
     "license": "MIT",

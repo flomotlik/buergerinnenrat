@@ -76,6 +76,12 @@ const PURPOSE_MAP: Record<
     purpose: 'HiGHS-Solver für Stage 3 (Maximin) als WASM.',
     sourceUrl: 'https://highs.dev/',
   },
+  xlsx: {
+    kind: 'runtime',
+    purpose:
+      'Excel-Parser und -Writer (SheetJS Community Edition) für .xlsx-Upload und -Export. Lazy-geladen, nur bei Bedarf.',
+    sourceUrl: 'https://sheetjs.com/',
+  },
   vitest: {
     kind: 'test',
     purpose: 'Unit-Test-Runner.',
