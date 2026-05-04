@@ -5,6 +5,7 @@ import {
   selectedToCsv,
   AUDIT_SCHEMA_VERSION,
 } from '../../src/run/audit';
+import type { SeatAllocation, SeatAllocationOverride } from '../../src/quotas/seat-allocation';
 import type { Pool, Quotas, RunResult } from '@sortition/engine-contract';
 
 // Unit coverage for run/audit.ts:
@@ -140,6 +141,102 @@ describe('buildAudit', () => {
     });
     expect(doc.timing.num_committees).toBeUndefined();
     expect(doc.timing.total_ms).toBe(7);
+  });
+});
+
+describe('AUDIT_SCHEMA_VERSION', () => {
+  it('is bumped to 0.2 (Task 5 — adds optional seat_allocation field)', () => {
+    expect(AUDIT_SCHEMA_VERSION).toBe('0.2');
+  });
+});
+
+describe('buildAudit — seat_allocation handling', () => {
+  function makeBaseline(): SeatAllocation['baseline'] {
+    return { gender: { m: 1, f: 1 } };
+  }
+
+  function makeOverride(): SeatAllocationOverride {
+    return {
+      axis: 'gender',
+      seats: { m: 2, f: 0 },
+      rationale: 'Geschlechter-Quote-Override gemäss Geschäftsordnung §17 Absatz 3.',
+      timestamp_iso: '2026-05-04T12:00:00Z',
+    };
+  }
+
+  it('omits seat_allocation when no SeatAllocation passed (backward-compat)', async () => {
+    const doc = await buildAudit({
+      pool: makePool(),
+      quotas: makeQuotas(),
+      seed: 42,
+      result: makeRunResult(),
+      duration_ms: 99,
+    });
+    expect(doc.schema_version).toBe('0.2');
+    expect(doc.seat_allocation).toBeUndefined();
+  });
+
+  it('writes baseline + override + deviation when override is active', async () => {
+    const seatAllocation: SeatAllocation = {
+      baseline: makeBaseline(),
+      override: makeOverride(),
+    };
+    const doc = await buildAudit({
+      pool: makePool(),
+      quotas: makeQuotas(),
+      seed: 42,
+      result: makeRunResult(),
+      duration_ms: 99,
+      seatAllocation,
+    });
+    expect(doc.seat_allocation).toBeDefined();
+    expect(doc.seat_allocation!.baseline).toEqual(makeBaseline());
+    expect(doc.seat_allocation!.override).toEqual(makeOverride());
+    expect(doc.seat_allocation!.deviation).toEqual({
+      m: { delta_seats: 1, delta_percent: 0.5 },
+      f: { delta_seats: -1, delta_percent: -0.5 },
+    });
+  });
+
+  it('writes baseline + null override + null deviation when override absent', async () => {
+    const seatAllocation: SeatAllocation = {
+      baseline: makeBaseline(),
+      override: null,
+    };
+    const doc = await buildAudit({
+      pool: makePool(),
+      quotas: makeQuotas(),
+      seed: 42,
+      result: makeRunResult(),
+      duration_ms: 99,
+      seatAllocation,
+    });
+    expect(doc.seat_allocation).toBeDefined();
+    expect(doc.seat_allocation!.override).toBeNull();
+    expect(doc.seat_allocation!.deviation).toBeNull();
+    expect(doc.seat_allocation!.baseline).toEqual(makeBaseline());
+  });
+
+  it('property order is deterministic — schema_version first, seat_allocation after timing', async () => {
+    const seatAllocation: SeatAllocation = {
+      baseline: makeBaseline(),
+      override: makeOverride(),
+    };
+    const doc = await buildAudit({
+      pool: makePool(),
+      quotas: makeQuotas(),
+      seed: 42,
+      result: makeRunResult(),
+      duration_ms: 99,
+      seatAllocation,
+    });
+    const keys = Object.keys(doc);
+    expect(keys[0]).toBe('schema_version');
+    // seat_allocation must come AFTER timing — the doc is signed via plain
+    // JSON.stringify, so order is the wire format. Pre-signing only.
+    const timingIdx = keys.indexOf('timing');
+    const seatIdx = keys.indexOf('seat_allocation');
+    expect(seatIdx).toBeGreaterThan(timingIdx);
   });
 });
 
