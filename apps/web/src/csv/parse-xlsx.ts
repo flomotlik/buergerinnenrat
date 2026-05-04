@@ -47,10 +47,17 @@ function convertCell(value: unknown): string {
 }
 
 export async function parseXlsxFile(file: File, refYear?: number): Promise<ParsedTable> {
+  const buf = await file.arrayBuffer();
+  return parseXlsxBuffer(buf, refYear);
+}
+
+export async function parseXlsxBuffer(
+  buf: ArrayBuffer,
+  refYear?: number,
+): Promise<ParsedTable> {
   // Lazy import — SheetJS chunk ships only when this function is actually
   // called (i.e. user uploaded .xlsx).
   const XLSX = await import('xlsx');
-  const buf = await file.arrayBuffer();
 
   let wb: XlsxWorkbook;
   try {
@@ -97,13 +104,15 @@ export async function parseXlsxFile(file: File, refYear?: number): Promise<Parse
     );
   }
 
-  // 2D-array form — header: 1 returns rows as arrays, raw: false applies cell
-  // formatters but keeps Date objects (because cellDates: true above), defval
-  // ensures missing cells become empty string, blankrows: false drops empty
-  // trailing rows that Excel often appends.
+  // 2D-array form — header: 1 returns rows as arrays, raw: true gives raw
+  // typed values (Date / number / string / boolean) which we then convert
+  // ourselves in convertCell. Without raw: true, SheetJS would format dates
+  // via the cell's number-format string (e.g. '6/15/90'), losing ISO 8601.
+  // defval ensures missing cells become empty string, blankrows: false drops
+  // empty trailing rows that Excel often appends.
   const aoa = XLSX.utils.sheet_to_json<unknown[]>(ws, {
     header: 1,
-    raw: false,
+    raw: true,
     defval: '',
     blankrows: false,
   });
