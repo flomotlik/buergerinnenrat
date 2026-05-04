@@ -22,6 +22,22 @@ export interface ParsedCsv {
   derivedColumns: string[];
 }
 
+// ParsedTable: format-agnostic table structure for CSV + XLSX. ParsedCsv kept
+// for backward-compat until rename in #72 phase E.
+export interface ParsedTable {
+  format: 'csv' | 'xlsx';
+  headers: string[];
+  rows: Record<string, string>[];
+  warnings: string[];
+  derivedColumns: string[];
+  // CSV-only fields (only populated when format === 'csv'):
+  separator?: ',' | ';' | '\t';
+  encoding?: SupportedEncoding;
+  // XLSX-only fields (only populated when format === 'xlsx'):
+  sheetName?: string;
+  sheetCount?: number;
+}
+
 const BOM = 0xfeff;
 
 function decodeBuffer(buf: ArrayBuffer): { text: string; encoding: SupportedEncoding } {
