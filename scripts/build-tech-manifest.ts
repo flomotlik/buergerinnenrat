@@ -86,6 +86,11 @@ const PURPOSE_MAP: Record<
     purpose: 'End-to-End-Tests in echten Browsern.',
     sourceUrl: 'https://playwright.dev/',
   },
+  '@axe-core/playwright': {
+    kind: 'test',
+    purpose: 'Automatisierte Barrierefreiheits-Prüfung (WCAG 2 A/AA) der gerenderten Seiten in Playwright-Specs.',
+    sourceUrl: 'https://github.com/dequelabs/axe-core-npm/tree/develop/packages/playwright',
+  },
   eslint: {
     kind: 'test',
     purpose: 'Linter für TypeScript.',

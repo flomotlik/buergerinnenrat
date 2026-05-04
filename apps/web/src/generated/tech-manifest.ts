@@ -12,6 +12,14 @@ export interface TechEntry {
 
 export const TECH_MANIFEST: TechEntry[] = [
   {
+    "name": "@axe-core/playwright",
+    "version": "4.11.3",
+    "license": "MPL-2.0",
+    "kind": "test",
+    "purpose": "Automatisierte Barrierefreiheits-Prüfung (WCAG 2 A/AA) der gerenderten Seiten in Playwright-Specs.",
+    "sourceUrl": "https://github.com/dequelabs/axe-core-npm/tree/develop/packages/playwright"
+  },
+  {
     "name": "@kobalte/core",
     "version": "0.13.11",
     "license": "MIT",
