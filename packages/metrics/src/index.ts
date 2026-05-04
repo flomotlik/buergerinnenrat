@@ -4,6 +4,8 @@
 
 import type { RunResult } from '@sortition/engine-contract';
 
+export { seatAllocationDrift, type SeatAllocationDrift } from './seat-allocation-drift';
+
 export interface QualityMetrics {
   min_pi: number;
   min_pi_2: number;
