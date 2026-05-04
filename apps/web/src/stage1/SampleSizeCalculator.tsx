@@ -111,7 +111,8 @@ export const SampleSizeCalculator: Component<SampleSizeCalculatorProps> = (props
             }}
           />
           <p class="text-xs text-slate-500 mt-1">
-            Z.B. 30 für einen Gemeinde-Bürgerrat, 160 für einen Bundes-Bürgerrat.
+            Z.B. 30 für einen Gemeinde-Bürgerrat, 50–100 für eine Landeskonferenz-Delegation, 160
+            für einen Bundes-Bürgerrat.
           </p>
         </div>
 
