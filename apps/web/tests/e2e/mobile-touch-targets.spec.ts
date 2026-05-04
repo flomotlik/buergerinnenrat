@@ -101,7 +101,7 @@ test('mobile: stage 1 inputs and run-button are ≥44×44 after CSV load', async
 }) => {
   await page.goto('/#/stage1');
   // Upload a fixture so the inputs + run-button render.
-  await page.locator('[data-testid="stage1-csv-upload"]').setInputFiles({
+  await page.locator('[data-testid="stage1-file-upload"]').setInputFiles({
     name: 'pool.csv',
     mimeType: 'text/csv',
     buffer: readFileSync(FIXTURE),
@@ -115,7 +115,7 @@ test('mobile: stage 1 inputs and run-button are ≥44×44 after CSV load', async
     'stage1-run',
     // The dropzone label itself wraps the upload — the label is the visible
     // tap surface (input is sr-only). Use the dropzone container test-id.
-    'stage1-csv-dropzone',
+    'stage1-file-dropzone',
   ]) {
     await assertTouchTarget(page.getByTestId(id), id);
   }
@@ -125,7 +125,7 @@ test('mobile: stage 1 strata table container has horizontal scroll', async ({
   page,
 }) => {
   await page.goto('/#/stage1');
-  await page.locator('[data-testid="stage1-csv-upload"]').setInputFiles({
+  await page.locator('[data-testid="stage1-file-upload"]').setInputFiles({
     name: 'pool.csv',
     mimeType: 'text/csv',
     buffer: readFileSync(FIXTURE),
@@ -151,7 +151,7 @@ test('mobile: sticky run button uses safe-area-inset-bottom', async ({
   page,
 }) => {
   await page.goto('/#/stage1');
-  await page.locator('[data-testid="stage1-csv-upload"]').setInputFiles({
+  await page.locator('[data-testid="stage1-file-upload"]').setInputFiles({
     name: 'pool.csv',
     mimeType: 'text/csv',
     buffer: readFileSync(FIXTURE),

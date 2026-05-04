@@ -1,14 +1,14 @@
 import type { Component } from 'solid-js';
 import { createEffect, createMemo, createSignal, For, on, Show } from 'solid-js';
-import { autoGuessMapping, parseCsvFile } from '../csv/parse';
-import type { ParsedCsv, ParsedTable } from '../csv/parse';
-import { parseXlsxFile } from '../csv/parse-xlsx';
+import { autoGuessMapping, parseCsvFile } from '../import/parse-csv';
+import type { ParsedTable } from '../import/parse-csv';
+import { parseXlsxFile } from '../import/parse-xlsx';
 import {
   DEFAULT_AGE_BANDS,
   recomputeAltersgruppe,
   validateBands,
   type AgeBand,
-} from '../csv/derive';
+} from '../import/derive';
 import { downloadBinaryBlob, downloadBlob } from '../run/audit';
 import { runStage1 } from './runStage1';
 import type { RunStage1Output } from './runStage1';
@@ -19,7 +19,7 @@ import { AuditFooter } from './AuditFooter';
 import { StratificationExplainer } from './StratificationExplainer';
 import { SampleSizeCalculator } from './SampleSizeCalculator';
 import TrustStrip from './TrustStrip';
-import { CsvPreview } from '../csv/CsvPreview';
+import { FilePreview } from '../import/FilePreview';
 import {
   coverageMetric,
   infoOnlyBandsReport,
@@ -222,7 +222,7 @@ export const Stage1Panel: Component = () => {
       // Extension-based routing — locked decision in CONTEXT.md (kein
       // Magic-Bytes-Check). SheetJS throws bubbled to the existing error slot.
       const ext = f.name.toLowerCase().split('.').pop();
-      const p = ext === 'xlsx' ? await parseXlsxFile(f) : csvToTable(await parseCsvFile(f));
+      const p = ext === 'xlsx' ? await parseXlsxFile(f) : await parseCsvFile(f);
       const recs = recommendedAxes(p.headers);
       setFile(f);
       setParsed(p);
@@ -235,20 +235,6 @@ export const Stage1Panel: Component = () => {
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
     }
-  }
-
-  // Wrap a ParsedCsv as ParsedTable for the format-agnostic state shape;
-  // dropped in Phase E when parseCsvFile starts returning ParsedTable directly.
-  function csvToTable(p: ParsedCsv): ParsedTable {
-    return {
-      format: 'csv',
-      headers: p.headers,
-      rows: p.rows,
-      warnings: p.warnings,
-      derivedColumns: p.derivedColumns,
-      separator: p.separator,
-      encoding: p.encoding,
-    };
   }
 
   function toggleAxis(header: string) {
@@ -331,10 +317,7 @@ export const Stage1Panel: Component = () => {
         : undefined;
       const out = await runStage1({
         file: f,
-        // runStage1 still expects ParsedCsv until Phase E migrates the type;
-        // ParsedTable is a runtime-superset (CSV-only fields optional, XLSX
-        // fields unused by runStage1), so the cast is safe here.
-        parsed: p as unknown as ParsedCsv,
+        parsed: p,
         axes: selectedAxes(),
         targetN: n,
         seed: seed(),
@@ -447,7 +430,7 @@ export const Stage1Panel: Component = () => {
 
       {/* Step 1: file upload — visual drop-zone wraps the (sr-only) native
           file input. Clicking the label triggers the picker; tests still
-          target the input via [data-testid="stage1-csv-upload"]. Drag-drop
+          target the input via [data-testid="stage1-file-upload"]. Drag-drop
           functionality is out of scope (tracked separately). */}
       <section class="card">
         <div class="card-head">
@@ -455,7 +438,7 @@ export const Stage1Panel: Component = () => {
           <h2 class="card-title">1. Melderegister-CSV hochladen</h2>
           <p class="card-help">CSV-Datei mit Bevölkerungsdaten gemäß § 46 BMG.</p>
         </div>
-        <label class="dropzone" data-testid="stage1-csv-dropzone">
+        <label class="dropzone" data-testid="stage1-file-dropzone">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
@@ -486,7 +469,7 @@ export const Stage1Panel: Component = () => {
             type="file"
             accept=".csv,.txt,text/csv,text/plain,.xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             class="sr-only"
-            data-testid="stage1-csv-upload"
+            data-testid="stage1-file-upload"
             onChange={(e) => {
               const f = e.currentTarget.files?.[0];
               if (f) void handleFile(f);
@@ -529,7 +512,7 @@ export const Stage1Panel: Component = () => {
               {/* CSV preview (issue #53 I): first 5 rows so the operator can
                   visually confirm the upload before configuring axes. */}
               <div class="mt-3">
-                <CsvPreview headers={p().headers} rows={p().rows} />
+                <FilePreview headers={p().headers} rows={p().rows} />
               </div>
             </>
           )}
@@ -1078,7 +1061,7 @@ export const Stage1Panel: Component = () => {
                 type="button"
                 class="btn-secondary"
                 onClick={exportCsv}
-                data-testid="stage1-download-csv"
+                data-testid="stage1-file-download-csv"
               >
                 CSV herunterladen
               </button>
@@ -1086,7 +1069,7 @@ export const Stage1Panel: Component = () => {
                 type="button"
                 class="btn-secondary"
                 onClick={exportXlsx}
-                data-testid="stage1-download-xlsx"
+                data-testid="stage1-file-download-xlsx"
               >
                 Excel herunterladen
               </button>

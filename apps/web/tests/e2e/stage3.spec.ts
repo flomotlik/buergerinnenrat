@@ -40,7 +40,7 @@ test('stage 3: upload n=20 → quotas → run → audit JSON parses', async ({ p
     mimeType: 'text/csv',
     buffer: Buffer.from(makeCsv(), 'utf8'),
   });
-  await page.getByTestId('csv-commit').click();
+  await page.getByTestId('file-commit').click();
   await expect(page.getByTestId('pool-summary')).toContainText('20 Personen');
 
   // Step 2: panel size + quota category. Default category bounds (min=0,

@@ -46,10 +46,10 @@ test('imports a generated xlsx fixture and shows preview', async ({ page }) => {
     buffer,
   });
 
-  await expect(page.getByTestId('csv-preview')).toBeVisible();
-  await expect(page.getByTestId('csv-validation-ok')).toBeVisible();
+  await expect(page.getByTestId('file-preview')).toBeVisible();
+  await expect(page.getByTestId('file-validation-ok')).toBeVisible();
 
-  await page.getByTestId('csv-commit').click();
+  await page.getByTestId('file-commit').click();
   await expect(page.getByTestId('pool-summary')).toContainText('100 Personen');
 });
 
@@ -73,7 +73,7 @@ test('shows multi-sheet warning when xlsx has multiple worksheets', async ({ pag
   });
 
   // Preview still renders for the first sheet — multi-sheet is non-fatal.
-  await expect(page.getByTestId('csv-preview')).toBeVisible();
+  await expect(page.getByTestId('file-preview')).toBeVisible();
   // Warning surface: page text should mention '2 Worksheets' from the
   // ParsedTable.warnings array. Stage 3 doesn't render warnings explicitly
   // today, but the worksheet name + count appear in the summary line.
@@ -102,7 +102,7 @@ test('shows clear error when uploading a corrupt xlsx', async ({ page }) => {
     buffer: corruptBuffer,
   });
 
-  await expect(page.getByTestId('csv-error')).toContainText(/sieht nicht wie/i);
+  await expect(page.getByTestId('file-error')).toContainText(/sieht nicht wie/i);
 });
 
 test('imports the herzogenburg xlsx beispiel into Stage 1', async ({ page }) => {
@@ -111,7 +111,7 @@ test('imports the herzogenburg xlsx beispiel into Stage 1', async ({ page }) => 
   await page.locator('a[data-testid="nav-stage1"]').click();
 
   const buffer = readFileSync(HERZOGENBURG_XLSX);
-  const input = page.locator('[data-testid="stage1-csv-upload"]');
+  const input = page.locator('[data-testid="stage1-file-upload"]');
   await input.setInputFiles({
     name: 'herzogenburg-melderegister-8000.xlsx',
     mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',

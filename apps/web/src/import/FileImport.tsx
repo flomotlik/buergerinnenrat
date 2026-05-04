@@ -1,14 +1,14 @@
 import type { Component } from 'solid-js';
 import { createSignal, For, Show } from 'solid-js';
-import { autoGuessMapping, parseCsvFile, SEMANTIC_FIELDS, validateMapping } from './parse';
-import type { ColumnMapping, ParsedCsv, ParsedTable, SemanticField } from './parse';
+import { autoGuessMapping, parseCsvFile, SEMANTIC_FIELDS, validateMapping } from './parse-csv';
+import type { ColumnMapping, ParsedTable, SemanticField } from './parse-csv';
 import { parseXlsxFile } from './parse-xlsx';
 
-export interface CsvImportProps {
-  onLoaded: (data: { parsed: ParsedCsv; mapping: ColumnMapping }) => void;
+export interface FileImportProps {
+  onLoaded: (data: { parsed: ParsedTable; mapping: ColumnMapping }) => void;
 }
 
-export const CsvImport: Component<CsvImportProps> = (props) => {
+export const FileImport: Component<FileImportProps> = (props) => {
   const [parsed, setParsed] = createSignal<ParsedTable | null>(null);
   const [mapping, setMapping] = createSignal<ColumnMapping>({});
   const [error, setError] = createSignal<string | null>(null);
@@ -16,10 +16,10 @@ export const CsvImport: Component<CsvImportProps> = (props) => {
   async function handleFile(file: File) {
     try {
       // Extension-based routing — locked decision in CONTEXT.md (kein
-      // Magic-Bytes-Check). SheetJS throws bubbled to the existing csv-error
+      // Magic-Bytes-Check). SheetJS throws bubbled to the existing file-error
       // slot when the file is corrupt or password-protected.
       const ext = file.name.toLowerCase().split('.').pop();
-      const p = ext === 'xlsx' ? await parseXlsxFile(file) : csvToTable(await parseCsvFile(file));
+      const p = ext === 'xlsx' ? await parseXlsxFile(file) : await parseCsvFile(file);
       const m = autoGuessMapping(p.headers);
       setParsed(p);
       setMapping(m);
@@ -27,20 +27,6 @@ export const CsvImport: Component<CsvImportProps> = (props) => {
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
     }
-  }
-
-  // Wrap a ParsedCsv as ParsedTable for the format-agnostic state shape;
-  // dropped in Phase E when parseCsvFile starts returning ParsedTable directly.
-  function csvToTable(p: ParsedCsv): ParsedTable {
-    return {
-      format: 'csv',
-      headers: p.headers,
-      rows: p.rows,
-      warnings: p.warnings,
-      derivedColumns: p.derivedColumns,
-      separator: p.separator,
-      encoding: p.encoding,
-    };
   }
 
   function onDrop(ev: DragEvent) {
@@ -61,10 +47,7 @@ export const CsvImport: Component<CsvImportProps> = (props) => {
       setError(v.errors.join(' '));
       return;
     }
-    // Until Phase E lands ParsedTable as the public interface, downstream
-    // (App.tsx → applyMapping) only consumes .rows / .headers — both shared
-    // between ParsedCsv and ParsedTable. Cast is safe at runtime.
-    props.onLoaded({ parsed: p as unknown as ParsedCsv, mapping: mapping() });
+    props.onLoaded({ parsed: p, mapping: mapping() });
   }
 
   const validation = () => {
@@ -78,7 +61,7 @@ export const CsvImport: Component<CsvImportProps> = (props) => {
       {/* Drop-zone: visual upload target consistent with Stage 1.
           DnD wiring stays here (Stage 3 already had it pre-#56). */}
       <label
-        data-testid="csv-dropzone"
+        data-testid="file-dropzone"
         onDragOver={(e) => e.preventDefault()}
         onDrop={onDrop}
         class="dropzone"
@@ -114,7 +97,7 @@ export const CsvImport: Component<CsvImportProps> = (props) => {
       </label>
 
       <Show when={error()}>
-        <p class="text-sm text-red-700" data-testid="csv-error">
+        <p class="text-sm text-red-700" data-testid="file-error">
           {error()}
         </p>
       </Show>
@@ -139,13 +122,13 @@ export const CsvImport: Component<CsvImportProps> = (props) => {
             </div>
 
             {/* TODO(#53-followup): refactor inline preview to use shared
-                <CsvPreview> component once we can decouple the mapping
+                <FilePreview> component once we can decouple the mapping
                 <select> row from the data preview rows without breaking
-                csv-import.spec.ts which asserts on this exact `csv-preview`
+                file-import.spec.ts which asserts on this exact `file-preview`
                 table testid. The Stage-3 mapping UI is interleaved with the
                 preview rows here; lift the mapping into its own row above
-                and the body becomes a drop-in <CsvPreview>. */}
-            <table class="w-full text-xs border-collapse" data-testid="csv-preview">
+                and the body becomes a drop-in <FilePreview>. */}
+            <table class="w-full text-xs border-collapse" data-testid="file-preview">
               <thead>
                 <tr>
                   <For each={p().headers}>
@@ -162,7 +145,7 @@ export const CsvImport: Component<CsvImportProps> = (props) => {
                           onChange={(e) =>
                             setColumn(h, e.currentTarget.value as SemanticField | '__ignore__')
                           }
-                          data-testid={`csv-map-${h}`}
+                          data-testid={`file-map-${h}`}
                         >
                           <option value="__ignore__">(ignorieren)</option>
                           <For each={SEMANTIC_FIELDS}>{(f) => <option value={f}>{f}</option>}</For>
@@ -189,12 +172,12 @@ export const CsvImport: Component<CsvImportProps> = (props) => {
               {(v) => (
                 <div class="space-y-1 text-sm">
                   <Show when={!v().ok}>
-                    <p class="text-red-700" data-testid="csv-validation-error">
+                    <p class="text-red-700" data-testid="file-validation-error">
                       <For each={v().errors}>{(err) => <span>{err} </span>}</For>
                     </p>
                   </Show>
                   <Show when={v().ok}>
-                    <p class="text-green-700" data-testid="csv-validation-ok">
+                    <p class="text-green-700" data-testid="file-validation-ok">
                       Mapping ok — {p().rows.length} Personen,{' '}
                       {Object.values(mapping()).filter((m) => m !== '__ignore__').length} Felder.
                     </p>
@@ -208,7 +191,7 @@ export const CsvImport: Component<CsvImportProps> = (props) => {
               class="px-3 py-1.5 bg-slate-900 text-white rounded text-sm disabled:opacity-50"
               disabled={!validation()?.ok}
               onClick={commit}
-              data-testid="csv-commit"
+              data-testid="file-commit"
             >
               Pool übernehmen
             </button>

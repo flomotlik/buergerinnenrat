@@ -46,7 +46,7 @@ interface Point {
 }
 
 const POINTS: Point[] = [
-  { slug: '01-sidebar', hash: '#/stage3', anchorTestId: 'csv-dropzone' },
+  { slug: '01-sidebar', hash: '#/stage3', anchorTestId: 'file-dropzone' },
   {
     slug: '02-stage1-card',
     hash: '#/stage1',
@@ -76,7 +76,7 @@ for (const point of POINTS) {
       await page.getByTestId(point.anchorTestId).waitFor({ state: 'visible', timeout: 10_000 });
 
       if (point.uploadCsv || point.runStage1) {
-        await page.locator('[data-testid="stage1-csv-upload"]').setInputFiles({
+        await page.locator('[data-testid="stage1-file-upload"]').setInputFiles({
           name: 'pool.csv',
           mimeType: 'text/csv',
           buffer: readFileSync(FIXTURE),

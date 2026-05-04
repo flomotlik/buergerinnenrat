@@ -6,7 +6,7 @@
 // "Lazy-load via await import('xlsx') ist Pflicht") because Vite would then
 // pull SheetJS into the main bundle synchronously.
 
-import type { ParsedTable } from './parse';
+import type { ParsedTable } from './parse-csv';
 import { DEFAULT_AGE_BANDS, deriveAltersgruppe } from './derive';
 
 // Loose typings for SheetJS interop without forcing a top-level type-import

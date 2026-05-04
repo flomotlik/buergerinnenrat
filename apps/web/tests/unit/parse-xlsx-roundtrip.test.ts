@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { stage1ResultToXlsx } from '@sortition/core';
-import { parseXlsxBuffer } from '../../src/csv/parse-xlsx';
+import { parseXlsxBuffer } from '../../src/import/parse-xlsx';
 
 // Round-trip proves Acceptance-Criteria #91: every generated export file is
 // re-importable via the upload path. We synthesize a Stage 1 result, write

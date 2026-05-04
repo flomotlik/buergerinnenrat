@@ -27,7 +27,7 @@ async function uploadFixture(page: import('@playwright/test').Page, fixture: str
   await page.evaluate(() => {
     window.location.hash = '#/stage1';
   });
-  await page.locator('[data-testid="stage1-csv-upload"]').setInputFiles({
+  await page.locator('[data-testid="stage1-file-upload"]').setInputFiles({
     name: 'pool.csv',
     mimeType: 'text/csv',
     buffer: readFileSync(fixture),

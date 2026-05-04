@@ -55,7 +55,7 @@ test('audit-footer parity: every mandatory schema-0.4 field is rendered', async 
   await expect(page.getByTestId('stage1-panel')).toBeVisible();
 
   // Upload, set N, run.
-  await page.locator('[data-testid="stage1-csv-upload"]').setInputFiles({
+  await page.locator('[data-testid="stage1-file-upload"]').setInputFiles({
     name: 'pool.csv',
     mimeType: 'text/csv',
     buffer: readFileSync(FIXTURE),

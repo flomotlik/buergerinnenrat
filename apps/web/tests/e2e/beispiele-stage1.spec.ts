@@ -46,7 +46,7 @@ test('beispiele: download from /docs → upload into Stage 1 → run', async ({ 
     window.location.hash = '#/stage1';
   });
   await expect(page.getByTestId('stage1-panel')).toBeVisible();
-  await page.locator('[data-testid="stage1-csv-upload"]').setInputFiles({
+  await page.locator('[data-testid="stage1-file-upload"]').setInputFiles({
     name: 'herzogenburg-melderegister-8000.csv',
     mimeType: 'text/csv',
     buffer: buf,
@@ -70,7 +70,7 @@ test('beispiele: download from /docs → upload into Stage 1 → run', async ({ 
 
   // Output download should have 301 lines (header + 300 samples).
   const csvDownloadPromise = page.waitForEvent('download');
-  await page.getByTestId('stage1-download-csv').click();
+  await page.getByTestId('stage1-file-download-csv').click();
   const csvDownload = await csvDownloadPromise;
   const csvPath = await csvDownload.path();
   expect(csvPath).toBeTruthy();

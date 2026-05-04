@@ -12,12 +12,12 @@ import {
   type Stage1SeedSource,
   type StratifyResult,
 } from '@sortition/core';
-import type { ParsedCsv } from '../csv/parse';
+import type { ParsedTable } from '../import/parse-csv';
 import { signStage1Audit, type SignedStage1Audit } from './audit-sign';
 
 export interface RunStage1Input {
   file: File;
-  parsed: ParsedCsv;
+  parsed: ParsedTable;
   axes: string[];
   targetN: number;
   seed: number;

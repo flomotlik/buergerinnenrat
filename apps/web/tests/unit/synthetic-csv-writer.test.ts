@@ -5,7 +5,7 @@ import {
   STAGE3_HEADERS,
   writeCsv,
 } from '../../../../scripts/synthetic-meldedaten/csv-writer';
-import { parseCsvBuffer } from '../../src/csv/parse';
+import { parseCsvBuffer } from '../../src/import/parse-csv';
 import type { Person } from '../../../../scripts/synthetic-meldedaten/types';
 
 function p(over: Partial<Person> = {}): Person {

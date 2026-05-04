@@ -1,6 +1,6 @@
 import type { Component } from 'solid-js';
 import { For, Show } from 'solid-js';
-import { validateBands, type AgeBand } from '../csv/derive';
+import { validateBands, type AgeBand } from '../import/derive';
 import { addBandTo, removeBandAt, resetToDefaults } from './age-bands-helpers';
 
 // Editor for the altersgruppe band configuration (selection vs display-only).

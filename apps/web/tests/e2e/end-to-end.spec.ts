@@ -22,7 +22,7 @@ test('end-to-end: import → quotas → run → results', async ({ page, browser
     mimeType: 'text/csv',
     buffer: readFileSync(FIXTURE),
   });
-  await page.getByTestId('csv-commit').click();
+  await page.getByTestId('file-commit').click();
   await expect(page.getByTestId('pool-summary')).toContainText('100 Personen');
 
   // Step 2: quotas — set panel size and add a category

@@ -38,7 +38,7 @@ test.describe('Live Site Smoke', () => {
 
   test('Stage 1 zeigt CSV-Upload-Feld', async ({ page }) => {
     await gotoRoute(page, '#/stage1');
-    const fileInput = page.getByTestId('stage1-csv-upload');
+    const fileInput = page.getByTestId('stage1-file-upload');
     await expect(fileInput).toBeAttached();
   });
 

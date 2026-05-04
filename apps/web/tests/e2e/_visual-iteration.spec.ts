@@ -92,9 +92,9 @@ interface FinalShot {
 
 const FINAL_SHOTS: FinalShot[] = [
   // Mirror the before-screenshots/ filenames.
-  // #65: pill-tab nav is now hidden at md+; csv-dropzone is the stable
+  // #65: pill-tab nav is now hidden at md+; file-dropzone is the stable
   // Stage 3 anchor visible at all viewports.
-  { name: '01-stage3-default', hash: '#/stage3', anchorTestId: 'csv-dropzone' },
+  { name: '01-stage3-default', hash: '#/stage3', anchorTestId: 'file-dropzone' },
   { name: '02-stage1-empty', hash: '#/stage1', anchorTestId: 'stage1-trust-strip' },
   { name: '03-docs-hub', hash: '#/docs', anchorTestId: 'docs-hub' },
   {
@@ -126,7 +126,7 @@ for (const shot of FINAL_SHOTS) {
         .waitFor({ state: 'visible', timeout: 10_000 });
 
       if (shot.runStage1ToResult) {
-        await page.locator('[data-testid="stage1-csv-upload"]').setInputFiles({
+        await page.locator('[data-testid="stage1-file-upload"]').setInputFiles({
           name: 'pool.csv',
           mimeType: 'text/csv',
           buffer: readFileSync(FIXTURE),
@@ -165,7 +165,7 @@ for (const step of STEPS) {
 
         if (step.runStage1) {
           // Upload synthetic CSV so dropzone + inputs + preview render.
-          await page.locator('[data-testid="stage1-csv-upload"]').setInputFiles({
+          await page.locator('[data-testid="stage1-file-upload"]').setInputFiles({
             name: 'pool.csv',
             mimeType: 'text/csv',
             buffer: readFileSync(FIXTURE),

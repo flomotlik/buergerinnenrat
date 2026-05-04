@@ -1,8 +1,8 @@
 import { createMemo, createSignal, lazy, onCleanup, onMount, Show, Suspense } from 'solid-js';
 import type { Component } from 'solid-js';
-import { CsvImport } from './csv/CsvImport';
-import { applyMapping } from './csv/parse';
-import type { ColumnMapping, ParsedCsv } from './csv/parse';
+import { FileImport } from './import/FileImport';
+import { applyMapping } from './import/parse-csv';
+import type { ColumnMapping, ParsedTable } from './import/parse-csv';
 import { QuotaEditor } from './quotas/QuotaEditor';
 import type { CategoryQuota, QuotaConfig } from './quotas/model';
 import { validateQuotas } from './quotas/model';
@@ -20,7 +20,7 @@ const DocsHub = lazy(() => import('./docs/DocsHub'));
 const Overview = lazy(() => import('./Overview'));
 
 interface ImportedPool {
-  parsed: ParsedCsv;
+  parsed: ParsedTable;
   mapping: ColumnMapping;
   rows: Record<string, string>[];
 }
@@ -261,7 +261,7 @@ export const App: Component = () => {
           <div class="space-y-8">
             <section>
               <h2 class="text-xl font-semibold mb-3">1. Pool importieren</h2>
-              <CsvImport
+              <FileImport
                 onLoaded={({ parsed, mapping }) => {
                   setPool({ parsed, mapping, rows: applyMapping(parsed.rows, mapping) });
                   setQuotas(null);

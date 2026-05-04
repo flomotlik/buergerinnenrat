@@ -8,27 +8,20 @@ import { DEFAULT_AGE_BANDS, deriveAltersgruppe } from './derive';
 
 export type SupportedEncoding = 'utf-8' | 'windows-1252' | 'iso-8859-1';
 
-export interface ParsedCsv {
+// Format-agnostic table structure shared between CSV and XLSX parsers.
+// `format` discriminator drives format-specific UI (e.g. separator/encoding
+// chip for CSV, worksheet badge for XLSX). Format-specific fields are
+// optional and only populated for their matching format.
+export interface ParsedTable {
+  format: 'csv' | 'xlsx';
   headers: string[];
   rows: Record<string, string>[];
-  separator: ',' | ';' | '\t';
-  encoding: SupportedEncoding;
   warnings: string[];
   /**
    * Headers in `headers[]` that were not present in the raw file but were
    * synthesized by the parse pipeline (e.g. `altersgruppe` derived from
    * `geburtsjahr`). Empty when nothing was derived.
    */
-  derivedColumns: string[];
-}
-
-// ParsedTable: format-agnostic table structure for CSV + XLSX. ParsedCsv kept
-// for backward-compat until rename in #72 phase E.
-export interface ParsedTable {
-  format: 'csv' | 'xlsx';
-  headers: string[];
-  rows: Record<string, string>[];
-  warnings: string[];
   derivedColumns: string[];
   // CSV-only fields (only populated when format === 'csv'):
   separator?: ',' | ';' | '\t';
@@ -80,12 +73,12 @@ function detectSeparator(headerLine: string): ',' | ';' | '\t' {
   return best;
 }
 
-export async function parseCsvFile(file: File, refYear?: number): Promise<ParsedCsv> {
+export async function parseCsvFile(file: File, refYear?: number): Promise<ParsedTable> {
   const buf = await file.arrayBuffer();
   return parseCsvBuffer(buf, refYear);
 }
 
-export function parseCsvBuffer(buf: ArrayBuffer, refYear?: number): ParsedCsv {
+export function parseCsvBuffer(buf: ArrayBuffer, refYear?: number): ParsedTable {
   const { text: rawText, encoding } = decodeBuffer(buf);
   const text = stripBom(rawText);
 
@@ -139,7 +132,7 @@ export function parseCsvBuffer(buf: ArrayBuffer, refYear?: number): ParsedCsv {
     );
   }
 
-  return { headers, rows, separator, encoding, warnings, derivedColumns };
+  return { format: 'csv', headers, rows, separator, encoding, warnings, derivedColumns };
 }
 
 // --- mapping ----------------------------------------------------------------

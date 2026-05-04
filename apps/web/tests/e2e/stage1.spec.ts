@@ -27,7 +27,7 @@ test('stage 1: upload → defaults → ziehen → download', async ({ page, brow
   await expect(page.getByTestId('stage1-panel')).toBeVisible();
 
   // Upload the fixture CSV.
-  await page.locator('[data-testid="stage1-csv-upload"]').setInputFiles({
+  await page.locator('[data-testid="stage1-file-upload"]').setInputFiles({
     name: 'pool.csv',
     mimeType: 'text/csv',
     buffer: readFileSync(FIXTURE),
@@ -90,7 +90,7 @@ test('stage 1: upload → defaults → ziehen → download', async ({ page, brow
 
   // CSV download.
   const csvDownloadPromise = page.waitForEvent('download');
-  await page.getByTestId('stage1-download-csv').click();
+  await page.getByTestId('stage1-file-download-csv').click();
   const csvDownload = await csvDownloadPromise;
   expect(csvDownload.suggestedFilename()).toMatch(/^versand-.*\.csv$/);
 
@@ -122,7 +122,7 @@ test('stage 1: Stichprobengröße-Input ist via Label erreichbar (a11y)', async 
   await page.evaluate(() => {
     window.location.hash = '#/stage1';
   });
-  await page.locator('[data-testid="stage1-csv-upload"]').setInputFiles({
+  await page.locator('[data-testid="stage1-file-upload"]').setInputFiles({
     name: 'pool.csv',
     mimeType: 'text/csv',
     buffer: readFileSync(FIXTURE),
@@ -144,7 +144,7 @@ test('stage 1: Stale Result wird gecleart wenn N nach Run geändert wird (H)', a
   await page.evaluate(() => {
     window.location.hash = '#/stage1';
   });
-  await page.locator('[data-testid="stage1-csv-upload"]').setInputFiles({
+  await page.locator('[data-testid="stage1-file-upload"]').setInputFiles({
     name: 'pool.csv',
     mimeType: 'text/csv',
     buffer: readFileSync(FIXTURE),
@@ -173,7 +173,7 @@ test('stage 1: Run-Button ist sofort klickbar nach N-Eingabe — kein Seed-Gatin
   await page.evaluate(() => {
     window.location.hash = '#/stage1';
   });
-  await page.locator('[data-testid="stage1-csv-upload"]').setInputFiles({
+  await page.locator('[data-testid="stage1-file-upload"]').setInputFiles({
     name: 'pool.csv',
     mimeType: 'text/csv',
     buffer: readFileSync(FIXTURE),
@@ -206,7 +206,7 @@ test('stage 1: Run-Button ist sticky positioniert (D)', async ({ page }) => {
   await page.evaluate(() => {
     window.location.hash = '#/stage1';
   });
-  await page.locator('[data-testid="stage1-csv-upload"]').setInputFiles({
+  await page.locator('[data-testid="stage1-file-upload"]').setInputFiles({
     name: 'pool.csv',
     mimeType: 'text/csv',
     buffer: readFileSync(FIXTURE),
@@ -228,7 +228,7 @@ test('stage 1: SVG-Bars haben title-Children und Pattern-Defs (E, a11y)', async 
   await page.evaluate(() => {
     window.location.hash = '#/stage1';
   });
-  await page.locator('[data-testid="stage1-csv-upload"]').setInputFiles({
+  await page.locator('[data-testid="stage1-file-upload"]').setInputFiles({
     name: 'pool.csv',
     mimeType: 'text/csv',
     buffer: readFileSync(FIXTURE),
@@ -269,15 +269,15 @@ test('stage 1: CSV-Vorschau-Tabelle erscheint nach Upload (I)', async ({ page })
   await page.evaluate(() => {
     window.location.hash = '#/stage1';
   });
-  await page.locator('[data-testid="stage1-csv-upload"]').setInputFiles({
+  await page.locator('[data-testid="stage1-file-upload"]').setInputFiles({
     name: 'pool.csv',
     mimeType: 'text/csv',
     buffer: readFileSync(FIXTURE),
   });
-  // Stage 1 uses the new shared <CsvPreview>; default 5 data rows.
-  await expect(page.getByTestId('csv-preview-table')).toBeVisible();
+  // Stage 1 uses the new shared <FilePreview>; default 5 data rows.
+  await expect(page.getByTestId('file-preview-table')).toBeVisible();
   const dataRows = page
-    .locator('[data-testid="csv-preview-table"] tbody tr');
+    .locator('[data-testid="file-preview-table"] tbody tr');
   expect(await dataRows.count()).toBe(5);
 });
 

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parseXlsxBuffer } from '../../src/csv/parse-xlsx';
+import { parseXlsxBuffer } from '../../src/import/parse-xlsx';
 
 // Build a synthetic .xlsx ArrayBuffer via SheetJS itself, lazily imported per
 // test helper. We assert against the buffer-form of the parser; parseXlsxFile
