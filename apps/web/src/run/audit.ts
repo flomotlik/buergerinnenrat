@@ -187,6 +187,29 @@ export function selectedToCsv(pool: Pool, selectedIds: string[]): string {
   return lines.join('\n') + '\n';
 }
 
+// XLSX of selected people, mirrors selectedToCsv. Lazy import keeps SheetJS
+// out of the main bundle — only triggered when the user clicks 'Excel
+// exportieren' in RunPanel.
+export async function selectedToXlsx(pool: Pool, selectedIds: string[]): Promise<ArrayBuffer> {
+  const XLSX = await import('xlsx');
+  const sel = pool.people.filter((p) => selectedIds.includes(p.person_id));
+  // Build 2D array — header row + data rows. Even an empty selection emits a
+  // valid one-sheet workbook; SheetJS's aoa_to_sheet handles [[]] OK.
+  if (sel.length === 0) {
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([[]]), 'Panel');
+    return XLSX.write(wb, { bookType: 'xlsx', type: 'array' }) as ArrayBuffer;
+  }
+  const headers = Object.keys(sel[0]!);
+  const aoa: string[][] = [headers];
+  for (const p of sel) {
+    aoa.push(headers.map((h) => String(p[h] ?? '')));
+  }
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(aoa), 'Panel');
+  return XLSX.write(wb, { bookType: 'xlsx', type: 'array' }) as ArrayBuffer;
+}
+
 export function downloadBlob(filename: string, content: string, mime: string): void {
   const blob = new Blob([content], { type: mime });
   const url = URL.createObjectURL(blob);
