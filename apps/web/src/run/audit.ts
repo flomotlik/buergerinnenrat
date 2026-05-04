@@ -196,3 +196,20 @@ export function downloadBlob(filename: string, content: string, mime: string): v
   a.click();
   URL.revokeObjectURL(url);
 }
+
+// Binary variant of downloadBlob — wraps an ArrayBuffer/Uint8Array as a Blob
+// for xlsx and other binary downloads. The Blob constructor accepts both
+// directly without needing a copy.
+export function downloadBinaryBlob(
+  filename: string,
+  content: ArrayBuffer | Uint8Array,
+  mime: string,
+): void {
+  const blob = new Blob([content], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}

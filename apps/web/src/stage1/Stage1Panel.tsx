@@ -9,7 +9,7 @@ import {
   validateBands,
   type AgeBand,
 } from '../csv/derive';
-import { downloadBlob } from '../run/audit';
+import { downloadBinaryBlob, downloadBlob } from '../run/audit';
 import { runStage1 } from './runStage1';
 import type { RunStage1Output } from './runStage1';
 import { AxisPicker } from './AxisPicker';
@@ -356,6 +356,23 @@ export const Stage1Panel: Component = () => {
     const out = output();
     if (!out) return;
     downloadBlob(`versand-${seed()}.csv`, out.csv, 'text/csv;charset=utf-8');
+  }
+
+  async function exportXlsx() {
+    const out = output();
+    const p = parsed();
+    if (!out || !p) return;
+    // Lazy import — xlsx is async-only so the SheetJS chunk is not paid for
+    // by users who never click this button.
+    const { stage1ResultToXlsx } = await import('@sortition/core');
+    const { buffer } = await stage1ResultToXlsx(p.headers, p.rows, out.result.selected, {
+      includeGezogenColumn: false,
+    });
+    downloadBinaryBlob(
+      `versand-${seed()}.xlsx`,
+      buffer,
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    );
   }
 
   function exportAuditJson() {
@@ -1064,6 +1081,14 @@ export const Stage1Panel: Component = () => {
                 data-testid="stage1-download-csv"
               >
                 CSV herunterladen
+              </button>
+              <button
+                type="button"
+                class="btn-secondary"
+                onClick={exportXlsx}
+                data-testid="stage1-download-xlsx"
+              >
+                Excel herunterladen
               </button>
               <button
                 type="button"
