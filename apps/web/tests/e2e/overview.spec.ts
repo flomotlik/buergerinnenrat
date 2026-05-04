@@ -16,7 +16,7 @@ test.describe('Overview landing (#/overview)', () => {
     // h1 lives inside the overview hero; assert exactly one h1 visible on this route.
     const h1 = page.locator('h1');
     await expect(h1).toHaveCount(1);
-    await expect(h1).toContainText('Bürger:innenrat');
+    await expect(h1).toContainText('Personenauswahl');
   });
 
   test('renders both workflow cards (Stage 1 + Stage 3)', async ({ page }) => {

@@ -37,7 +37,7 @@ export const Brand: Component<{ subtitle?: string }> = (props) => (
       <circle cx="4" cy="7.5" r="1.5" />
     </svg>
     <div class="flex flex-col leading-tight">
-      <span class="font-serif font-semibold text-lg text-ink">Bürger:innenrat</span>
+      <span class="font-serif font-semibold text-lg text-ink">Personenauswahl</span>
       <span class="text-xs text-ink-3">{props.subtitle ?? 'Stratifiziertes Losverfahren'}</span>
     </div>
   </div>

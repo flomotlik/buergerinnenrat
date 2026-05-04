@@ -23,7 +23,9 @@ test.describe('Live Site Smoke', () => {
   test('Hauptseite lädt mit korrektem Title', async ({ page }) => {
     const response = await page.goto('./');
     expect(response?.status()).toBe(200);
-    await expect(page).toHaveTitle(/Bürger|Sortition|Buergerinnenrat/i);
+    // After rebrand "Personenauswahl" is the primary brand; "Bürger" and "Sortition"
+    // remain tolerated fallbacks for the transition window (CDN cache, etc.).
+    await expect(page).toHaveTitle(/Personenauswahl|Bürger|Sortition/i);
   });
 
   test('Tab-Navigation: Stage 1 / Doku / Stage 3 alle erreichbar', async ({ page }) => {

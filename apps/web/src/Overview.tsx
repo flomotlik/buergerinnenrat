@@ -19,10 +19,11 @@ const Overview: Component = () => {
   return (
     <div class="space-y-8" data-testid="overview-page">
       <header class="overview-hero space-y-3">
-        <h1 class="text-4xl font-serif font-semibold text-ink">Bürger:innenrat</h1>
+        <h1 class="text-4xl font-serif font-semibold text-ink">Personenauswahl</h1>
         <p class="text-lg text-ink-2 max-w-prose">
-          Browser-natives Werkzeug für stratifizierte Zufallsauswahl in Bürgerräten. Daten bleiben
-          lokal, Audit-Protokolle sind Ed25519-signiert, jede Entscheidung ist nachvollziehbar.
+          Browser-natives Werkzeug für stratifizierte Personenauswahl — z.B. für Bürgerinnenräte,
+          Delegierten-Auswahl oder Vereinsgremien. Daten bleiben lokal, Audit-Protokolle sind
+          Ed25519-signiert, jede Entscheidung ist nachvollziehbar.
         </p>
       </header>
 
