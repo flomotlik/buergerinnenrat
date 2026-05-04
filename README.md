@@ -27,16 +27,27 @@ Power-User mit lokal installiertem Node 20 + pnpm + Playwright können
 Du willst das Tool ohne eigene Melderegister-Datei testen? Auf der Live-Seite
 findest du unter
 [Doku → Beispiel-Daten](https://flomotlik.github.io/buergerinnenrat/#/docs/beispiele)
-vier vor-generierte synthetische CSV-Dateien:
+vier vor-generierte synthetische Datensätze, jeweils als **CSV** und als
+**Excel** (`.xlsx`):
 
-- `herzogenburg-melderegister-8000.csv` — Vollbevölkerung einer kleineren NÖ-Gemeinde
+- `herzogenburg-melderegister-8000` — Vollbevölkerung einer kleineren NÖ-Gemeinde
   nach Vorbild Herzogenburg (für Stage 1)
-- `herzogenburg-versand-300.csv` — stratifizierte Versand-Stichprobe von 300 Personen
-- `herzogenburg-antwortende-60.csv` — 60 Personen mit Selbstauskunfts-Feldern (für Stage 3)
-- `kleinstadt-3000.csv` — kleineres Profil zum schnellen Testen
+- `herzogenburg-versand-300` — stratifizierte Versand-Stichprobe von 300 Personen
+- `herzogenburg-antwortende-60` — 60 Personen mit Selbstauskunfts-Feldern (für Stage 3)
+- `kleinstadt-3000` — kleineres Profil zum schnellen Testen
 
 Alle Daten sind synthetisch erzeugt — keine echten Personen.
 Generator + Reproduzier-Anleitung: `scripts/synthetic-meldedaten/`.
+
+## Datenformate
+
+Die App akzeptiert beim Upload sowohl **CSV** (UTF-8 oder Latin-1, Trenner
+`,`/`;`/Tab automatisch erkannt) als auch **Excel** (`.xlsx`, ein Worksheet
+mit Header in Zeile 1). Excel wird via SheetJS lazy-geladen — CSV-only-User
+zahlen keinen Bandwidth-Hit. Detail-Anforderungen für Excel-Uploads (kein
+Multi-Sheet, keine Formeln, keine merged cells) siehe
+[Doku → Beispiel-Daten](https://flomotlik.github.io/buergerinnenrat/#/docs/beispiele).
+Spezifikation: Issue #72.
 
 ## Bürgerrat-Sortition (Hintergrund)
 
