@@ -1,7 +1,7 @@
 ---
 id: '70'
 title: 'Rebranding: Bürgerinnenrat → Personenauswahl (verallgemeinerte stratifizierte Auswahl)'
-status: open
+status: done
 priority: high
 labels:
 - branding
@@ -120,3 +120,20 @@ Das Tool ist generisch (drei Primitive: Auswahl + Override + Nachwahl). Die Reic
 - Repo-Rename + Pfad-Änderung kann externe Links brechen — sorgfältige Migrations-Strategie nötig
 - Zu generisches Naming kann Bürgerinnenrat-Stakeholder verunsichern ("ist das noch unser Tool?") — Doku muss klar machen, dass Bürgerinnenrat-Use-Case unverändert unterstützt wird
 - Branding-Änderungen treten in Audit-Exports auf, die juristisch relevant sein können — Versionierung im Audit-Manifest beachten
+
+## Erledigt am 2026-05-04
+
+In-Scope (umgesetzt):
+- **UI-Wordmark + Test-IDs** (Phase A): Brand.tsx, Overview.tsx, App.tsx (sr-only h1 + DocsRoute), index.html (`<title>`); 3 E2E-Specs auf `getByTestId('brand')` migriert (Brand-Immunität gegen weitere Renames), live-smoke-Regex erweitert. Commit `1934254`.
+- **UI-Copy generisch** (Phase B): Stage1Panel Tooltips (Geschlecht-Achse) + BMG-§46-Banner (Variante A: konservativ, generisch, immer sichtbar, mit Cross-Link auf `#/docs/use-cases`); SampleSizeCalculator Helper-Text mit drei Pool-Größen-Beispielen. Commit `3e6bf22`.
+- **Use-Case-Hub** (Phase C): Neue DocsRoute `use-cases`, neue Component `UseCases.tsx` als Akkordeon (drei `<details open>`: Bürgerinnenrat, Landeskonferenz/Parteitag, Vereinsgremium), Tile in DocsHub. Commit `3c50ed2`.
+- **README + CLAUDE.md + Code-Kommentare** (Phase D): README-Titel + Beschreibung + Live-URL-Note + Rebrand-Note + Disclaimer für historische Brand-Referenzen; CLAUDE.md Satz 1 generisch; Code-Kommentar-Neutralisierung in `tailwind.config.cjs` und `packages/core/src/stage1/sample-size.ts`. Commit `b0153d8`.
+
+Deferred (explizit out-of-scope laut CONTEXT.md, an Issue #73 abgegeben):
+- Repo-Rename, Domain-Migration, 301-Redirects, gh-pages-Update
+- `vite.config.ts` `base`-Pfad, `.github/workflows/deploy.yml`, `docker-build.yml`
+- Verzeichnis-Rename `design_handoff_buergerinnenrat/`
+- Audit-Manifest-Versionierung (kein Brand-String im Manifest, keine Änderung nötig)
+- Pipeline-Wahl / Modus-Toggle / Multi-Mandanten-Modus (ein anderes Produkt)
+
+Acceptance Criteria — alle in-scope-Items erfüllt; out-of-scope-Items per CONTEXT.md vertagt. Verbleibende historische Brand-Referenzen in `sortition-tool/`, `research/`, `docs/iteration-*` sind durch README-Disclaimer als historische Artefakte markiert.
