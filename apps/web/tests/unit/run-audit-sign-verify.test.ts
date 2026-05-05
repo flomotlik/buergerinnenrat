@@ -112,6 +112,106 @@ describe('signAudit (Stage 3) — round-trip verification', () => {
   });
 });
 
+describe('signAudit (Stage 3) — seat_allocation coverage (Task 5)', () => {
+  function makeDocWithSeatAllocation(): AuditDoc {
+    const base = makeDoc();
+    return {
+      ...base,
+      seat_allocation: {
+        baseline: { gender: { m: 3, f: 3 } },
+        override: {
+          axis: 'gender',
+          seats: { m: 4, f: 2 },
+          rationale: 'Geschlechter-Quote-Override gemäss Geschäftsordnung §17 Absatz 3.',
+          timestamp_iso: '2026-05-04T12:00:00Z',
+        },
+        deviation: {
+          m: { delta_seats: 1, delta_percent: 1 / 6 },
+          f: { delta_seats: -1, delta_percent: -1 / 6 },
+        },
+      },
+    };
+  }
+
+  it('round-trips a signed doc with seat_allocation.override populated', async () => {
+    const signed = await signAudit(makeDocWithSeatAllocation());
+    expect(signed.doc.seat_allocation).toBeDefined();
+    expect(signed.doc.seat_allocation!.override?.axis).toBe('gender');
+
+    const algo = signed.doc.signature_algo!;
+    const format = algo === 'Ed25519' ? 'raw' : 'spki';
+    const pubKey = await importPublicKey(format, algo, signed.doc.public_key!);
+    const sig = fromBase64(signed.doc.signature!);
+    const body = new TextEncoder().encode(signed.bodyJson);
+    expect(await verify(algo, pubKey, sig, body)).toBe(true);
+  });
+
+  it('detects tampering — rationale changed without re-sign → verify false', async () => {
+    const signed = await signAudit(makeDocWithSeatAllocation());
+    const algo = signed.doc.signature_algo!;
+    const format = algo === 'Ed25519' ? 'raw' : 'spki';
+    const pubKey = await importPublicKey(format, algo, signed.doc.public_key!);
+    const sig = fromBase64(signed.doc.signature!);
+
+    const tamperedJson = signed.bodyJson.replace(
+      'Geschlechter-Quote-Override gemäss Geschäftsordnung §17 Absatz 3.',
+      'Andere Begründung — manipuliert nach dem Signieren.',
+    );
+    expect(tamperedJson).not.toBe(signed.bodyJson);
+
+    const ok = await verify(algo, pubKey, sig, new TextEncoder().encode(tamperedJson));
+    expect(ok).toBe(false);
+  });
+
+  it('detects tampering — override.seats[m] flipped → verify false', async () => {
+    const signed = await signAudit(makeDocWithSeatAllocation());
+    const algo = signed.doc.signature_algo!;
+    const format = algo === 'Ed25519' ? 'raw' : 'spki';
+    const pubKey = await importPublicKey(format, algo, signed.doc.public_key!);
+    const sig = fromBase64(signed.doc.signature!);
+
+    const tamperedJson = signed.bodyJson.replace('"m":4', '"m":5');
+    expect(tamperedJson).not.toBe(signed.bodyJson);
+
+    const ok = await verify(algo, pubKey, sig, new TextEncoder().encode(tamperedJson));
+    expect(ok).toBe(false);
+  });
+
+  it('detects tampering — schema_version downgrade 0.2 → 0.1 → verify false', async () => {
+    const signed = await signAudit(makeDocWithSeatAllocation());
+    const algo = signed.doc.signature_algo!;
+    const format = algo === 'Ed25519' ? 'raw' : 'spki';
+    const pubKey = await importPublicKey(format, algo, signed.doc.public_key!);
+    const sig = fromBase64(signed.doc.signature!);
+
+    const tamperedJson = signed.bodyJson.replace('"schema_version":"0.2"', '"schema_version":"0.1"');
+    expect(tamperedJson).not.toBe(signed.bodyJson);
+
+    const ok = await verify(algo, pubKey, sig, new TextEncoder().encode(tamperedJson));
+    expect(ok).toBe(false);
+  });
+
+  it('backward-compat: a hand-written 0.1-shaped doc still signs + verifies', async () => {
+    // Simulate a pre-existing 0.1 audit (no seat_allocation field). signAudit
+    // is unchanged from 0.1 → 0.2; the round trip must still hold so
+    // existing 0.1 manifests verify against the unchanged signing code.
+    const legacy: AuditDoc = {
+      ...makeDoc(),
+      schema_version: '0.1',
+    };
+    const signed = await signAudit(legacy);
+    expect(signed.doc.seat_allocation).toBeUndefined();
+    expect(signed.doc.schema_version).toBe('0.1');
+
+    const algo = signed.doc.signature_algo!;
+    const format = algo === 'Ed25519' ? 'raw' : 'spki';
+    const pubKey = await importPublicKey(format, algo, signed.doc.public_key!);
+    const sig = fromBase64(signed.doc.signature!);
+    const body = new TextEncoder().encode(signed.bodyJson);
+    expect(await verify(algo, pubKey, sig, body)).toBe(true);
+  });
+});
+
 describe('signAudit (Stage 3) — ECDSA fallback', () => {
   it('falls back to ECDSA-P256-SHA256 when Ed25519 generateKey throws, and the result still round-trips', async () => {
     const original = crypto.subtle.generateKey.bind(crypto.subtle);

@@ -1,4 +1,17 @@
 import type { Pool, Quotas, RunResult } from '@sortition/engine-contract';
+import type { SeatAllocation, SeatAllocationOverride } from '../quotas/seat-allocation';
+
+/**
+ * Per-axis-value seat-allocation deviation (override - baseline).
+ * Pre-computed in buildAudit so external verifiers don't have to redo
+ * the subtraction. delta_percent is delta_seats / panel_size.
+ */
+export interface SeatAllocationAudit {
+  baseline: Record<string, Record<string, number>>;
+  override: SeatAllocationOverride | null;
+  /** axis-value → {delta_seats, delta_percent}; null when no override active. */
+  deviation: Record<string, { delta_seats: number; delta_percent: number }> | null;
+}
 
 export interface AuditDoc {
   schema_version: string;
@@ -12,13 +25,22 @@ export interface AuditDoc {
   marginals: Record<string, number>;
   quota_fulfillment: RunResult['quota_fulfillment'];
   timing: { duration_ms: number; total_ms: number; num_committees?: number };
+  /**
+   * Optional seat-allocation block. Present in 0.2 manifests when the run
+   * recorded baseline + (optional) override. Absent in 0.1 manifests and in
+   * 0.2 manifests where the caller didn't supply seatAllocation.
+   *
+   * Backward-compat: external verifier (scripts/verify_audit.py) accepts
+   * both schema versions because REQUIRED_FIELDS does not include this.
+   */
+  seat_allocation?: SeatAllocationAudit;
   // Filled in by signAudit().
   public_key?: string;
   signature?: string;
   signature_algo?: 'Ed25519' | 'ECDSA-P256-SHA256';
 }
 
-export const AUDIT_SCHEMA_VERSION = '0.1';
+export const AUDIT_SCHEMA_VERSION = '0.2';
 
 async function sha256Hex(bytes: Uint8Array): Promise<string> {
   const buf = await crypto.subtle.digest('SHA-256', bytes);
@@ -72,12 +94,28 @@ export async function inputSha256(pool: Pool, quotas: Quotas): Promise<string> {
 
 export async function buildAudit(args: {
   pool: Pool;
+  /**
+   * The quotas actually fed to the LP (post-override). Hash is computed
+   * over these so an external verifier with `pool + effectiveQuotas`
+   * regenerates the same input_sha256 (RESEARCH.md Pitfall 4).
+   */
   quotas: Quotas;
   seed: number;
   result: RunResult;
   duration_ms: number;
+  /**
+   * Optional seat-allocation context. When supplied, the audit records the
+   * baseline and (optionally) the override + per-value deviation. Absent
+   * → schema_version stays 0.2 but no seat_allocation block is emitted
+   * (backward-compat with callers that don't track allocation).
+   */
+  seatAllocation?: SeatAllocation;
 }): Promise<AuditDoc> {
   const inputHash = await inputSha256(args.pool, args.quotas);
+  // Build the doc in a fixed property order. Stage-3 signing uses plain
+  // JSON.stringify (NOT canonicalStage1Json), so insertion order IS the
+  // serialization order — Pitfall 6 in RESEARCH.md. Never use Object spread
+  // for AuditDoc fields; that would let property order drift.
   const doc: AuditDoc = {
     schema_version: AUDIT_SCHEMA_VERSION,
     engine: {
@@ -100,7 +138,46 @@ export async function buildAudit(args: {
         : {}),
     },
   };
+  if (args.seatAllocation !== undefined) {
+    doc.seat_allocation = computeSeatAllocationAudit(args.seatAllocation, args.quotas.panel_size);
+  }
   return doc;
+}
+
+/**
+ * Compute the seat_allocation audit block from a SeatAllocation. When no
+ * override is set, deviation is null (caller still records baseline so a
+ * verifier can compare a baseline-only run to an override run later).
+ */
+function computeSeatAllocationAudit(
+  seatAllocation: SeatAllocation,
+  panelSize: number,
+): SeatAllocationAudit {
+  if (!seatAllocation.override) {
+    return {
+      baseline: seatAllocation.baseline,
+      override: null,
+      deviation: null,
+    };
+  }
+  const override = seatAllocation.override;
+  const baseAxis = seatAllocation.baseline[override.axis] ?? {};
+  const allValues = new Set<string>([...Object.keys(baseAxis), ...Object.keys(override.seats)]);
+  const deviation: Record<string, { delta_seats: number; delta_percent: number }> = {};
+  for (const v of allValues) {
+    const b = baseAxis[v] ?? 0;
+    const o = override.seats[v] ?? 0;
+    const delta = o - b;
+    deviation[v] = {
+      delta_seats: delta,
+      delta_percent: panelSize === 0 ? 0 : delta / panelSize,
+    };
+  }
+  return {
+    baseline: seatAllocation.baseline,
+    override,
+    deviation,
+  };
 }
 
 export interface SignedAudit {

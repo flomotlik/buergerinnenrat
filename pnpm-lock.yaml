@@ -26,6 +26,9 @@ importers:
       '@sortition/engine-contract':
         specifier: workspace:*
         version: link:../../packages/engine-contract
+      '@sortition/metrics':
+        specifier: workspace:*
+        version: link:../../packages/metrics
       papaparse:
         specifier: ^5.5.3
         version: 5.5.3

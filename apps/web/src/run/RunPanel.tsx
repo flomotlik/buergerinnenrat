@@ -1,5 +1,5 @@
 import type { Component } from 'solid-js';
-import { createSignal, For, Show } from 'solid-js';
+import { createMemo, createSignal, For, Show } from 'solid-js';
 import type { Pool, Quotas } from '@sortition/engine-contract';
 import { runEngineA, type RunOutcome } from './runEngine';
 import {
@@ -10,10 +10,28 @@ import {
   selectedToXlsx,
   signAudit,
 } from './audit';
+import { SeatAllocationPanel } from '../quotas/SeatAllocationPanel';
+import {
+  computeBaseline,
+  type SeatAllocationOverride,
+  type SeatAllocation,
+} from '../quotas/seat-allocation';
+import { seatAllocationDrift } from '@sortition/metrics';
 
 export interface RunPanelProps {
   pool: Pool;
   quotas: Quotas;
+  /**
+   * The raw rows (before EnginePool transformation) used to compute the
+   * baseline allocation. Kept separate from `pool` because the baseline
+   * uses the user-facing column values (after CSV mapping) rather than
+   * EnginePool's normalised attribute bag.
+   */
+  rows: Record<string, string>[];
+  panelSize: number;
+  candidateAxes: string[];
+  override: SeatAllocationOverride | null;
+  onOverrideChange: (override: SeatAllocationOverride | null) => void;
 }
 
 export const RunPanel: Component<RunPanelProps> = (props) => {
@@ -23,6 +41,18 @@ export const RunPanel: Component<RunPanelProps> = (props) => {
   const [logs, setLogs] = createSignal<string[]>([]);
   const [outcome, setOutcome] = createSignal<RunOutcome | null>(null);
   const [aborter, setAborter] = createSignal<AbortController | null>(null);
+
+  // Baseline is recomputed on every render that reads it; createMemo caches
+  // by axes + rows + panelSize identity. Used both for SeatAllocationPanel
+  // display and (when override active) for the drift metric in the result.
+  const baseline = createMemo(() =>
+    computeBaseline(props.rows, props.panelSize, props.candidateAxes),
+  );
+
+  const seatAllocation = createMemo<SeatAllocation>(() => ({
+    baseline: baseline(),
+    override: props.override,
+  }));
 
   async function start() {
     setOutcome(null);
@@ -37,6 +67,7 @@ export const RunPanel: Component<RunPanelProps> = (props) => {
           pool: props.pool,
           quotas: props.quotas,
           seed: seed(),
+          override: props.override,
           onProgress: (msg, fraction) =>
             setProgress({ msg, ...(fraction !== undefined ? { fraction } : {}) }),
           onLog: (msg) => setLogs((xs) => [...xs.slice(-50), msg]),
@@ -74,19 +105,56 @@ export const RunPanel: Component<RunPanelProps> = (props) => {
   async function exportAuditJson() {
     const o = outcome();
     if (!o?.result) return;
+    // Use the post-override quotas if available so input_sha256 matches the
+    // LP that actually ran (Pitfall 4). When no override is active,
+    // effectiveQuotas equals props.quotas — same behavior as 0.1.
+    const effective = o.effectiveQuotas ?? props.quotas;
     const audit = await buildAudit({
       pool: props.pool,
-      quotas: props.quotas,
+      quotas: effective,
       seed: seed(),
       result: o.result,
       duration_ms: o.duration_ms,
+      seatAllocation: seatAllocation(),
     });
     const signed = await signAudit(audit);
     downloadBlob(`audit-${seed()}.json`, JSON.stringify(signed.doc, null, 2), 'application/json');
   }
 
+  // Drift metric: only compute when override is set + result available.
+  const drift = createMemo(() => {
+    const ov = props.override;
+    if (!ov) return null;
+    const baseAxis = baseline()[ov.axis] ?? {};
+    return seatAllocationDrift(ov.axis, baseAxis, ov.seats, props.panelSize);
+  });
+
+  // Largest absolute single-value change (for human-readable drift summary).
+  const maxValueChange = createMemo(() => {
+    const ov = props.override;
+    if (!ov) return null;
+    const baseAxis = baseline()[ov.axis] ?? {};
+    let bestVal: string | null = null;
+    let bestDelta = 0;
+    for (const v of Object.keys(ov.seats)) {
+      const delta = (ov.seats[v] ?? 0) - (baseAxis[v] ?? 0);
+      if (Math.abs(delta) > Math.abs(bestDelta)) {
+        bestDelta = delta;
+        bestVal = v;
+      }
+    }
+    return bestVal ? { value: bestVal, delta: bestDelta } : null;
+  });
+
   return (
     <div class="space-y-4" data-testid="run-panel">
+      <SeatAllocationPanel
+        rows={props.rows}
+        panelSize={props.panelSize}
+        axes={props.candidateAxes}
+        onChange={props.onOverrideChange}
+      />
+
       <div class="flex items-center gap-3">
         <label class="text-sm">Seed</label>
         <input
@@ -167,6 +235,12 @@ export const RunPanel: Component<RunPanelProps> = (props) => {
               `min` oder erweitere den Pool.
             </p>
           </Show>
+          <Show when={outcome()!.error?.code === 'infeasible_quotas' && props.override}>
+            <p class="text-xs mt-2 text-red-700" data-testid="override-infeasibility-hint">
+              Override und andere Bounds inkompatibel — bitte andere Achsen-Bounds prüfen oder
+              Override-Werte anpassen.
+            </p>
+          </Show>
         </div>
       </Show>
 
@@ -175,6 +249,34 @@ export const RunPanel: Component<RunPanelProps> = (props) => {
           const r = outcome()!.result!;
           return (
             <div class="space-y-4" data-testid="run-result">
+              <Show when={props.override}>
+                <div class="flex flex-col gap-2">
+                  <span
+                    class="status-pill status-pill-warn self-start"
+                    data-testid="seat-allocation-active-badge"
+                  >
+                    Manuelle Sitz-Allokation aktiv — siehe Audit-Export
+                  </span>
+                  <Show when={drift()}>
+                    {(d) => (
+                      <p class="text-xs text-slate-700" data-testid="seat-allocation-drift-display">
+                        {Math.round(d().l1_drift / 2)} von {props.panelSize} Sitzen umgeschichtet (
+                        {Math.round(d().l1_drift_pct * 100)}%)
+                        <Show when={maxValueChange()}>
+                          {(m) => (
+                            <>
+                              , maximaler Eingriff: {m().delta > 0 ? '+' : ''}
+                              {m().delta} Sitze für Wert „{m().value}"
+                            </>
+                          )}
+                        </Show>
+                        .
+                      </p>
+                    )}
+                  </Show>
+                </div>
+              </Show>
+
               <div class="grid grid-cols-2 gap-4 text-sm">
                 <div>
                   <span class="text-slate-500">Laufzeit:</span>{' '}

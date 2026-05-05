@@ -2,7 +2,7 @@
  * Stage 3 RunPanel e2e (#68 P1 #5). Inlines a small CSV (n=20) so the test
  * is self-contained, configures a panel-size=6 quota with a satisfiable
  * gender bound, runs Engine A, and asserts the audit-JSON download contains
- * the expected schema-0.1 fields.
+ * the expected schema-0.2 fields (bumped from 0.1 in #71 — Task 5).
  */
 import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
@@ -89,8 +89,10 @@ test('stage 3: upload n=20 → quotas → run → audit JSON parses', async ({ p
     signature_algo?: string;
   };
 
-  // Required schema-0.1 fields.
-  expect(audit.schema_version).toBe('0.1');
+  // Required schema-0.2 fields. (Bumped from 0.1 in #71 — Task 5; the
+  // optional seat_allocation field is absent here because we ran without
+  // an override, which exercises the backward-compat path.)
+  expect(audit.schema_version).toBe('0.2');
   expect(audit.engine.id).toMatch(/engine-a/);
   expect(audit.algorithm).toBe('maximin');
   expect(audit.seed).toBe(42);
