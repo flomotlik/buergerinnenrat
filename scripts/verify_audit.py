@@ -98,7 +98,9 @@ def _canonical_quotas(quotas: dict[str, Any]) -> str:
         keys = sorted(c["bounds"].keys())
         bounds = {k: {"min": c["bounds"][k]["min"], "max": c["bounds"][k]["max"]} for k in keys}
         norm["categories"].append({"column": c["column"], "bounds": bounds})
-    return json.dumps(norm, separators=(",", ":"))
+    # ensure_ascii=False so the canonicalisation matches the JS-side
+    # implementation in apps/web/src/run/audit.ts.
+    return json.dumps(norm, separators=(",", ":"), ensure_ascii=False)
 
 
 def _canonical_pool(pool: dict[str, Any]) -> str:
@@ -107,7 +109,9 @@ def _canonical_pool(pool: dict[str, Any]) -> str:
     for p in persons:
         keys = sorted(p.keys())
         norm["people"].append({k: p[k] for k in keys})
-    return json.dumps(norm, separators=(",", ":"))
+    # ensure_ascii=False so person attributes with German umlauts round-trip
+    # identically between JS and Python (see _canonical_quotas note).
+    return json.dumps(norm, separators=(",", ":"), ensure_ascii=False)
 
 
 def _input_sha256(pool: dict[str, Any], quotas: dict[str, Any]) -> str:
@@ -128,7 +132,14 @@ def main() -> int:
             print(f"[error] missing field: {field}", file=sys.stderr)
             return 3
 
-    body = json.dumps(_strip_signature(doc), separators=(",", ":")).encode("utf-8")
+    # ensure_ascii=False so non-ASCII characters (e.g. German umlauts in a
+    # rationale string, or in person attributes) round-trip as raw UTF-8 —
+    # JS `JSON.stringify` does NOT escape them, so the Python body bytes
+    # must match. Without this, every audit with a non-ASCII string fails
+    # verification even when the signature is valid.
+    body = json.dumps(_strip_signature(doc), separators=(",", ":"), ensure_ascii=False).encode(
+        "utf-8"
+    )
     pubkey = base64.b64decode(doc["public_key"])
     sig = base64.b64decode(doc["signature"])
     algo = doc.get("signature_algo", "Ed25519")
