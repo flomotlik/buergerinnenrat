@@ -14,6 +14,14 @@ Browser-native, backend-lose Sortition-Web-App für **Personenauswahl** (stratif
 - **Findings als Input für Masterplan v2**: `docs/iteration-1-findings.md`.
 - Der Masterplan **v1** war von drei externen LLMs reviewed (FAIL, FAIL, WARN). Konsolidierung in `sortition-tool/06-review-consolidation.md`. Iteration 1 hat einen Teil der P0/P1-Items beantwortet, der Rest ist in den Findings dokumentiert.
 
+## Tool-Primitive (Stand 2026-05-04)
+
+Generische Operationen, die für alle Use-Cases (Bürger:innenrat, Landeskonferenz, Parteitag) gleich funktionieren — kein use-case-spezifisches Feature:
+
+- **Auswahl**: statistische Stratifikation (Stage 1, Hamilton/Largest-Remainder + Fisher-Yates) und Maximin-Panel-Optimierung (Stage 3, Engine A auf HiGHS).
+- **Override** (#71): manuelle 1-D Achsen-Sitz-Allokation. Pro Lauf eine CSV-Spalte übersteuern, Override ersetzt min/max-Bounds (`min == max == override_value`), andere Achsen bleiben proportional. Begründung Pflicht (≥ 20 Zeichen non-whitespace), voll im Audit-Manifest signiert (Schema 0.2, `seat_allocation`-Feld mit baseline + override + deviation). Verifier akzeptiert sowohl 0.1 als auch 0.2.
+- **Nachwahl** (#48, geplant): Drop-out-Replacement aus Reserve.
+
 ## Wenn du hier einsteigst — lies in dieser Reihenfolge
 
 1. `sortition-tool/06-review-consolidation.md` — was stimmt nicht am aktuellen Plan, welche Änderungen stehen an

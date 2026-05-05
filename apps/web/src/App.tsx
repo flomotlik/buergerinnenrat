@@ -1,4 +1,14 @@
-import { createEffect, createMemo, createSignal, lazy, on, onCleanup, onMount, Show, Suspense } from 'solid-js';
+import {
+  createEffect,
+  createMemo,
+  createSignal,
+  lazy,
+  on,
+  onCleanup,
+  onMount,
+  Show,
+  Suspense,
+} from 'solid-js';
 import type { Component } from 'solid-js';
 import { FileImport } from './import/FileImport';
 import { applyMapping } from './import/parse-csv';
@@ -56,7 +66,8 @@ export type DocsRoute =
   | 'bmg46'
   | 'limitationen'
   | 'beispiele'
-  | 'use-cases';
+  | 'use-cases'
+  | 'override';
 
 const DOCS_ROUTES: ReadonlySet<DocsRoute> = new Set<DocsRoute>([
   'hub',
@@ -68,6 +79,7 @@ const DOCS_ROUTES: ReadonlySet<DocsRoute> = new Set<DocsRoute>([
   'limitationen',
   'beispiele',
   'use-cases',
+  'override',
 ]);
 
 interface ParsedHash {

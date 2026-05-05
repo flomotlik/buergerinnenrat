@@ -236,10 +236,7 @@ export const RunPanel: Component<RunPanelProps> = (props) => {
             </p>
           </Show>
           <Show when={outcome()!.error?.code === 'infeasible_quotas' && props.override}>
-            <p
-              class="text-xs mt-2 text-red-700"
-              data-testid="override-infeasibility-hint"
-            >
+            <p class="text-xs mt-2 text-red-700" data-testid="override-infeasibility-hint">
               Override und andere Bounds inkompatibel — bitte andere Achsen-Bounds prüfen oder
               Override-Werte anpassen.
             </p>
@@ -262,10 +259,7 @@ export const RunPanel: Component<RunPanelProps> = (props) => {
                   </span>
                   <Show when={drift()}>
                     {(d) => (
-                      <p
-                        class="text-xs text-slate-700"
-                        data-testid="seat-allocation-drift-display"
-                      >
+                      <p class="text-xs text-slate-700" data-testid="seat-allocation-drift-display">
                         {Math.round(d().l1_drift / 2)} von {props.panelSize} Sitzen umgeschichtet (
                         {Math.round(d().l1_drift_pct * 100)}%)
                         <Show when={maxValueChange()}>

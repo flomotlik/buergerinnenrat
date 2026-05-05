@@ -13,6 +13,7 @@ const Bmg46 = lazy(() => import('./Bmg46'));
 const Limitationen = lazy(() => import('./Limitationen'));
 const Beispiele = lazy(() => import('./Beispiele'));
 const UseCases = lazy(() => import('./UseCases'));
+const Override = lazy(() => import('./Override'));
 
 interface Props {
   docsRoute: () => DocsRoute;
@@ -156,6 +157,22 @@ const TILES: ReadonlyArray<TileDef> = [
       </svg>
     ),
   },
+  {
+    slug: 'override',
+    title: 'Sitz-Override',
+    description: 'Manuelle Sitz-Allokation pro Achse — wann sinnvoll, wie im Audit.',
+    // Adjustable sliders — signals "manual tweak / override".
+    icon: (
+      <svg {...SVG_BASE} class={ICON_CLASS}>
+        <line x1="4" y1="6" x2="20" y2="6" />
+        <circle cx="9" cy="6" r="2" />
+        <line x1="4" y1="12" x2="20" y2="12" />
+        <circle cx="15" cy="12" r="2" />
+        <line x1="4" y1="18" x2="20" y2="18" />
+        <circle cx="11" cy="18" r="2" />
+      </svg>
+    ),
+  },
 ];
 
 const TITLES: Record<Exclude<DocsRoute, 'hub'>, string> = {
@@ -167,6 +184,7 @@ const TITLES: Record<Exclude<DocsRoute, 'hub'>, string> = {
   limitationen: 'Limitationen',
   beispiele: 'Beispiel-Daten',
   'use-cases': 'Anwendungsfälle',
+  override: 'Sitz-Override',
 };
 
 /** Map a non-hub route to its component. */
@@ -188,6 +206,8 @@ function renderSubpage(route: Exclude<DocsRoute, 'hub'>) {
       return <Beispiele />;
     case 'use-cases':
       return <UseCases />;
+    case 'override':
+      return <Override />;
   }
 }
 

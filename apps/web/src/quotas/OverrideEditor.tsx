@@ -74,7 +74,10 @@ export const OverrideEditor: Component<OverrideEditorProps> = (props) => {
   }
 
   return (
-    <div class="space-y-4 border rounded p-4 bg-amber-50/40" data-testid="seat-allocation-override-editor">
+    <div
+      class="space-y-4 border rounded p-4 bg-amber-50/40"
+      data-testid="seat-allocation-override-editor"
+    >
       <p
         class="text-sm border-l-4 border-amber-500 bg-amber-50 p-2 rounded"
         data-testid="seat-allocation-override-warning"
@@ -102,9 +105,7 @@ export const OverrideEditor: Component<OverrideEditorProps> = (props) => {
               return (
                 <tr>
                   <td class="p-1">{value}</td>
-                  <td class="p-1 text-right tabular-nums text-slate-500">
-                    {counts()[value] ?? 0}
-                  </td>
+                  <td class="p-1 text-right tabular-nums text-slate-500">{counts()[value] ?? 0}</td>
                   <td class="p-1 text-right tabular-nums">{baselineVal()}</td>
                   <td class="p-1 text-right">
                     <input
