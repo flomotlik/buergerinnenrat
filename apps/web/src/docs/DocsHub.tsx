@@ -12,6 +12,7 @@ const Glossar = lazy(() => import('./Glossar'));
 const Bmg46 = lazy(() => import('./Bmg46'));
 const Limitationen = lazy(() => import('./Limitationen'));
 const Beispiele = lazy(() => import('./Beispiele'));
+const UseCases = lazy(() => import('./UseCases'));
 
 interface Props {
   docsRoute: () => DocsRoute;
@@ -142,6 +143,19 @@ const TILES: ReadonlyArray<TileDef> = [
       </svg>
     ),
   },
+  {
+    slug: 'use-cases',
+    title: 'Anwendungsfälle',
+    description: 'Drei dokumentierte Verfahren — und wie sie dasselbe Tool kombinieren.',
+    // Three stacked layers — signals "different use cases sharing the same base".
+    icon: (
+      <svg {...SVG_BASE} class={ICON_CLASS}>
+        <polygon points="12 2 2 7 12 12 22 7 12 2" />
+        <polyline points="2 17 12 22 22 17" />
+        <polyline points="2 12 12 17 22 12" />
+      </svg>
+    ),
+  },
 ];
 
 const TITLES: Record<Exclude<DocsRoute, 'hub'>, string> = {
@@ -152,6 +166,7 @@ const TITLES: Record<Exclude<DocsRoute, 'hub'>, string> = {
   bmg46: '§ 46 BMG',
   limitationen: 'Limitationen',
   beispiele: 'Beispiel-Daten',
+  'use-cases': 'Anwendungsfälle',
 };
 
 /** Map a non-hub route to its component. */
@@ -171,6 +186,8 @@ function renderSubpage(route: Exclude<DocsRoute, 'hub'>) {
       return <Limitationen />;
     case 'beispiele':
       return <Beispiele />;
+    case 'use-cases':
+      return <UseCases />;
   }
 }
 
