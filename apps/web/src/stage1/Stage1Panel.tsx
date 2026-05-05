@@ -39,9 +39,9 @@ import type {
 // German per-axis tooltips. Headers without an entry render no info icon.
 const AXIS_DESCRIPTIONS: Record<string, string> = {
   geschlecht:
-    'Geschlecht (m/w/d laut Melderegister) — Standard-Stratifikation in jeder Bürgerrats-Methodik.',
+    'Geschlecht (m/w/d laut Melderegister) — Standard-Stratifikation in stratifizierten Auswahl-Verfahren (z.B. Bürgerräte, Delegierten-Auswahl).',
   gender:
-    'Geschlecht (m/w/d laut Melderegister) — Standard-Stratifikation in jeder Bürgerrats-Methodik.',
+    'Geschlecht (m/w/d laut Melderegister) — Standard-Stratifikation in stratifizierten Auswahl-Verfahren (z.B. Bürgerräte, Delegierten-Auswahl).',
   altersgruppe:
     'Altersgruppe (berechnet aus geburtsjahr) — kontrolliert Generationen-Repräsentation.',
   age_band: 'Altersgruppe — kontrolliert Generationen-Repräsentation.',
@@ -525,16 +525,30 @@ export const Stage1Panel: Component = () => {
       </section>
 
       <Show when={parsed()}>
-        {/* BMG §46 hint (Task 6) — informational, no hard block */}
+        {/* Stratification-axes hint — informational, no hard block. Phrased
+            generically (per #70 rebrand): the constraint applies to every
+            Personenauswahl-Verfahren ("you can only stratify on columns that
+            exist in your input"); BMG §46 is mentioned as one example
+            (Bürgerrats-Kontext, DE/AT-Melderegister), not as a precondition. */}
         <aside class="banner info" data-testid="stage1-bmg-hint">
           <div>
             <p>
-              <strong>Hinweis:</strong> Stratifikation kann nur über Felder erfolgen, die im
-              Melderegister enthalten sind. Bildung, Migrationshintergrund, Beruf sind nicht im
-              Melderegister — diese kommen erst nach Selbstauskunft hinzu.
+              <strong>Hinweis:</strong> Stratifikation kann nur über Spalten erfolgen, die in deiner
+              Eingabe existieren.
+            </p>
+            <p class="mt-1">
+              Im Bürgerrats-Kontext (BMG §46, DE/AT-Melderegister-Auszüge) sind das typischerweise
+              Felder wie <em>Staatsbürgerschaft</em>, <em>Geburtsjahr</em>, <em>Sprengel</em> oder{' '}
+              <em>Katastralgemeinde</em>. In anderen Verfahren (z.B. Mitgliederlisten für
+              Delegierten-Auswahl oder Vereinsgremien) sind die verfügbaren Spalten andere — das
+              Tool stratifiziert auf den Achsen, die du im Mapping zuordnest.
             </p>
             <p class="mt-1 text-xs">
-              Quelle:{' '}
+              Mehr zu konkreten Verfahren:{' '}
+              <a href="#/docs/use-cases" class="underline">
+                Anwendungsfälle
+              </a>
+              {' | '}
               <a
                 href="https://www.gesetze-im-internet.de/bmg/__46.html"
                 target="_blank"

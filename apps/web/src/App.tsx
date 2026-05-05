@@ -54,7 +54,8 @@ export type DocsRoute =
   | 'glossar'
   | 'bmg46'
   | 'limitationen'
-  | 'beispiele';
+  | 'beispiele'
+  | 'use-cases';
 
 const DOCS_ROUTES: ReadonlySet<DocsRoute> = new Set<DocsRoute>([
   'hub',
@@ -65,6 +66,7 @@ const DOCS_ROUTES: ReadonlySet<DocsRoute> = new Set<DocsRoute>([
   'bmg46',
   'limitationen',
   'beispiele',
+  'use-cases',
 ]);
 
 interface ParsedHash {
@@ -236,9 +238,9 @@ export const App: Component = () => {
             wordmark in Sidebar is a <span class="font-serif">, NOT an <h1>,
             so a11y.spec.ts ("h1 must exist and be unique") and
             csv-import/smoke specs (getByRole('heading', { name:
-            'Bürger:innenrat' })) both pass on Stage 1 + Stage 3. */}
+            'Personenauswahl' })) both pass on Stage 1 + Stage 3. */}
         <Show when={mode() !== 'docs' && mode() !== 'overview'}>
-          <h1 class="sr-only">Bürger:innenrat</h1>
+          <h1 class="sr-only">Personenauswahl</h1>
         </Show>
 
         <Show when={mode() === 'overview'}>

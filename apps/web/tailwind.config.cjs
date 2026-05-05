@@ -12,11 +12,13 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Brand-Familie für "Bürger:innenrat" — kept for backward-compat.
+        // Brand color family for Personenauswahl — civic green signals
+        // democratic / participatory framing, applicable to Bürgerräte and
+        // other stratified-selection use cases. Kept for backward-compat.
         // - DEFAULT: dunkler, seriöser Grundton (Slate-900-Variante) für H1/Logo
         // - fg: Vordergrundfarbe auf Brand-Hintergrund (weiß)
         // - muted: ganz leichter Brand-Tint für Card-Hintergründe
-        // - accent: civic-grüner Primär-Akzent (Bürgerrat = zivil/demokratisch)
+        // - accent: civic-grüner Primär-Akzent
         // - accent-strong: dunklere Hover-/Press-Variante des Accent-Tons
         brand: {
           DEFAULT: '#0f172a',

@@ -4,8 +4,13 @@
 // + "Welche Outreach-Methode?" into a recommended Versand-Stichprobe N
 // (number of letters to send) plus a defensible range.
 //
+// Outreach response-rate defaults derived from Personenauswahl practice —
+// empirical from Bürgerrat verfahren in DE/AT (sortition-foundation, "Es
+// geht LOS"), and applicable to comparable selection processes (delegation,
+// internal panels) with similar anonymous-outreach characteristics.
+//
 // Rationale (research/03-legal-framework-and-best-practices.md, Bürgerrat-
-// Praxis):
+// Praxis as the empirical baseline):
 //   - mail-only: 5–10 % response (avg 7 %) — Sortition Foundation, kommunale
 //     Bürgerräte AT.
 //   - mail-plus-phone: 30–50 % (avg 40 %) — Bürgerrat-Praxis with active

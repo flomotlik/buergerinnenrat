@@ -1,10 +1,16 @@
-# Bürgerinnenrat — Sortition Tool
+# Personenauswahl — stratifizierte Zufallsauswahl
 
 [![Deploy](https://github.com/flomotlik/buergerinnenrat/actions/workflows/deploy.yml/badge.svg)](https://github.com/flomotlik/buergerinnenrat/actions/workflows/deploy.yml)
 
-Browser-natives Werkzeug für die stratifizierte Zufallsauswahl von Personen für Bürger:innenräte (Deutschland und Österreich). Alle Daten bleiben im Browser, kein Server-Backend.
+Browser-natives Werkzeug für die stratifizierte Zufallsauswahl von Personen — z.B. für Bürgerinnenräte (DE/AT, BMG §46), Landeskonferenz-Delegation oder Vereinsgremien. Alle Daten bleiben im Browser, kein Server-Backend.
 
-**Live:** <https://flomotlik.github.io/buergerinnenrat/>
+**Live (vorläufige URL):** <https://flomotlik.github.io/buergerinnenrat/> — die URL wird mit der Infrastruktur-Migration aktualisiert (siehe Issue #73, deferred).
+
+## Rebranding-Hinweis
+
+Dieses Repository hieß bis 2026-05 *Bürgerinnenrat — Sortition Tool*. Mit der Erweiterung auf weitere Anwendungsfälle (Delegierten-Auswahl, Vereinsgremien) heißt das Produkt jetzt **Personenauswahl**. Die Bürgerinnenrat-Funktionalität, BMG-§46-Kontext und Herzogenburg-Beispieldaten bleiben unverändert — Bürgerinnenrat ist *einer* von drei dokumentierten Use Cases (siehe Doku → Anwendungsfälle in der App).
+
+*Hinweis:* Internes Planungs-Material und Research-Artefakte unter `sortition-tool/`, `research/` und `docs/iteration-*` referenzieren weiterhin den ursprünglichen Bürgerrats-Kontext, weil sie historische Artefakte sind. Aktuelle UI und Doku verwenden den generischen Namen *Personenauswahl*.
 
 ## Lokale Entwicklung mit Docker
 
@@ -88,14 +94,16 @@ Planungs- und Research-Repository für eine **browser-native, backend-lose Sorti
 4. Native Referenz-Benchmark (`pgoelz/citizensassemblies-replication`)
 5. Marktvalidierung: Pilot-Kommune identifizieren
 
-## Stage 1 — Versand-Liste ziehen
+## Stage 1 — Stichprobe aus Pool
 
 Seit Iteration 2 (Issue #45) enthält die Web-App einen neuen Bereich "Versand-Liste
-ziehen" für den ersten Schritt eines realen Bürger:innenrats-Verfahrens: aus der
-Melderegister-Eingabe wird eine **proportionale stratifizierte Zufallsstichprobe**
+ziehen" für den ersten Schritt eines mehrstufigen Auswahlverfahrens: aus einer
+Pool-Eingabe (z.B. Melderegister bei Bürgerinnenräten, Mitgliederliste bei
+Delegierten-Auswahl) wird eine **proportionale stratifizierte Zufallsstichprobe**
 gezogen, die anschließend angeschrieben werden kann. Stage 3 (Maximin-Auswahl auf
 dem Antwortenden-Pool) bleibt unverändert nutzbar — beide Wege erreichbar über
-die Hauptnavigation.
+die Hauptnavigation. Beispiel-Workflow: Bürgerinnenrat nach BMG §46 — siehe
+Herzogenburg-Daten in `apps/web/public/sample-data/`.
 
 **Ablauf:**
 

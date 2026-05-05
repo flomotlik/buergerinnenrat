@@ -12,11 +12,12 @@ test.describe('docs hub + subpages', () => {
     await expect(page.getByTestId('docs-hub')).toBeVisible();
   });
 
-  test('Hub zeigt 7 Tile-Karten und tile-click navigiert', async ({ page }) => {
+  test('Hub zeigt 8 Tile-Karten und tile-click navigiert', async ({ page }) => {
     await page.goto('/#/docs');
     const tiles = page.locator('[data-testid^="docs-tile-"]');
-    // Issue #57 added the "Beispiel-Daten" tile.
-    await expect(tiles).toHaveCount(7);
+    // Issue #57 added the "Beispiel-Daten" tile; #70 added the
+    // "Anwendungsfälle" tile.
+    await expect(tiles).toHaveCount(8);
     await page.getByTestId('docs-tile-algorithmus').click();
     await expect(page).toHaveURL(/#\/docs\/algorithmus$/);
     await expect(page.getByTestId('docs-page-algorithmus')).toBeVisible();
