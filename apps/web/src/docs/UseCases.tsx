@@ -38,14 +38,16 @@ const UseCases: Component = () => {
         <h2 class="text-xl font-semibold">Bürgerinnenrat</h2>
         <details open>
           <summary class="cursor-pointer text-sm font-semibold text-ink-2">
-            BMG §46, Herzogenburg-Daten, zweistufige Auswahl
+            Herzogenburg-Daten, zweistufige Auswahl aus dem Melderegister
           </summary>
           <div class="space-y-3 mt-3">
             <p class="text-sm">
               <strong>Was ist das?</strong> Geloster, deliberativ arbeitender Bürger:innenrat auf
-              Gemeinde- oder Bundes-Ebene (Vorbild: österreichische/deutsche Praxis). Nach §46 BMG
-              dürfen Kommunen aus dem Melderegister bestimmte Felder herausgeben; die Auswahl
-              erfolgt zweistufig (Versand-Liste + Antwortenden-Panel).
+              Gemeinde- oder Bundes-Ebene (Vorbild: österreichische/deutsche Praxis). Kommunen geben
+              aus dem Melderegister einen erlaubten Feldsatz heraus (in Deutschland geregelt durch
+              §46 BMG, in Österreich durch das Meldegesetz 1991 — der Träger klärt den Datenzugang
+              vorab mit der Behörde); die Auswahl erfolgt zweistufig (Versand-Liste +
+              Antwortenden-Panel).
             </p>
             <h3 class="text-base font-semibold">Workflow (Tool-Primitive)</h3>
             <ol class="list-decimal pl-5 space-y-1 text-sm">
@@ -139,7 +141,8 @@ const UseCases: Component = () => {
             <p class="text-sm">
               <strong>Was ist das?</strong> Ein Verein, eine NGO oder eine Schule will ein
               5–15-köpfiges Gremium aus 50–500 Personen losen — mit einfachen Quoten (z.B. „drei
-              Sitze für jede Altersgruppe"). Kein juristischer Kontext, keine §46-BMG-Komplexität.
+              Sitze für jede Altersgruppe"). Kein juristischer Kontext, keine
+              Melderegister-Komplexität.
             </p>
             <h3 class="text-base font-semibold">Workflow (Tool-Primitive)</h3>
             <ol class="list-decimal pl-5 space-y-1 text-sm">

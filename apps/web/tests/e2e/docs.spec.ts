@@ -12,12 +12,14 @@ test.describe('docs hub + subpages', () => {
     await expect(page.getByTestId('docs-hub')).toBeVisible();
   });
 
-  test('Hub zeigt 9 Tile-Karten und tile-click navigiert', async ({ page }) => {
+  test('Hub zeigt 8 Tile-Karten und tile-click navigiert', async ({ page }) => {
     await page.goto('/#/docs');
     const tiles = page.locator('[data-testid^="docs-tile-"]');
-    // Issue #57 added "Beispiel-Daten"; #70 added "Anwendungsfälle";
-    // #71 added "Sitz-Override".
-    await expect(tiles).toHaveCount(9);
+    // Issue #57 added "Beispiel-Daten"; #70 added "Anwendungsfälle"; #71 added
+    // "Sitz-Override". The "§ 46 BMG" tile was removed in the post-#70 cleanup
+    // (German-only legal context, replaced by neutral wording in glossary +
+    // use-case docs).
+    await expect(tiles).toHaveCount(8);
     await page.getByTestId('docs-tile-algorithmus').click();
     await expect(page).toHaveURL(/#\/docs\/algorithmus$/);
     await expect(page.getByTestId('docs-page-algorithmus')).toBeVisible();
@@ -55,9 +57,4 @@ test.describe('docs hub + subpages', () => {
     await expect(page.getByTestId('docs-hub')).toBeVisible();
   });
 
-  test('BMG46-Seite zeigt zulässige Felder', async ({ page }) => {
-    await page.goto('/#/docs/bmg46');
-    await expect(page.getByTestId('docs-page-bmg46')).toBeVisible();
-    await expect(page.getByTestId('docs-page-bmg46')).toContainText('Familienname');
-  });
 });

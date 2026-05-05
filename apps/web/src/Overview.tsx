@@ -41,8 +41,8 @@ const Overview: Component = () => {
             </div>
             <h3 class="text-lg font-serif font-semibold text-ink">Versand-Liste ziehen</h3>
             <p class="text-sm text-ink-2">
-              Stratifizierte Zufallsauswahl aus dem Melderegister gemäß § 46 BMG. Bytegleich
-              reproduzierbar mit der Python-Referenz.
+              Stratifizierte Zufallsauswahl aus dem Melderegister oder einer Mitgliederliste.
+              Bytegleich reproduzierbar mit der Python-Referenz.
             </p>
           </a>
           <a
@@ -52,7 +52,7 @@ const Overview: Component = () => {
           >
             <div class="flex items-center justify-between gap-2">
               <span class="text-xs font-semibold uppercase tracking-wide text-ink-3">Stage 3</span>
-              <span class="status-pill status-pill-warn">Konzept</span>
+              <span class="status-pill status-pill-ok">verfügbar</span>
             </div>
             <h3 class="text-lg font-serif font-semibold text-ink">Panel-Auswahl</h3>
             <p class="text-sm text-ink-2">

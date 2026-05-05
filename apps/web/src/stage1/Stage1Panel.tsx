@@ -436,7 +436,9 @@ export const Stage1Panel: Component = () => {
         <div class="card-head">
           <span class="card-eyebrow">Schritt 1</span>
           <h2 class="card-title">1. Melderegister-CSV hochladen</h2>
-          <p class="card-help">CSV-Datei mit Bevölkerungsdaten gemäß § 46 BMG.</p>
+          <p class="card-help">
+            CSV- oder Excel-Datei mit der Personen-Liste (Melderegister, Mitgliederliste, …).
+          </p>
         </div>
         <label class="dropzone" data-testid="stage1-file-dropzone">
           <svg
@@ -526,40 +528,27 @@ export const Stage1Panel: Component = () => {
 
       <Show when={parsed()}>
         {/* Stratification-axes hint — informational, no hard block. Phrased
-            generically (per #70 rebrand): the constraint applies to every
-            Personenauswahl-Verfahren ("you can only stratify on columns that
-            exist in your input"); BMG §46 is mentioned as one example
-            (Bürgerrats-Kontext, DE/AT-Melderegister), not as a precondition. */}
-        <aside class="banner info" data-testid="stage1-bmg-hint">
+            generically: the constraint applies to every Personenauswahl-
+            Verfahren ("you can only stratify on columns that exist in your
+            input"). The available columns differ per use case (Melderegister,
+            Mitgliederlisten, etc.). */}
+        <aside class="banner info" data-testid="stage1-axes-hint">
           <div>
             <p>
               <strong>Hinweis:</strong> Stratifikation kann nur über Spalten erfolgen, die in deiner
               Eingabe existieren.
             </p>
             <p class="mt-1">
-              Im Bürgerrats-Kontext (BMG §46, DE/AT-Melderegister-Auszüge) sind das typischerweise
-              Felder wie <em>Staatsbürgerschaft</em>, <em>Geburtsjahr</em>, <em>Sprengel</em> oder{' '}
-              <em>Katastralgemeinde</em>. In anderen Verfahren (z.B. Mitgliederlisten für
-              Delegierten-Auswahl oder Vereinsgremien) sind die verfügbaren Spalten andere — das
-              Tool stratifiziert auf den Achsen, die du im Mapping zuordnest.
+              Bei Melderegister-Auszügen sind das typischerweise Felder wie{' '}
+              <em>Staatsbürgerschaft</em>, <em>Geburtsjahr</em>, <em>Sprengel</em> oder{' '}
+              <em>Katastralgemeinde</em>. Bei Mitgliederlisten für Delegierten-Auswahl oder
+              Vereinsgremien sind die verfügbaren Spalten andere — das Tool stratifiziert auf den
+              Achsen, die du im Mapping zuordnest.
             </p>
             <p class="mt-1 text-xs">
               Mehr zu konkreten Verfahren:{' '}
               <a href="#/docs/use-cases" class="underline">
                 Anwendungsfälle
-              </a>
-              {' | '}
-              <a
-                href="https://www.gesetze-im-internet.de/bmg/__46.html"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="underline"
-              >
-                § 46 BMG
-              </a>
-              {' | '}
-              <a href="#/docs/bmg46" class="underline">
-                Mehr im Glossar zu § 46 BMG
               </a>
             </p>
           </div>

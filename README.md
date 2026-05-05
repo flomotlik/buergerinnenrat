@@ -2,13 +2,13 @@
 
 [![Deploy](https://github.com/flomotlik/buergerinnenrat/actions/workflows/deploy.yml/badge.svg)](https://github.com/flomotlik/buergerinnenrat/actions/workflows/deploy.yml)
 
-Browser-natives Werkzeug für die stratifizierte Zufallsauswahl von Personen — z.B. für Bürgerinnenräte (DE/AT, BMG §46), Landeskonferenz-Delegation oder Vereinsgremien. Alle Daten bleiben im Browser, kein Server-Backend.
+Browser-natives Werkzeug für die stratifizierte Zufallsauswahl von Personen — z.B. für Bürgerinnenräte (DE/AT), Landeskonferenz-Delegation oder Vereinsgremien. Alle Daten bleiben im Browser, kein Server-Backend.
 
 **Live (vorläufige URL):** <https://flomotlik.github.io/buergerinnenrat/> — die URL wird mit der Infrastruktur-Migration aktualisiert (siehe Issue #73, deferred).
 
 ## Rebranding-Hinweis
 
-Dieses Repository hieß bis 2026-05 *Bürgerinnenrat — Sortition Tool*. Mit der Erweiterung auf weitere Anwendungsfälle (Delegierten-Auswahl, Vereinsgremien) heißt das Produkt jetzt **Personenauswahl**. Die Bürgerinnenrat-Funktionalität, BMG-§46-Kontext und Herzogenburg-Beispieldaten bleiben unverändert — Bürgerinnenrat ist *einer* von drei dokumentierten Use Cases (siehe Doku → Anwendungsfälle in der App).
+Dieses Repository hieß bis 2026-05 *Bürgerinnenrat — Sortition Tool*. Mit der Erweiterung auf weitere Anwendungsfälle (Delegierten-Auswahl, Vereinsgremien) heißt das Produkt jetzt **Personenauswahl**. Die Bürgerinnenrat-Funktionalität und Herzogenburg-Beispieldaten bleiben unverändert — Bürgerinnenrat ist *einer* von drei dokumentierten Use Cases (siehe Doku → Anwendungsfälle in der App).
 
 *Hinweis:* Internes Planungs-Material und Research-Artefakte unter `sortition-tool/`, `research/` und `docs/iteration-*` referenzieren weiterhin den ursprünglichen Bürgerrats-Kontext, weil sie historische Artefakte sind. Aktuelle UI und Doku verwenden den generischen Namen *Personenauswahl*.
 
@@ -74,7 +74,7 @@ Planungs- und Research-Repository für eine **browser-native, backend-lose Sorti
 
 ## Struktur
 
-- `research/` — Vorfeld-Research zum Bürgerrat-Kontext, adhocracy+ als möglicher Begleit-Stack, Rechtsrahmen (§ 46 BMG, DSGVO), OECD-Methodik, bestehende Algorithmen (Sortition Foundation, panelot.org, "Es geht LOS").
+- `research/` — Vorfeld-Research zum Bürgerrat-Kontext, adhocracy+ als möglicher Begleit-Stack, Rechtsrahmen (DE: § 46 BMG; AT: Meldegesetz 1991; DSGVO), OECD-Methodik, bestehende Algorithmen (Sortition Foundation, panelot.org, "Es geht LOS").
 - `sortition-tool/` — Produktplanung für die browser-native Sortition-App: WASM-Solver-Analyse, Pyodide-Machbarkeit, Port-Optionen, Frontend-Architektur, Lizenz-/Geschäftsmodell, Masterplan und Review-Konsolidierung.
 - `reviews/` — Externe LLM-Reviews (Claude, Codex, Gemini) des Masterplans als Rohartefakte.
 
@@ -102,7 +102,7 @@ Pool-Eingabe (z.B. Melderegister bei Bürgerinnenräten, Mitgliederliste bei
 Delegierten-Auswahl) wird eine **proportionale stratifizierte Zufallsstichprobe**
 gezogen, die anschließend angeschrieben werden kann. Stage 3 (Maximin-Auswahl auf
 dem Antwortenden-Pool) bleibt unverändert nutzbar — beide Wege erreichbar über
-die Hauptnavigation. Beispiel-Workflow: Bürgerinnenrat nach BMG §46 — siehe
+die Hauptnavigation. Beispiel-Workflow: Bürgerinnenrat-Verfahren — siehe
 Herzogenburg-Daten in `apps/web/public/sample-data/`.
 
 **Ablauf:**
@@ -121,10 +121,12 @@ Herzogenburg-Daten in `apps/web/public/sample-data/`.
 Bruchteil-Rundung pro Stratum (sum aller `n_h` = N exakt), Fisher-Yates-Shuffle
 innerhalb jedes Stratums mit Mulberry32-PRNG. Vollständig deterministisch über Seed.
 
-**Hinweis (BMG § 46):** Stratifikation kann nur über Felder erfolgen, die im
+**Hinweis (Melderegister):** Stratifikation kann nur über Felder erfolgen, die im
 Melderegister enthalten sind. Bildung, Migrationshintergrund, Beruf sind nicht im
-Melderegister — diese kommen erst nach Selbstauskunft hinzu. Quelle:
-[§ 46 BMG](https://www.gesetze-im-internet.de/bmg/__46.html).
+Melderegister — diese kommen erst nach Selbstauskunft hinzu. Welche Felder
+herausgegeben werden dürfen, regelt das jeweilige nationale Melderecht (Deutschland
+[§ 46 BMG](https://www.gesetze-im-internet.de/bmg/__46.html), Österreich
+Meldegesetz 1991) — der Träger klärt den Datenzugang vorab mit der Behörde.
 
 **Output:**
 
