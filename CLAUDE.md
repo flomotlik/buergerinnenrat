@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Projekt in einem Satz
 
-Browser-native, backend-lose Sortition-Web-App für stratifizierte Zufallsauswahl in Bürgerräten (Deutschland/Österreich). **Iteration 1 ist gebaut**, Engine B (Pyodide) bleibt für Iteration 2.
+Browser-native, backend-lose Sortition-Web-App für **Personenauswahl** (stratifizierte Zufallsauswahl), entwickelt für Bürgerinnenräte (DE/AT) und übertragbar auf weitere Verfahren wie Delegierten-Auswahl oder Vereinsgremien. **Iteration 1 ist gebaut**, Engine B (Pyodide) bleibt für Iteration 2.
 
 ## Aktueller Stand (2026-04-24, post-Iteration-1)
 
