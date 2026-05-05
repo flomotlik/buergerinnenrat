@@ -23,8 +23,8 @@ const UseCases: Component = () => {
           Personenauswahl ist eine Toolbox aus drei zusammensetzbaren Primitiven:{' '}
           <strong>stratifizierte Auswahl</strong>, <strong>Quoten-Override</strong> und{' '}
           <strong>Nachwahl</strong>. Verschiedene Verfahren-Typen — vom Bürgerinnenrat über die
-          Landeskonferenz bis zum Vereinsgremium — sind dieselbe Komposition mit anderen
-          Pool-Größen und Workflow-Reihenfolgen. Was sich unterscheidet, ist organisatorisch, nicht
+          Landeskonferenz bis zum Vereinsgremium — sind dieselbe Komposition mit anderen Pool-Größen
+          und Workflow-Reihenfolgen. Was sich unterscheidet, ist organisatorisch, nicht
           algorithmisch.
         </p>
         <p>
