@@ -29,7 +29,8 @@ function makeXlsxBuffer(rows: unknown[][], extraSheets?: Record<string, unknown[
 
 test('imports a generated xlsx fixture and shows preview', async ({ page }) => {
   await page.goto('/');
-  await expect(page.getByRole('heading', { name: 'Bürger:innenrat' })).toBeVisible();
+  // Brand wordmark — testid-selector for immunity against future rebrands.
+  await expect(page.getByTestId('brand')).toBeVisible();
 
   // Tiny inline fixture — keeps the assertion deterministic ('100 Personen')
   // rather than depending on the herzogenburg-melderegister row count.
