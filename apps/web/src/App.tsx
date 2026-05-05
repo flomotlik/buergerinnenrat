@@ -63,7 +63,6 @@ export type DocsRoute =
   | 'technik'
   | 'verifikation'
   | 'glossar'
-  | 'bmg46'
   | 'limitationen'
   | 'beispiele'
   | 'use-cases'
@@ -75,7 +74,6 @@ const DOCS_ROUTES: ReadonlySet<DocsRoute> = new Set<DocsRoute>([
   'technik',
   'verifikation',
   'glossar',
-  'bmg46',
   'limitationen',
   'beispiele',
   'use-cases',

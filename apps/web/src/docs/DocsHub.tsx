@@ -9,7 +9,6 @@ const Algorithmus = lazy(() => import('./Algorithmus'));
 const Technik = lazy(() => import('./Technik'));
 const Verifikation = lazy(() => import('./Verifikation'));
 const Glossar = lazy(() => import('./Glossar'));
-const Bmg46 = lazy(() => import('./Bmg46'));
 const Limitationen = lazy(() => import('./Limitationen'));
 const Beispiele = lazy(() => import('./Beispiele'));
 const UseCases = lazy(() => import('./UseCases'));
@@ -26,7 +25,7 @@ interface TileDef {
   description: string;
   // Per-tile inline-SVG icon. Rendered ~28×28 above the title in
   // brand-accent. Each icon is chosen so the tile is recognisable at a
-  // glance without reading the title (e.g. § for the BMG section).
+  // glance without reading the title.
   icon: JSX.Element;
 }
 
@@ -110,28 +109,6 @@ const TILES: ReadonlyArray<TileDef> = [
     ),
   },
   {
-    slug: 'bmg46',
-    title: '§ 46 BMG',
-    description: 'Welche Felder sind im Melderegister erlaubt.',
-    // Section symbol "§" inside a circle — signals legal/paragraph.
-    icon: (
-      <svg {...SVG_BASE} class={ICON_CLASS}>
-        <circle cx="12" cy="12" r="10" />
-        <text
-          x="12"
-          y="16"
-          text-anchor="middle"
-          font-size="13"
-          font-weight="bold"
-          stroke="none"
-          fill="currentColor"
-        >
-          §
-        </text>
-      </svg>
-    ),
-  },
-  {
     slug: 'limitationen',
     title: 'Limitationen',
     description: 'Was dieses Tool bewusst nicht tut.',
@@ -180,7 +157,6 @@ const TITLES: Record<Exclude<DocsRoute, 'hub'>, string> = {
   technik: 'Technik',
   verifikation: 'Verifikation',
   glossar: 'Glossar',
-  bmg46: '§ 46 BMG',
   limitationen: 'Limitationen',
   beispiele: 'Beispiel-Daten',
   'use-cases': 'Anwendungsfälle',
@@ -198,8 +174,6 @@ function renderSubpage(route: Exclude<DocsRoute, 'hub'>) {
       return <Verifikation />;
     case 'glossar':
       return <Glossar />;
-    case 'bmg46':
-      return <Bmg46 />;
     case 'limitationen':
       return <Limitationen />;
     case 'beispiele':

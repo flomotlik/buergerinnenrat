@@ -101,15 +101,6 @@
     "see_also": ["unterbesetzt", "stratum"]
   },
   {
-    "slug": "bmg46",
-    "term": "§ 46 BMG (Bundesmeldegesetz)",
-    "kurz": "Deutscher Paragraph, der abschließend regelt, welche Felder Kommunen aus dem Melderegister für Sortition-Verfahren herausgeben dürfen. Bildung, Migrationshintergrund, Beruf sind NICHT enthalten — diese kommen erst in der Selbstauskunft (Stage 2).",
-    "external_link": {
-      "label": "§ 46 BMG bei gesetze-im-internet.de",
-      "url": "https://www.gesetze-im-internet.de/bmg/__46.html"
-    }
-  },
-  {
     "slug": "versand-liste",
     "term": "Versand-Liste",
     "kurz": "Output von Stage 1 — die Liste der Personen, die einen Brief mit Einladung zum Verfahren bekommen sollen. Enthält in der Regel mehr Personen als das spätere Panel, weil nicht alle antworten.",
@@ -118,8 +109,8 @@
   {
     "slug": "melderegister",
     "term": "Melderegister",
-    "kurz": "Kommunale Datenbank aller Einwohner:innen. Quelle für die stratifizierte Zufallsauswahl in Stage 1. Welche Felder herausgegeben werden dürfen, regelt § 46 BMG.",
-    "see_also": ["bmg46", "versand-liste"]
+    "kurz": "Kommunale Datenbank aller Einwohner:innen. Quelle für die stratifizierte Zufallsauswahl in Stage 1. Welche Felder herausgegeben werden dürfen, regelt das jeweilige nationale Melderecht (in Deutschland §46 BMG, in Österreich das Meldegesetz 1991) — der Träger klärt den Datenzugang vorab mit der Behörde.",
+    "see_also": ["versand-liste"]
   },
   {
     "slug": "axes",

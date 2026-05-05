@@ -36,8 +36,8 @@ test('stage 1: upload → defaults → ziehen → download', async ({ page, brow
   // Pool summary appears once parsing finishes.
   await expect(page.getByTestId('stage1-pool-summary')).toContainText('500');
 
-  // BMG §46 hint must be visible after upload.
-  await expect(page.getByTestId('stage1-bmg-hint')).toBeVisible();
+  // Stratification-axes hint must be visible after upload.
+  await expect(page.getByTestId('stage1-axes-hint')).toBeVisible();
 
   // Issue #62: this fixture carries `age_band` directly (no `geburtsjahr`),
   // so the derive pipeline is dormant and the AgeBandsEditor must not mount.

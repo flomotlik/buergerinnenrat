@@ -66,7 +66,6 @@ test('mobile: docs-hub tiles are ≥44×44', async ({ page }) => {
     'technik',
     'verifikation',
     'glossar',
-    'bmg46',
     'limitationen',
   ];
   for (const s of slugs) {
