@@ -1,7 +1,7 @@
 ---
 id: '71'
 title: 'Manuell editierbare Gruppen-Sitz-Allokation (Quoten-Override mit Audit)'
-status: open
+status: done
 priority: high
 labels:
 - feature
