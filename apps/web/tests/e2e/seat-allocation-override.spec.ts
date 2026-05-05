@@ -75,7 +75,7 @@ test('seat-allocation override: full flow toggle → edit → rationale gate →
     mimeType: 'text/csv',
     buffer: Buffer.from(makeCsv(), 'utf8'),
   });
-  await page.getByTestId('csv-commit').click();
+  await page.getByTestId('file-commit').click();
   await expect(page.getByTestId('pool-summary')).toContainText('20 Personen');
 
   // Configure quota: panel=10, gender 4..6 each (matches stage3.spec.ts
