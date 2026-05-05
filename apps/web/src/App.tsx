@@ -1,4 +1,4 @@
-import { createMemo, createSignal, lazy, onCleanup, onMount, Show, Suspense } from 'solid-js';
+import { createEffect, createMemo, createSignal, lazy, on, onCleanup, onMount, Show, Suspense } from 'solid-js';
 import type { Component } from 'solid-js';
 import { FileImport } from './import/FileImport';
 import { applyMapping } from './import/parse-csv';
@@ -6,6 +6,7 @@ import type { ColumnMapping, ParsedTable } from './import/parse-csv';
 import { QuotaEditor } from './quotas/QuotaEditor';
 import type { CategoryQuota, QuotaConfig } from './quotas/model';
 import { validateQuotas } from './quotas/model';
+import type { SeatAllocationOverride } from './quotas/seat-allocation';
 import { RunPanel } from './run/RunPanel';
 import { Stage1Panel } from './stage1/Stage1Panel';
 import { Sidebar } from './shell/Sidebar';
@@ -119,6 +120,21 @@ export const App: Component = () => {
 
   const [pool, setPool] = createSignal<ImportedPool | null>(null);
   const [quotas, setQuotas] = createSignal<QuotaConfig | null>(null);
+  // Seat-allocation override is hosted at the App level so it survives
+  // mode/tab switches (RESEARCH.md Pitfall 7 + R4). Auto-invalidated when
+  // the pool or quotas change — old override may reference values that no
+  // longer exist (RESEARCH.md R7).
+  const [seatAllocationOverride, setSeatAllocationOverride] =
+    createSignal<SeatAllocationOverride | null>(null);
+  createEffect(
+    on(
+      [pool, quotas],
+      () => {
+        setSeatAllocationOverride(null);
+      },
+      { defer: true },
+    ),
+  );
 
   const enginePool = createMemo(() => {
     const p = pool();
@@ -290,10 +306,24 @@ export const App: Component = () => {
             </Show>
 
             <Show when={quotaValid() && enginePool() && engineQuotas()}>
-              <section>
-                <h2 class="text-xl font-semibold mb-3">3. Lauf starten</h2>
-                <RunPanel pool={enginePool()!} quotas={engineQuotas()!} />
-              </section>
+              {(_v) => {
+                const p = pool()!;
+                const q = quotas()!;
+                return (
+                  <section>
+                    <h2 class="text-xl font-semibold mb-3">3. Lauf starten</h2>
+                    <RunPanel
+                      pool={enginePool()!}
+                      quotas={engineQuotas()!}
+                      rows={p.rows}
+                      panelSize={q.panel_size}
+                      candidateAxes={Object.keys(p.rows[0] ?? {}).filter((c) => c !== 'person_id')}
+                      override={seatAllocationOverride()}
+                      onOverrideChange={setSeatAllocationOverride}
+                    />
+                  </section>
+                );
+              }}
             </Show>
 
             <Show when={pool() && quotas() && !quotaValid()}>
