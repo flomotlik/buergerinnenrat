@@ -136,13 +136,14 @@ const Beispiele: Component = () => {
       <section class="space-y-2">
         <h3 class="text-base font-serif font-semibold">Excel-Format-Anforderungen</h3>
         <p class="text-sm">
-          Excel-Uploads (<code>.xlsx</code>) folgen dem gleichen Schema wie CSV — Spaltenüberschriften
-          in <strong>Zeile 1</strong>, eine Daten-Zeile pro Person ab Zeile 2. Im Detail:
+          Excel-Uploads (<code>.xlsx</code>) folgen dem gleichen Schema wie CSV —
+          Spaltenüberschriften in <strong>Zeile 1</strong>, eine Daten-Zeile pro Person ab Zeile 2.
+          Im Detail:
         </p>
         <ul class="list-disc pl-5 text-sm space-y-1">
           <li>
-            Genau <strong>ein Worksheet</strong> wird importiert — bei mehreren Tabs verwendet die App
-            den ersten und zeigt eine Warnung an.
+            Genau <strong>ein Worksheet</strong> wird importiert — bei mehreren Tabs verwendet die
+            App den ersten und zeigt eine Warnung an.
           </li>
           <li>
             <strong>Keine verbundenen Zellen</strong> in der Header-Zeile.
@@ -153,11 +154,13 @@ const Beispiele: Component = () => {
             berechnete Wert verwendet und eine Warnung angezeigt.
           </li>
           <li>
-            <strong>Datums-Felder</strong> werden zu ISO-8601 (<code>YYYY-MM-DD</code>) normalisiert,
+            <strong>Datums-Felder</strong> werden zu ISO-8601 (<code>YYYY-MM-DD</code>)
+            normalisiert,
             <strong>Zahlen</strong> zu Strings ohne <code>.0</code>-Suffix.
           </li>
           <li>
-            <strong>Passwortgeschützte Dateien</strong> werden abgelehnt — vor dem Upload entschlüsseln.
+            <strong>Passwortgeschützte Dateien</strong> werden abgelehnt — vor dem Upload
+            entschlüsseln.
           </li>
         </ul>
       </section>
