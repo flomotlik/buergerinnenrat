@@ -2,7 +2,14 @@ import type { Component } from 'solid-js';
 import { createSignal, For, Show } from 'solid-js';
 import type { Pool, Quotas } from '@sortition/engine-contract';
 import { runEngineA, type RunOutcome } from './runEngine';
-import { buildAudit, downloadBlob, selectedToCsv, signAudit } from './audit';
+import {
+  buildAudit,
+  downloadBinaryBlob,
+  downloadBlob,
+  selectedToCsv,
+  selectedToXlsx,
+  signAudit,
+} from './audit';
 
 export interface RunPanelProps {
   pool: Pool;
@@ -51,6 +58,17 @@ export const RunPanel: Component<RunPanelProps> = (props) => {
     const r = outcome()?.result;
     if (!r) return;
     downloadBlob(`panel-${seed()}.csv`, selectedToCsv(props.pool, r.selected), 'text/csv');
+  }
+
+  async function exportPanelXlsx() {
+    const r = outcome()?.result;
+    if (!r) return;
+    const buffer = await selectedToXlsx(props.pool, r.selected);
+    downloadBinaryBlob(
+      `panel-${seed()}.xlsx`,
+      buffer,
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    );
   }
 
   async function exportAuditJson() {
@@ -267,6 +285,13 @@ export const RunPanel: Component<RunPanelProps> = (props) => {
                   data-testid="run-export-csv"
                 >
                   Panel-CSV exportieren
+                </button>
+                <button
+                  class="px-3 py-1.5 border bg-white text-sm rounded"
+                  onClick={exportPanelXlsx}
+                  data-testid="run-export-xlsx"
+                >
+                  Panel-Excel exportieren
                 </button>
                 <button
                   class="px-3 py-1.5 border bg-white text-sm rounded"

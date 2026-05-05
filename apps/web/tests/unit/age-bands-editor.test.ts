@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 // Import from the pure helpers module — the .tsx file pulls in Solid's
 // client runtime which throws when evaluated outside a renderer context.
 import { addBandTo, removeBandAt, resetToDefaults } from '../../src/stage1/age-bands-helpers';
-import type { AgeBand } from '../../src/csv/derive';
+import type { AgeBand } from '../../src/import/derive';
 
 describe('addBandTo', () => {
   it('appends a new band starting one above the prior closed max', () => {

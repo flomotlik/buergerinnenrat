@@ -18,10 +18,10 @@ test('imports a synthetic pool fixture and shows preview', async ({ page }) => {
   const csv = readFileSync(FIXTURE);
   await input.setInputFiles({ name: 'pool.csv', mimeType: 'text/csv', buffer: csv });
 
-  await expect(page.getByTestId('csv-preview')).toBeVisible();
-  await expect(page.getByTestId('csv-validation-ok')).toBeVisible();
+  await expect(page.getByTestId('file-preview')).toBeVisible();
+  await expect(page.getByTestId('file-validation-ok')).toBeVisible();
 
-  await page.getByTestId('csv-commit').click();
+  await page.getByTestId('file-commit').click();
   await expect(page.getByTestId('pool-summary')).toContainText('100 Personen');
 });
 
@@ -30,7 +30,7 @@ test('configures quotas and reaches the run-stub', async ({ page }) => {
   const input = page.locator('input[type="file"]').first();
   const csv = readFileSync(FIXTURE);
   await input.setInputFiles({ name: 'pool.csv', mimeType: 'text/csv', buffer: csv });
-  await page.getByTestId('csv-commit').click();
+  await page.getByTestId('file-commit').click();
 
   await expect(page.getByTestId('quota-editor')).toBeVisible();
   await page.getByTestId('quota-panel-size').fill('20');

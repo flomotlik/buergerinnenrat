@@ -21,7 +21,8 @@
     "@sortition/engine-a": "workspace:*",
     "@sortition/engine-contract": "workspace:*",
     "papaparse": "^5.5.3",
-    "solid-js": "^1.9.3"
+    "solid-js": "^1.9.3",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.3",

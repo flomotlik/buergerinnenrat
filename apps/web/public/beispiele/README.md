@@ -1,17 +1,24 @@
 # Beispiel-Daten
 
-Diese CSV-Dateien sind **synthetisch erzeugt** — sie enthalten **keine echten
+Diese Dateien sind **synthetisch erzeugt** — sie enthalten **keine echten
 Personen**. Sie dienen ausschließlich dazu, das Tool ohne eigene
 Melderegister-Daten ausprobieren zu können.
 
+Jeder Datensatz steht parallel als **CSV** und als **Excel** (`.xlsx`) zur
+Verfügung. Die CSV bleibt die Source of Truth — die Excel-Variante wird via
+`pnpm tsx scripts/csv-to-xlsx.ts` aus der CSV erzeugt. Im CI verifiziert
+`pnpm tsx scripts/csv-to-xlsx.ts --check`, dass beide Formate inhaltlich
+übereinstimmen (re-parse, kein Byte-Diff — Excel-ZIPs sind nicht
+deterministisch).
+
 ## Übersicht
 
-| Datei | Größe | Personen | Stage | Beschreibung |
-|---|---|---|---|---|
-| `herzogenburg-melderegister-8000.csv` | ~620 KB | 8000 | Stage 1 | Vollbevölkerung einer NÖ-Gemeinde nach Vorbild Herzogenburg |
-| `herzogenburg-versand-300.csv` | ~24 KB | 300 | Stage 1 Output | Stratifizierte Versand-Stichprobe von 300 Personen |
-| `herzogenburg-antwortende-60.csv` | ~5 KB | 60 | Stage 3 Input | Antwortende mit Selbstauskunfts-Feldern (Bildung, Migration) |
-| `kleinstadt-3000.csv` | ~230 KB | 3000 | Stage 1 | Kleineres Profil zum schnellen Testen |
+| Datensatz | CSV | XLSX | Personen | Stage | Beschreibung |
+|---|---|---|---|---|---|
+| `herzogenburg-melderegister-8000` | ~648 KB | ~3.0 MB | 8000 | Stage 1 | Vollbevölkerung einer NÖ-Gemeinde nach Vorbild Herzogenburg |
+| `herzogenburg-versand-300` | ~28 KB | ~124 KB | 300 | Stage 1 Output | Stratifizierte Versand-Stichprobe von 300 Personen |
+| `herzogenburg-antwortende-60` | ~8 KB | ~44 KB | 60 | Stage 3 Input | Antwortende mit Selbstauskunfts-Feldern (Bildung, Migration) |
+| `kleinstadt-3000` | ~232 KB | ~1.1 MB | 3000 | Stage 1 | Kleineres Profil zum schnellen Testen |
 
 ## Datei-Details
 

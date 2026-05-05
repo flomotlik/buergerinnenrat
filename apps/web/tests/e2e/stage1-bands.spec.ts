@@ -22,7 +22,7 @@ async function uploadHerzogenburg(page: import('@playwright/test').Page) {
     window.location.hash = '#/stage1';
   });
   await expect(page.getByTestId('stage1-panel')).toBeVisible();
-  await page.locator('[data-testid="stage1-csv-upload"]').setInputFiles({
+  await page.locator('[data-testid="stage1-file-upload"]').setInputFiles({
     name: 'herzogenburg-melderegister-8000.csv',
     mimeType: 'text/csv',
     buffer: readFileSync(HERZOGENBURG),

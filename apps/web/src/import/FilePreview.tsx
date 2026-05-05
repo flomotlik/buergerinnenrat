@@ -1,25 +1,26 @@
 import type { Component } from 'solid-js';
 import { For } from 'solid-js';
 
-// Shared CSV preview table — first N rows visible after upload. Used in
+// Shared file preview table — first N rows visible after upload. Used in
 // Stage 1 (always) and could replace the inline preview in Stage 3 in a
 // follow-up refactor (issue #53 I); kept generic so the same component
-// works for both call sites without prop drilling.
+// works for both call sites without prop drilling. Format-agnostic: works
+// for both CSV and XLSX uploads (consumer normalizes via ParsedTable).
 
-export interface CsvPreviewProps {
+export interface FilePreviewProps {
   headers: string[];
   rows: Record<string, string>[];
   /** Default 5; capped to rows.length. */
   maxRows?: number;
 }
 
-export const CsvPreview: Component<CsvPreviewProps> = (props) => {
+export const FilePreview: Component<FilePreviewProps> = (props) => {
   const limit = () => Math.min(props.maxRows ?? 5, props.rows.length);
   const visibleRows = () => props.rows.slice(0, limit());
 
   return (
-    <div class="overflow-x-auto" data-testid="csv-preview-wrap">
-      <table class="w-full text-xs border-collapse" data-testid="csv-preview-table">
+    <div class="overflow-x-auto" data-testid="file-preview-wrap">
+      <table class="w-full text-xs border-collapse" data-testid="file-preview-table">
         <thead>
           <tr class="bg-slate-100">
             <For each={props.headers}>{(h) => <th class="border px-2 py-1 text-left">{h}</th>}</For>

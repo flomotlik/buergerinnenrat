@@ -1,14 +1,15 @@
 import type { Component } from 'solid-js';
 import { createEffect, createMemo, createSignal, For, on, Show } from 'solid-js';
-import { autoGuessMapping, parseCsvFile } from '../csv/parse';
-import type { ParsedCsv } from '../csv/parse';
+import { autoGuessMapping, parseCsvFile } from '../import/parse-csv';
+import type { ParsedTable } from '../import/parse-csv';
+import { parseXlsxFile } from '../import/parse-xlsx';
 import {
   DEFAULT_AGE_BANDS,
   recomputeAltersgruppe,
   validateBands,
   type AgeBand,
-} from '../csv/derive';
-import { downloadBlob } from '../run/audit';
+} from '../import/derive';
+import { downloadBinaryBlob, downloadBlob } from '../run/audit';
 import { runStage1 } from './runStage1';
 import type { RunStage1Output } from './runStage1';
 import { AxisPicker } from './AxisPicker';
@@ -18,7 +19,7 @@ import { AuditFooter } from './AuditFooter';
 import { StratificationExplainer } from './StratificationExplainer';
 import { SampleSizeCalculator } from './SampleSizeCalculator';
 import TrustStrip from './TrustStrip';
-import { CsvPreview } from '../csv/CsvPreview';
+import { FilePreview } from '../import/FilePreview';
 import {
   coverageMetric,
   infoOnlyBandsReport,
@@ -72,7 +73,7 @@ function recommendedAxes(headers: string[]): string[] {
 }
 
 export const Stage1Panel: Component = () => {
-  const [parsed, setParsed] = createSignal<ParsedCsv | null>(null);
+  const [parsed, setParsed] = createSignal<ParsedTable | null>(null);
   const [file, setFile] = createSignal<File | null>(null);
   const [defaultAxes, setDefaultAxes] = createSignal<string[]>([]);
   const [selectedAxes, setSelectedAxes] = createSignal<string[]>([]);
@@ -218,7 +219,10 @@ export const Stage1Panel: Component = () => {
     setError(null);
     setOutput(null);
     try {
-      const p = await parseCsvFile(f);
+      // Extension-based routing — locked decision in CONTEXT.md (kein
+      // Magic-Bytes-Check). SheetJS throws bubbled to the existing error slot.
+      const ext = f.name.toLowerCase().split('.').pop();
+      const p = ext === 'xlsx' ? await parseXlsxFile(f) : await parseCsvFile(f);
       const recs = recommendedAxes(p.headers);
       setFile(f);
       setParsed(p);
@@ -337,6 +341,23 @@ export const Stage1Panel: Component = () => {
     downloadBlob(`versand-${seed()}.csv`, out.csv, 'text/csv;charset=utf-8');
   }
 
+  async function exportXlsx() {
+    const out = output();
+    const p = parsed();
+    if (!out || !p) return;
+    // Lazy import — xlsx is async-only so the SheetJS chunk is not paid for
+    // by users who never click this button.
+    const { stage1ResultToXlsx } = await import('@sortition/core');
+    const { buffer } = await stage1ResultToXlsx(p.headers, p.rows, out.result.selected, {
+      includeGezogenColumn: false,
+    });
+    downloadBinaryBlob(
+      `versand-${seed()}.xlsx`,
+      buffer,
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    );
+  }
+
   function exportAuditJson() {
     const out = output();
     if (!out) return;
@@ -409,7 +430,7 @@ export const Stage1Panel: Component = () => {
 
       {/* Step 1: file upload — visual drop-zone wraps the (sr-only) native
           file input. Clicking the label triggers the picker; tests still
-          target the input via [data-testid="stage1-csv-upload"]. Drag-drop
+          target the input via [data-testid="stage1-file-upload"]. Drag-drop
           functionality is out of scope (tracked separately). */}
       <section class="card">
         <div class="card-head">
@@ -417,7 +438,7 @@ export const Stage1Panel: Component = () => {
           <h2 class="card-title">1. Melderegister-CSV hochladen</h2>
           <p class="card-help">CSV-Datei mit Bevölkerungsdaten gemäß § 46 BMG.</p>
         </div>
-        <label class="dropzone" data-testid="stage1-csv-dropzone">
+        <label class="dropzone" data-testid="stage1-file-dropzone">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
@@ -433,8 +454,12 @@ export const Stage1Panel: Component = () => {
             <polyline points="17 8 12 3 7 8" />
             <line x1="12" x2="12" y1="3" y2="15" />
           </svg>
-          <span class="dropzone-label">Melderegister-CSV hochladen oder hier ablegen</span>
-          <span class="dropzone-hint">CSV mit Header-Zeile, UTF-8 oder Latin-1</span>
+          <span class="dropzone-label">
+            Melderegister-CSV oder Excel hochladen oder hier ablegen
+          </span>
+          <span class="dropzone-hint">
+            CSV (UTF-8/Latin-1) oder Excel (.xlsx) mit Header in Zeile 1
+          </span>
           <Show when={file()}>
             {(f) => (
               <span class="text-xs text-accent-strong font-medium mt-1">Geladen: {f().name}</span>
@@ -442,9 +467,9 @@ export const Stage1Panel: Component = () => {
           </Show>
           <input
             type="file"
-            accept=".csv,.txt,text/csv,text/plain"
+            accept=".csv,.txt,text/csv,text/plain,.xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             class="sr-only"
-            data-testid="stage1-csv-upload"
+            data-testid="stage1-file-upload"
             onChange={(e) => {
               const f = e.currentTarget.files?.[0];
               if (f) void handleFile(f);
@@ -468,14 +493,26 @@ export const Stage1Panel: Component = () => {
           {(p) => (
             <>
               <p class="mt-2 text-sm text-ink-2" data-testid="stage1-pool-summary">
-                {p().rows.length} Zeilen geladen ({p().headers.length} Spalten,{' '}
-                {p().separator === '\t' ? 'TAB' : p().separator}-getrennt, Encoding{' '}
-                <code>{p().encoding}</code>).
+                <Show
+                  when={p().format === 'csv'}
+                  fallback={
+                    <>
+                      {p().rows.length} Zeilen geladen ({p().headers.length} Spalten, Worksheet{' '}
+                      <code>{p().sheetName}</code>
+                      <Show when={(p().sheetCount ?? 1) > 1}> — 1 von {p().sheetCount}</Show>
+                      ).
+                    </>
+                  }
+                >
+                  {p().rows.length} Zeilen geladen ({p().headers.length} Spalten,{' '}
+                  {p().separator === '\t' ? 'TAB' : p().separator}-getrennt, Encoding{' '}
+                  <code>{p().encoding}</code>).
+                </Show>
               </p>
               {/* CSV preview (issue #53 I): first 5 rows so the operator can
                   visually confirm the upload before configuring axes. */}
               <div class="mt-3">
-                <CsvPreview headers={p().headers} rows={p().rows} />
+                <FilePreview headers={p().headers} rows={p().rows} />
               </div>
             </>
           )}
@@ -1024,9 +1061,17 @@ export const Stage1Panel: Component = () => {
                 type="button"
                 class="btn-secondary"
                 onClick={exportCsv}
-                data-testid="stage1-download-csv"
+                data-testid="stage1-file-download-csv"
               >
                 CSV herunterladen
+              </button>
+              <button
+                type="button"
+                class="btn-secondary"
+                onClick={exportXlsx}
+                data-testid="stage1-file-download-xlsx"
+              >
+                Excel herunterladen
               </button>
               <button
                 type="button"

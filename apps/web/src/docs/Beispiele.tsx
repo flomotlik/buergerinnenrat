@@ -63,45 +63,106 @@ const Beispiele: Component = () => {
       <section class="space-y-3">
         <h2 class="text-xl font-serif font-semibold">Beispiel-Dateien zum Download</h2>
         <p class="text-sm">
-          Vier vor-generierte CSV-Dateien decken den vollen Stage-1- und Stage-3-Workflow ab. Klick
-          auf eine Datei lädt sie direkt herunter — anschließend in den entsprechenden Stage-Reiter
+          Vier vor-generierte Datensätze decken den vollen Stage-1- und Stage-3-Workflow ab. Jeder
+          Datensatz steht als <strong>CSV</strong> und als <strong>Excel</strong> (
+          <code>.xlsx</code>) zur Verfügung — anschließend in den entsprechenden Stage-Reiter
           hochladen.
         </p>
         <div class="sample-grid" data-testid="beispiele-table">
-          {FILES.map((f) => (
-            <a
-              class="sample-card no-underline flex flex-col gap-2"
-              href={downloadHref(f.filename)}
-              download={f.filename}
-              data-testid={`download-${f.slug}`}
-            >
-              <div class="flex items-center justify-between gap-2">
-                <span class="chip">{f.stage}</span>
-                <span class="text-xs tabular-nums text-ink-3">{f.personen} Personen</span>
+          {FILES.map((f) => {
+            const xlsxFilename = f.filename.replace(/\.csv$/, '.xlsx');
+            return (
+              <div class="sample-card flex flex-col gap-2">
+                <div class="flex items-center justify-between gap-2">
+                  <span class="chip">{f.stage}</span>
+                  <span class="text-xs tabular-nums text-ink-3">{f.personen} Personen</span>
+                </div>
+                <div class="font-mono text-xs text-ink break-all">{f.slug}</div>
+                <div class="text-sm text-ink-2">{f.beschreibung}</div>
+                <div class="mt-auto flex flex-wrap gap-2 text-xs font-semibold">
+                  <a
+                    class="inline-flex items-center gap-1 text-accent no-underline"
+                    href={downloadHref(f.filename)}
+                    download={f.filename}
+                    data-testid={`download-${f.slug}`}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="h-4 w-4"
+                      aria-hidden="true"
+                    >
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                      <polyline points="7 10 12 15 17 10" />
+                      <line x1="12" x2="12" y1="15" y2="3" />
+                    </svg>
+                    CSV
+                  </a>
+                  <a
+                    class="inline-flex items-center gap-1 text-accent no-underline"
+                    href={downloadHref(xlsxFilename)}
+                    download={xlsxFilename}
+                    data-testid={`download-${f.slug}-xlsx`}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="h-4 w-4"
+                      aria-hidden="true"
+                    >
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                      <polyline points="7 10 12 15 17 10" />
+                      <line x1="12" x2="12" y1="15" y2="3" />
+                    </svg>
+                    Excel (.xlsx)
+                  </a>
+                </div>
               </div>
-              <div class="font-mono text-xs text-ink break-all">{f.filename}</div>
-              <div class="text-sm text-ink-2">{f.beschreibung}</div>
-              <div class="mt-auto inline-flex items-center gap-1 text-xs font-semibold text-accent">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  class="h-4 w-4"
-                  aria-hidden="true"
-                >
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                  <polyline points="7 10 12 15 17 10" />
-                  <line x1="12" x2="12" y1="15" y2="3" />
-                </svg>
-                Download
-              </div>
-            </a>
-          ))}
+            );
+          })}
         </div>
+      </section>
+
+      <section class="space-y-2">
+        <h3 class="text-base font-serif font-semibold">Excel-Format-Anforderungen</h3>
+        <p class="text-sm">
+          Excel-Uploads (<code>.xlsx</code>) folgen dem gleichen Schema wie CSV —
+          Spaltenüberschriften in <strong>Zeile 1</strong>, eine Daten-Zeile pro Person ab Zeile 2.
+          Im Detail:
+        </p>
+        <ul class="list-disc pl-5 text-sm space-y-1">
+          <li>
+            Genau <strong>ein Worksheet</strong> wird importiert — bei mehreren Tabs verwendet die
+            App den ersten und zeigt eine Warnung an.
+          </li>
+          <li>
+            <strong>Keine verbundenen Zellen</strong> in der Header-Zeile.
+          </li>
+          <li>
+            <strong>Keine Formeln</strong> in Daten-Zellen — vorab als Werte einfügen (Excel{' '}
+            <em>„Inhalte einfügen → Werte“</em>). Falls Formeln gefunden werden, wird der zuletzt
+            berechnete Wert verwendet und eine Warnung angezeigt.
+          </li>
+          <li>
+            <strong>Datums-Felder</strong> werden zu ISO-8601 (<code>YYYY-MM-DD</code>)
+            normalisiert,
+            <strong>Zahlen</strong> zu Strings ohne <code>.0</code>-Suffix.
+          </li>
+          <li>
+            <strong>Passwortgeschützte Dateien</strong> werden abgelehnt — vor dem Upload
+            entschlüsseln.
+          </li>
+        </ul>
       </section>
 
       <section class="space-y-2">

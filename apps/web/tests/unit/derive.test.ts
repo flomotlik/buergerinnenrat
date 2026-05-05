@@ -5,7 +5,7 @@ import {
   recomputeAltersgruppe,
   validateBands,
   type AgeBand,
-} from '../../src/csv/derive';
+} from '../../src/import/derive';
 
 describe('deriveAltersgruppe (refYear=2026)', () => {
   const refYear = 2026;

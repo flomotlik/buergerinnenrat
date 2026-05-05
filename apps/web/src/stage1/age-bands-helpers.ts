@@ -5,7 +5,7 @@
 // surface — see notes in tests/unit/hamilton-svg.test.ts for the same
 // pattern.
 
-import { DEFAULT_AGE_BANDS, type AgeBand } from '../csv/derive';
+import { DEFAULT_AGE_BANDS, type AgeBand } from '../import/derive';
 
 /** Append a new band after the existing list. Closes a final open band first. */
 export function addBandTo(bands: AgeBand[]): AgeBand[] {

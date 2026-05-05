@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { generate } from '../../../../scripts/synthetic-meldedaten/generator';
 import { STAGE1_HEADERS } from '../../../../scripts/synthetic-meldedaten/csv-writer';
-import { parseCsvBuffer } from '../../src/csv/parse';
+import { parseCsvBuffer } from '../../src/import/parse-csv';
 import { isProfile, type Profile } from '../../../../scripts/synthetic-meldedaten/types';
 
 const REPO_ROOT = resolve(process.cwd(), '../..');

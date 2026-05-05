@@ -4,7 +4,7 @@ import {
   autoGuessMapping,
   validateMapping,
   applyMapping,
-} from '../../src/csv/parse';
+} from '../../src/import/parse-csv';
 
 function buf(s: string, enc: 'utf-8' | 'windows-1252' = 'utf-8'): ArrayBuffer {
   if (enc === 'utf-8') return new TextEncoder().encode(s).buffer as ArrayBuffer;
