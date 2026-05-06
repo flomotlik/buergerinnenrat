@@ -1,7 +1,9 @@
 # Issue system configuration
 # Docs: see /issue:init, /issue:new, /issue:work
 
-model: opus
+research_model: opus
+plan_model: opus
+execute_model: sonnet
 
 source:
   type: local
