@@ -61,7 +61,7 @@ const Overview: Component = () => {
             </p>
           </a>
         </div>
-        <aside class="banner info" data-testid="overview-stages-2-4-note">
+        <aside class="gat-callout gat-callout--info" data-testid="overview-stages-2-4-note">
           <div>
             <strong>Stage 2 (Outreach + Selbstauskunft)</strong> und{' '}
             <strong>Stage 4 (Reserve / Nachholung)</strong> liegen außerhalb des aktuellen

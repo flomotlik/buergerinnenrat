@@ -219,7 +219,7 @@ export const SampleSizeCalculator: Component<SampleSizeCalculatorProps> = (props
       <Show
         when={proposal()}
         fallback={
-          <div class="banner warn" data-testid="stage1-sample-suggestion">
+          <div class="gat-callout gat-callout--warn" data-testid="stage1-sample-suggestion">
             Vorschlag nicht berechenbar — bitte Eingaben prüfen (z.B. min ≤ max, Werte zwischen 0
             und 100 %).
           </div>
@@ -259,7 +259,10 @@ export const SampleSizeCalculator: Component<SampleSizeCalculatorProps> = (props
               </div>
             </details>
             <Show when={poolTooSmall()}>
-              <p class="banner warn text-xs" data-testid="stage1-pool-too-small-warning">
+              <p
+                class="gat-callout gat-callout--warn text-xs"
+                data-testid="stage1-pool-too-small-warning"
+              >
                 <strong>Hinweis:</strong> Pool hat nur {props.poolSize()} Personen, der Vorschlag
                 wäre {p().recommended}. Empfohlen: kleinere Panelgröße, bessere Outreach-Methode
                 oder größerer Pool.

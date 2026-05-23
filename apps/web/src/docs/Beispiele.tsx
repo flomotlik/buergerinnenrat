@@ -53,7 +53,7 @@ function downloadHref(filename: string): string {
 const Beispiele: Component = () => {
   return (
     <div class="space-y-6" data-testid="docs-page-beispiele">
-      <aside class="banner info" data-testid="beispiele-banner">
+      <aside class="gat-callout gat-callout--info" data-testid="beispiele-banner">
         <div>
           Diese Daten sind <strong>synthetisch erzeugt</strong>. Sie enthalten keine echten
           Personen. Sie dürfen frei verwendet werden, um den Workflow auszuprobieren.

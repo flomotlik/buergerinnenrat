@@ -325,36 +325,7 @@
    * NEW component classes (handoff styles.css → tokenised)
    * ===================================================================== */
 
-  /* ---- Banner — .banner.info / .banner.warn / .banner.ok / .banner.err ---- */
-  .banner {
-    display: flex;
-    gap: var(--gap-3);
-    align-items: flex-start;
-    padding: var(--gap-3) var(--gap-4);
-    border-radius: var(--radius);
-    border: 1px solid;
-    font-size: 14px;
-  }
-  .banner.info {
-    background: var(--accent-soft);
-    border-color: var(--accent-line);
-    color: var(--accent-ink);
-  }
-  .banner.warn {
-    background: var(--warn-soft);
-    border-color: oklch(80% 0.1 60);
-    color: oklch(35% 0.13 60);
-  }
-  .banner.ok {
-    background: var(--ok-soft);
-    border-color: oklch(80% 0.08 145);
-    color: oklch(35% 0.12 145);
-  }
-  .banner.err {
-    background: var(--err-soft);
-    border-color: oklch(80% 0.1 25);
-    color: oklch(35% 0.18 25);
-  }
+  /* Banner family migrated to DS v2.1 `.gat-callout` + `--info/--warn/--error` modifiers. */
 
   /* ---- Step rail — 6 steps (Stage 1) ---- */
   .step-rail {

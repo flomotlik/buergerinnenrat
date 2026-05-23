@@ -520,7 +520,7 @@ export const Stage1Panel: Component = () => {
           )}
         </Show>
         <Show when={error()}>
-          <div class="banner err mt-3" data-testid="stage1-error">
+          <div class="gat-callout gat-callout--error mt-3" data-testid="stage1-error">
             {error()}
           </div>
         </Show>
@@ -532,7 +532,7 @@ export const Stage1Panel: Component = () => {
             Verfahren ("you can only stratify on columns that exist in your
             input"). The available columns differ per use case (Melderegister,
             Mitgliederlisten, etc.). */}
-        <aside class="banner info" data-testid="stage1-axes-hint">
+        <aside class="gat-callout gat-callout--info" data-testid="stage1-axes-hint">
           <div>
             <p>
               <strong>Hinweis:</strong> Stratifikation kann nur über Spalten erfolgen, die in deiner
@@ -653,7 +653,7 @@ export const Stage1Panel: Component = () => {
               {seedSource() === 'user' ? '(manuell)' : '(Default — editierbar)'}
             </span>
           </div>
-          <aside class="banner info text-xs" data-testid="stage1-seed-hint">
+          <aside class="gat-callout gat-callout--info text-xs" data-testid="stage1-seed-hint">
             <div>
               <strong>Hinweis zum Seed:</strong> Der Default-Seed ist sofort einsatzbereit — Sie
               können ihn übernehmen oder mit einem gemeinsam vereinbarten Wert (z.B. Lottozahlen,
@@ -662,7 +662,7 @@ export const Stage1Panel: Component = () => {
             </div>
           </aside>
           <Show when={preview().error}>
-            <div class="banner err" data-testid="stage1-preview-error">
+            <div class="gat-callout gat-callout--error" data-testid="stage1-preview-error">
               {preview().error}
             </div>
           </Show>
@@ -681,7 +681,7 @@ export const Stage1Panel: Component = () => {
                   (preview().result?.underfillStrata ?? 0) > 0
                 }
               >
-                <div class="banner warn flex-col items-stretch text-xs space-y-2">
+                <div class="gat-callout gat-callout--warn flex-col items-stretch text-xs space-y-2">
                   <Show when={(preview().result?.zeroAllocationStrata ?? 0) > 0}>
                     {(() => {
                       const zeros = (preview().result?.rows ?? []).filter(
@@ -829,7 +829,10 @@ export const Stage1Panel: Component = () => {
               </svg>
             </button>
             <Show when={parsed() && validateBands(bands()) !== null}>
-              <div class="banner warn mt-2 text-xs" data-testid="stage1-run-bands-block">
+              <div
+                class="gat-callout gat-callout--warn mt-2 text-xs"
+                data-testid="stage1-run-bands-block"
+              >
                 Run deaktiviert: Altersgruppen-Bänder sind ungültig — siehe oben.
               </div>
             </Show>
@@ -893,7 +896,10 @@ export const Stage1Panel: Component = () => {
             </div>
 
             <Show when={underfills().length > 0}>
-              <section class="banner warn flex-col" data-testid="stage1-underfill-list">
+              <section
+                class="gat-callout gat-callout--warn flex-col"
+                data-testid="stage1-underfill-list"
+              >
                 <div>
                   <h3 class="font-semibold text-sm mb-1">Unterbesetzte Bevölkerungsgruppen</h3>
                   <p class="text-xs">
@@ -918,7 +924,7 @@ export const Stage1Panel: Component = () => {
             </Show>
 
             <Show when={out().result.warnings.length > 0 && underfills().length === 0}>
-              <div class="banner err">
+              <div class="gat-callout gat-callout--error">
                 <div>
                   <p class="font-semibold">Weitere Warnungen:</p>
                   <ul class="list-disc pl-5">
@@ -929,7 +935,7 @@ export const Stage1Panel: Component = () => {
             </Show>
 
             <Show when={out().csvWarnings.length > 0}>
-              <div class="banner warn">
+              <div class="gat-callout gat-callout--warn">
                 <ul class="list-disc pl-5">
                   <For each={out().csvWarnings}>{(w) => <li>{w}</li>}</For>
                 </ul>

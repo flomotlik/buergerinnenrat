@@ -78,7 +78,7 @@ export const StratificationExplainer: Component<StratificationExplainerProps> = 
           <Show
             when={counts().length > 0}
             fallback={
-              <div class="banner warn">
+              <div class="gat-callout gat-callout--warn">
                 Keine Achsen gewählt — die Stichprobe wäre eine einfache Zufallsstichprobe ohne
                 Strukturierung.
               </div>
