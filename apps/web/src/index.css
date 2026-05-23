@@ -1,7 +1,16 @@
 /*
- * Visual redesign — issue #65 (supersedes #56).
- * Tokens & shell derived from design_handoff_buergerinnenrat/.
- * DO NOT import from design_handoff_buergerinnenrat/reference/ — it is a React/Babel wireframe.
+ * App-level stylesheet — Phase 2 of design-system migration (issue #12).
+ *
+ * The previous OkLCH Hue-145 token layer is gone. All tokens now alias
+ * the Grüne-AT design-system variables (`--gat-color-*`, `--gat-web-*`)
+ * loaded via `apps/web/index.html` from
+ * `https://grueneat.github.io/design-system/design-system.css`.
+ *
+ * The short aliases below (`--bg`, `--ink`, `--accent`, `--ok-soft`, …)
+ * exist only so the Tailwind config in `tailwind.config.cjs` and the
+ * `var(--…)` sites inside this stylesheet stay compact — they are
+ * passthroughs to the DS, not a separate token system. New code should
+ * read the DS variables directly when possible.
  */
 
 @tailwind base;
@@ -9,120 +18,60 @@
 @tailwind utilities;
 
 /* ----------------------------------------------------------------------- *
- * Typography — driven by the Grüne-AT design-system stack loaded in
- * `index.html` (`https://grueneat.github.io/design-system/design-system.css`).
- * The DS imports Barlow Semi Condensed (headline + copy) and Vollkorn
- * (emphasis serif) from Google Fonts and exposes them as
- * `--font-gat-headline`, `--font-gat-copy`, and `--font-gat-emphasis`.
- *
- * The local `--serif` / `--sans` / `--mono` aliases below now alias the
- * DS variables so every existing call-site keeps rendering with the
- * brand stack — no self-hosted Inter / Source Serif 4 / JetBrains Mono.
- * The previous `apps/web/public/fonts/*` woff2 files are deliberately
- * left in place for the moment; Phase 2 (#12) sweeps them when the OkLCH
- * token layer goes away.
- * ----------------------------------------------------------------------- */
-
-/* ----------------------------------------------------------------------- *
- * Base layer — design tokens (CSS variables) + body defaults
+ * Base layer — DS-aliased tokens + body defaults
  * ----------------------------------------------------------------------- */
 @layer base {
   :root {
-    /* Hue indirection (preserved for #67 themability) */
-    --hue: 145;
+    /* ----- Surface / hairline tokens — alias `--gat-web-*` ----- */
+    --bg: var(--gat-web-bg);
+    --bg-sunken: var(--gat-web-surface-sunk);
+    --bg-card: var(--gat-web-surface);
+    --line: var(--gat-web-hairline);
+    --line-strong: var(--gat-web-hairline);
 
-    /* Surfaces — warm-neutral */
-    --bg: oklch(98.4% 0.006 80);
-    --bg-sunken: oklch(96.5% 0.008 80);
-    --bg-card: oklch(100% 0 0);
-    --line: oklch(91% 0.005 80);
-    --line-strong: oklch(82% 0.008 80);
+    /* ----- Ink scale ----- */
+    --ink: var(--gat-web-text);
+    --ink-2: var(--gat-web-text);
+    --ink-3: var(--gat-web-text-soft);
+    --ink-4: var(--gat-web-text-mute);
 
-    /* Ink scale */
-    --ink: oklch(20% 0.01 80);
-    --ink-2: oklch(35% 0.01 80);
-    --ink-3: oklch(50% 0.01 80);
-    --ink-4: oklch(65% 0.01 80);
+    /* ----- Accent (Grüne deep green) ----- */
+    --accent: var(--gat-web-green-deep);
+    --accent-strong: var(--gat-web-green-deep);
+    --accent-soft: var(--gat-web-green-tint);
+    --accent-line: var(--gat-web-green);
+    --accent-ink: var(--gat-web-green-deep);
 
-    /* Accent (civic-green) — pre-computed soft variants, NO color-mix() */
-    --accent: oklch(48% 0.14 var(--hue));
-    --accent-strong: oklch(40% 0.16 var(--hue));
-    --accent-soft: oklch(94% 0.04 var(--hue));
-    --accent-line: oklch(85% 0.06 var(--hue));
-    --accent-ink: oklch(28% 0.13 var(--hue));
+    /* ----- Semantic state tokens — feed off DS callout/tag tokens ----- */
+    --ok: var(--gat-web-tag-ok-text, var(--gat-web-green-deep));
+    --ok-soft: var(--gat-web-tag-ok-bg, var(--gat-web-green-tint));
+    --warn: var(--gat-web-tag-warn-text, var(--gat-web-clay-text));
+    --warn-soft: var(--gat-web-callout-warn-bg, var(--gat-web-yellow));
+    --err: var(--gat-web-tag-error-text, var(--gat-web-clay-text));
+    --err-soft: var(--gat-web-callout-error-bg, var(--gat-web-yellow));
 
-    /* State tokens */
-    --ok: oklch(55% 0.13 145);
-    --ok-soft: oklch(94% 0.04 145);
-    --warn: oklch(58% 0.13 60);
-    --warn-soft: oklch(94% 0.06 60);
-    --err: oklch(54% 0.2 25);
-    --err-soft: oklch(95% 0.04 25);
-
-    /* Spacing & radii */
-    --gap-1: 4px;
-    --gap-2: 8px;
-    --gap-3: 12px;
-    --gap-4: 16px;
-    --gap-5: 24px;
-    --gap-6: 32px;
+    /* ----- Spacing & radii — alias DS scale, supplement where needed ----- */
+    --gap-1: var(--gat-space-1, 4px);
+    --gap-2: var(--gat-space-2, 8px);
+    --gap-3: var(--gat-space-3, 12px);
+    --gap-4: var(--gat-space-4, 16px);
+    --gap-5: var(--gat-space-5, 24px);
+    --gap-6: var(--gat-space-6, 32px);
     --gap-7: 48px;
-    --pad-card: 24px;
-    --row-h: 44px; /* override handoff 40px to satisfy ≥44×44 mobile-touch-targets rule */
-    --radius: 8px;
-    --radius-lg: 14px;
+    --pad-card: var(--gat-space-5, 24px);
+    --row-h: 44px; /* ≥44px touch-target floor (mobile-touch-targets contract). */
+    --radius: var(--gat-radius-sm, 8px);
+    --radius-lg: var(--gat-web-radius-card, 14px);
 
-    /* Layout */
+    /* ----- Layout (app-only — DS has no sidebar primitive yet) ----- */
     --sidebar-w: 256px;
 
-    /* Fonts — alias the design-system stack (Barlow Semi Condensed for
-       sans/headline, Vollkorn for serif/emphasis). DS variables are
-       defined by `design-system.css` linked from `apps/web/index.html`;
-       fallbacks added so `<noscript>` / blocked-CDN renders still get a
-       sensible stack. */
-    --serif: var(--font-gat-emphasis, Vollkorn, Georgia, serif);
+    /* ----- Typography — alias DS font variables ----- */
+    --serif: var(--gat-font-emphasis, Vollkorn, Georgia, serif);
     --sans:
-      var(--font-gat-copy, 'Barlow Semi Condensed'), -apple-system, BlinkMacSystemFont, 'Segoe UI',
+      var(--gat-font-copy, 'Barlow Semi Condensed'), -apple-system, BlinkMacSystemFont, 'Segoe UI',
       sans-serif;
     --mono: ui-monospace, 'SF Mono', Menlo, monospace;
-  }
-
-  [data-theme='dark'] {
-    --bg: oklch(18% 0.01 80);
-    --bg-sunken: oklch(14% 0.008 80);
-    --bg-card: oklch(22% 0.01 80);
-    --line: oklch(30% 0.008 80);
-    --line-strong: oklch(40% 0.012 80);
-    --ink: oklch(96% 0.005 80);
-    --ink-2: oklch(82% 0.008 80);
-    --ink-3: oklch(65% 0.01 80);
-    --ink-4: oklch(50% 0.012 80);
-    --accent: oklch(68% 0.12 var(--hue)); /* NOT 72% — too bright at hue 145 */
-    --accent-strong: oklch(78% 0.14 var(--hue));
-    --accent-soft: oklch(28% 0.06 var(--hue));
-    --accent-line: oklch(40% 0.08 var(--hue));
-    --accent-ink: oklch(88% 0.1 var(--hue));
-  }
-
-  [data-density='compact'] {
-    --gap-3: 8px;
-    --gap-4: 12px;
-    --gap-5: 16px;
-    --gap-6: 24px;
-    --pad-card: 16px;
-    --row-h: 40px;
-  }
-
-  /* OkLCH guard — Firefox ESR 102 etc. without oklch support fall through to a banner. */
-  @supports not (color: oklch(0 0 0)) {
-    body::before {
-      content: 'Dieser Browser unterstützt OkLCH-Farben nicht. Bitte aktualisieren.';
-      display: block;
-      padding: 12px;
-      background: #fde68a;
-      color: #000;
-      font-family: system-ui, sans-serif;
-    }
   }
 
   html {

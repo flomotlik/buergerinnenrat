@@ -29,7 +29,7 @@ interface TileDef {
   icon: JSX.Element;
 }
 
-const ICON_CLASS = 'h-7 w-7 text-brand-accent';
+const ICON_CLASS = 'h-7 w-7 text-accent';
 const SVG_BASE = {
   xmlns: 'http://www.w3.org/2000/svg',
   viewBox: '0 0 24 24',
