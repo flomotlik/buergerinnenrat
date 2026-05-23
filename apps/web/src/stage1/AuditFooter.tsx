@@ -53,7 +53,7 @@ export const AuditFooter: Component<Props> = (props) => {
         <span class="card-eyebrow">Schritt 6</span>
         <h2 class="card-title">Protokoll / Audit</h2>
       </div>
-      <div class="audit">
+      <div class="app-audit">
         <dl>
           <dt>Schema-Version</dt>
           <dd>{props.doc.schema_version}</dd>
@@ -201,12 +201,12 @@ export const AuditFooter: Component<Props> = (props) => {
         <Show
           when={props.doc.signature_algo}
           fallback={
-            <span class="sig-pill is-unsigned" data-testid="audit-footer-sig-algo">
+            <span class="gat-tag gat-tag--warn" data-testid="audit-footer-sig-algo">
               noch nicht signiert
             </span>
           }
         >
-          <span class="sig-pill" data-testid="audit-footer-sig-algo">
+          <span class="gat-tag gat-tag--ok" data-testid="audit-footer-sig-algo">
             {props.doc.signature_algo}
           </span>
         </Show>

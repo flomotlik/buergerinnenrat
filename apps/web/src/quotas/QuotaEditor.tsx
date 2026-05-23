@@ -142,7 +142,7 @@ export const QuotaEditor: Component<QuotaEditorProps> = (props) => {
             <div class="border rounded p-3 bg-white" data-testid={`quota-cat-${cat.column}`}>
               <div class="flex justify-between items-center mb-2">
                 <h3 class="font-semibold text-sm">{cat.column}</h3>
-                <button class="text-xs text-red-600" onClick={() => removeCategory(cat.column)}>
+                <button class="text-xs text-err" onClick={() => removeCategory(cat.column)}>
                   entfernen
                 </button>
               </div>
@@ -160,7 +160,7 @@ export const QuotaEditor: Component<QuotaEditorProps> = (props) => {
                     {(val) => (
                       <tr>
                         <td class="py-1 pr-2">{val}</td>
-                        <td class="py-1 pr-2 tabular-nums text-slate-500">{counts[val] ?? 0}</td>
+                        <td class="py-1 pr-2 tabular-nums text-ink-3">{counts[val] ?? 0}</td>
                         <td class="py-1 pr-2">
                           <input
                             type="number"
@@ -192,8 +192,8 @@ export const QuotaEditor: Component<QuotaEditorProps> = (props) => {
               </table>
               <Show when={valVal && (valVal.errors.length > 0 || valVal.warnings.length > 0)}>
                 <div class="mt-2 text-xs">
-                  <For each={valVal!.errors}>{(e) => <p class="text-red-700">{e}</p>}</For>
-                  <For each={valVal!.warnings}>{(w) => <p class="text-amber-700">{w}</p>}</For>
+                  <For each={valVal!.errors}>{(e) => <p class="text-err">{e}</p>}</For>
+                  <For each={valVal!.warnings}>{(w) => <p class="text-warn">{w}</p>}</For>
                 </div>
               </Show>
             </div>
@@ -202,12 +202,12 @@ export const QuotaEditor: Component<QuotaEditorProps> = (props) => {
       </For>
 
       <Show when={validation().panel_errors.length}>
-        <div class="text-xs text-red-700" data-testid="quota-panel-errors">
+        <div class="text-xs text-err" data-testid="quota-panel-errors">
           <For each={validation().panel_errors}>{(e) => <p>{e}</p>}</For>
         </div>
       </Show>
 
-      <p class="text-xs text-slate-600" data-testid="quota-status">
+      <p class="text-xs text-ink-3" data-testid="quota-status">
         {validation().ok ? 'Quoten gültig.' : 'Quoten haben Fehler.'}
       </p>
     </section>

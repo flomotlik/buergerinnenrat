@@ -78,26 +78,26 @@ export const AgeBandsEditor: Component<AgeBandsEditorProps> = (props) => {
           {(b, i) => (
             <li class="flex flex-wrap items-center gap-2 text-sm">
               <label class="inline-flex items-center gap-1">
-                <span class="text-xs text-slate-500">Min</span>
+                <span class="text-xs text-ink-3">Min</span>
                 <input
                   type="number"
                   min="0"
                   max="120"
                   step="1"
-                  class="input-base w-20 tabular-nums"
+                  class="gat-input w-20 tabular-nums"
                   data-testid={`band-min-${i()}`}
                   value={b.min}
                   onChange={(e) => setBandField(i(), 'min', parseIntCell(e.currentTarget.value))}
                 />
               </label>
               <label class="inline-flex items-center gap-1">
-                <span class="text-xs text-slate-500">Max</span>
+                <span class="text-xs text-ink-3">Max</span>
                 <input
                   type="number"
                   min="0"
                   max="120"
                   step="1"
-                  class="input-base w-20 tabular-nums"
+                  class="gat-input w-20 tabular-nums"
                   data-testid={`band-max-${i()}`}
                   value={b.max ?? ''}
                   disabled={b.max === null}
@@ -111,13 +111,13 @@ export const AgeBandsEditor: Component<AgeBandsEditorProps> = (props) => {
                   checked={b.max === null}
                   onChange={(e) => setOpen(i(), e.currentTarget.checked)}
                 />
-                <span class="text-xs text-slate-500">offen</span>
+                <span class="text-xs text-ink-3">offen</span>
               </label>
               <label class="inline-flex items-center gap-1">
-                <span class="text-xs text-slate-500">Label</span>
+                <span class="text-xs text-ink-3">Label</span>
                 <input
                   type="text"
-                  class="input-base w-32"
+                  class="gat-input w-32"
                   data-testid={`band-label-${i()}`}
                   value={b.label}
                   onChange={(e) => setBandField(i(), 'label', e.currentTarget.value)}

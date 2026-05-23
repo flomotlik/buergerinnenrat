@@ -309,7 +309,7 @@ export const App: Component = () => {
               {(p) => (
                 <section>
                   <h2 class="text-xl font-semibold mb-3">2. Quoten konfigurieren</h2>
-                  <p class="text-sm text-slate-600 mb-3" data-testid="pool-summary">
+                  <p class="text-sm text-ink-3 mb-3" data-testid="pool-summary">
                     {p().rows.length} Personen importiert.
                   </p>
                   <QuotaEditor
@@ -346,7 +346,7 @@ export const App: Component = () => {
 
             <Show when={pool() && quotas() && !quotaValid()}>
               <section>
-                <p class="text-sm text-slate-500" data-testid="run-stub">
+                <p class="text-sm text-ink-3" data-testid="run-stub">
                   Quoten-Konfiguration noch nicht gültig — bitte Eingaben prüfen.
                 </p>
               </section>

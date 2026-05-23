@@ -74,12 +74,9 @@ export const OverrideEditor: Component<OverrideEditorProps> = (props) => {
   }
 
   return (
-    <div
-      class="space-y-4 border rounded p-4 bg-amber-50/40"
-      data-testid="seat-allocation-override-editor"
-    >
+    <div class="space-y-4 app-override-editor" data-testid="seat-allocation-override-editor">
       <p
-        class="text-sm border-l-4 border-amber-500 bg-amber-50 p-2 rounded"
+        class="text-sm app-override-editor__warning"
         data-testid="seat-allocation-override-warning"
       >
         Du weichst von der proportionalen Bevölkerungs-Verteilung ab. Diese Entscheidung wird im
@@ -87,7 +84,7 @@ export const OverrideEditor: Component<OverrideEditorProps> = (props) => {
       </p>
 
       <table class="w-full text-xs" data-testid="seat-allocation-override-table">
-        <thead class="bg-slate-100">
+        <thead class="bg-bg-sunken">
           <tr>
             <th class="text-left p-1">Wert</th>
             <th class="text-right p-1">im Pool</th>
@@ -105,12 +102,12 @@ export const OverrideEditor: Component<OverrideEditorProps> = (props) => {
               return (
                 <tr>
                   <td class="p-1">{value}</td>
-                  <td class="p-1 text-right tabular-nums text-slate-500">{counts()[value] ?? 0}</td>
+                  <td class="p-1 text-right tabular-nums text-ink-3">{counts()[value] ?? 0}</td>
                   <td class="p-1 text-right tabular-nums">{baselineVal()}</td>
                   <td class="p-1 text-right">
                     <input
                       type="number"
-                      class="border rounded px-1 py-0.5 w-16 text-right tabular-nums"
+                      class="gat-input w-16 text-right tabular-nums"
                       value={overrideVal()}
                       min={0}
                       onInput={(e) => setSeat(value, Number(e.currentTarget.value))}
@@ -120,9 +117,9 @@ export const OverrideEditor: Component<OverrideEditorProps> = (props) => {
                   <td
                     class="p-1 text-right tabular-nums"
                     classList={{
-                      'text-red-700': delta() < 0,
-                      'text-emerald-700': delta() > 0,
-                      'text-slate-500': delta() === 0,
+                      'text-err': delta() < 0,
+                      'text-ok': delta() > 0,
+                      'text-ink-3': delta() === 0,
                     }}
                   >
                     {delta() > 0 ? '+' : ''}
@@ -139,8 +136,8 @@ export const OverrideEditor: Component<OverrideEditorProps> = (props) => {
         class="text-sm tabular-nums"
         data-testid="seat-allocation-sum-validator"
         classList={{
-          'text-red-700': sumDelta() !== 0,
-          'text-emerald-700': sumDelta() === 0,
+          'text-err': sumDelta() !== 0,
+          'text-ok': sumDelta() === 0,
         }}
       >
         Σ Override = {sumOverride()} / Panel-Größe = {props.panelSize}
@@ -158,12 +155,12 @@ export const OverrideEditor: Component<OverrideEditorProps> = (props) => {
       </div>
 
       <div class="space-y-1">
-        <label class="text-sm font-medium" for={`rationale-${props.axis}`}>
+        <label class="gat-field__label" for={`rationale-${props.axis}`}>
           Begründung (Pflicht, mindestens {RATIONALE_MIN} Zeichen)
         </label>
         <textarea
           id={`rationale-${props.axis}`}
-          class="w-full border rounded px-2 py-1 text-sm h-24"
+          class="gat-textarea h-24"
           value={rationale()}
           onInput={(e) => setRationale(e.currentTarget.value)}
           placeholder="Warum wird vom proportionalen Vorschlag abgewichen?"
@@ -173,8 +170,8 @@ export const OverrideEditor: Component<OverrideEditorProps> = (props) => {
           class="text-xs"
           data-testid="seat-allocation-rationale-counter"
           classList={{
-            'text-red-700': rationaleLen() < RATIONALE_MIN,
-            'text-emerald-700': rationaleLen() >= RATIONALE_MIN,
+            'text-err': rationaleLen() < RATIONALE_MIN,
+            'text-ok': rationaleLen() >= RATIONALE_MIN,
           }}
         >
           {rationaleLen()}/{RATIONALE_MIN} Zeichen — Pflicht-Begründung
@@ -184,17 +181,17 @@ export const OverrideEditor: Component<OverrideEditorProps> = (props) => {
       <div class="flex justify-between items-center">
         <button
           type="button"
-          class="text-xs underline text-slate-600"
+          class="text-xs underline text-ink-3"
           onClick={reset}
           data-testid="seat-allocation-reset"
         >
           Zurück zur statistischen Baseline
         </button>
         <span
-          class="status-pill"
+          class="gat-tag"
           classList={{
-            'status-pill-ok': commitOk(),
-            'status-pill-warn': !commitOk(),
+            'gat-tag--ok': commitOk(),
+            'gat-tag--warn': !commitOk(),
           }}
           data-testid="seat-allocation-commit-status"
         >

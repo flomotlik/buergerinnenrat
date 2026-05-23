@@ -40,14 +40,14 @@ export const SeatAllocationPanel: Component<SeatAllocationPanelProps> = (props) 
     <section class="space-y-4 border rounded p-4 bg-white" data-testid="seat-allocation-panel">
       <header class="flex items-baseline justify-between">
         <h3 class="text-base font-semibold">Sitz-Allokation</h3>
-        <span class="text-xs text-slate-500">
+        <span class="text-xs text-ink-3">
           Statistische Baseline + optionales 1-D Achsen-Override
         </span>
       </header>
 
       <div class="border rounded" data-testid="seat-allocation-baseline">
         <table class="w-full text-xs">
-          <thead class="bg-slate-50">
+          <thead class="bg-bg-sunken">
             <tr>
               <th class="text-left p-1">Achse</th>
               <th class="text-left p-1">Wert</th>
@@ -62,7 +62,7 @@ export const SeatAllocationPanel: Component<SeatAllocationPanelProps> = (props) 
                   <For each={Object.keys(axisBase()).sort()}>
                     {(value) => (
                       <tr>
-                        <td class="p-1 font-mono text-slate-600">{axis}</td>
+                        <td class="p-1 font-mono text-ink-3">{axis}</td>
                         <td class="p-1">{value}</td>
                         <td class="p-1 text-right tabular-nums">{axisBase()[value]}</td>
                       </tr>

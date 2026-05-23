@@ -379,39 +379,39 @@ export const Stage1Panel: Component = () => {
     <div class="space-y-6" data-testid="stage1-panel">
       {/* 6-step progress rail (issue #65). Visual hint only — no gating
           logic. Resp 6→3→1 cols across breakpoints. */}
-      <ol class="step-rail" aria-label="Stage-1-Schritte">
+      <ol class="app-step-rail" aria-label="Stage-1-Schritte">
         <li
-          class="step"
+          class="app-step"
           classList={{ 'is-current': currentStep() === 1, 'is-done': currentStep() > 1 }}
         >
-          <span class="step-num">1</span> Eingabe
+          <span class="app-step__num">1</span> Eingabe
         </li>
         <li
-          class="step"
+          class="app-step"
           classList={{ 'is-current': currentStep() === 2, 'is-done': currentStep() > 2 }}
         >
-          <span class="step-num">2</span> Bemessung
+          <span class="app-step__num">2</span> Bemessung
         </li>
         <li
-          class="step"
+          class="app-step"
           classList={{ 'is-current': currentStep() === 3, 'is-done': currentStep() > 3 }}
         >
-          <span class="step-num">3</span> Achsen
+          <span class="app-step__num">3</span> Achsen
         </li>
         <li
-          class="step"
+          class="app-step"
           classList={{ 'is-current': currentStep() === 4, 'is-done': currentStep() > 4 }}
         >
-          <span class="step-num">4</span> Parameter
+          <span class="app-step__num">4</span> Parameter
         </li>
         <li
-          class="step"
+          class="app-step"
           classList={{ 'is-current': currentStep() === 5, 'is-done': currentStep() > 5 }}
         >
-          <span class="step-num">5</span> Ziehen
+          <span class="app-step__num">5</span> Ziehen
         </li>
-        <li class="step" classList={{ 'is-current': currentStep() === 6 }}>
-          <span class="step-num">6</span> Audit &amp; Export
+        <li class="app-step" classList={{ 'is-current': currentStep() === 6 }}>
+          <span class="app-step__num">6</span> Audit &amp; Export
         </li>
       </ol>
 
@@ -520,7 +520,7 @@ export const Stage1Panel: Component = () => {
           )}
         </Show>
         <Show when={error()}>
-          <div class="banner err mt-3" data-testid="stage1-error">
+          <div class="gat-callout gat-callout--error mt-3" data-testid="stage1-error">
             {error()}
           </div>
         </Show>
@@ -532,7 +532,7 @@ export const Stage1Panel: Component = () => {
             Verfahren ("you can only stratify on columns that exist in your
             input"). The available columns differ per use case (Melderegister,
             Mitgliederlisten, etc.). */}
-        <aside class="banner info" data-testid="stage1-axes-hint">
+        <aside class="gat-callout gat-callout--info" data-testid="stage1-axes-hint">
           <div>
             <p>
               <strong>Hinweis:</strong> Stratifikation kann nur über Spalten erfolgen, die in deiner
@@ -608,17 +608,17 @@ export const Stage1Panel: Component = () => {
             <h2 class="card-title">4. Stichprobengröße und Seed</h2>
           </div>
           {/* Inputs grid: 2 columns on ≥sm, stacked on mobile. Both inputs
-              share the .input-base style so they render at identical height. */}
+              share the DS `.gat-input` style so they render at identical height. */}
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label class="input-label" for="stage1-target-n">
+              <label class="gat-field__label" for="stage1-target-n">
                 Stichprobengröße N
               </label>
               <input
                 id="stage1-target-n"
                 type="number"
                 min="1"
-                class="input-base tabular-nums"
+                class="gat-input tabular-nums"
                 data-testid="stage1-target-n"
                 value={targetN() ?? ''}
                 onInput={(e) => handleTargetNInput(e.currentTarget.value)}
@@ -626,13 +626,13 @@ export const Stage1Panel: Component = () => {
               />
             </div>
             <div>
-              <label class="input-label" for="stage1-seed">
+              <label class="gat-field__label" for="stage1-seed">
                 Seed (deterministisch)
               </label>
               <input
                 id="stage1-seed"
                 type="number"
-                class="input-base tabular-nums"
+                class="gat-input tabular-nums"
                 data-testid="stage1-seed"
                 value={seed()}
                 onInput={(e) => changeSeed(Number(e.currentTarget.value))}
@@ -653,7 +653,7 @@ export const Stage1Panel: Component = () => {
               {seedSource() === 'user' ? '(manuell)' : '(Default — editierbar)'}
             </span>
           </div>
-          <aside class="banner info text-xs" data-testid="stage1-seed-hint">
+          <aside class="gat-callout gat-callout--info text-xs" data-testid="stage1-seed-hint">
             <div>
               <strong>Hinweis zum Seed:</strong> Der Default-Seed ist sofort einsatzbereit — Sie
               können ihn übernehmen oder mit einem gemeinsam vereinbarten Wert (z.B. Lottozahlen,
@@ -662,15 +662,15 @@ export const Stage1Panel: Component = () => {
             </div>
           </aside>
           <Show when={preview().error}>
-            <div class="banner err" data-testid="stage1-preview-error">
+            <div class="gat-callout gat-callout--error" data-testid="stage1-preview-error">
               {preview().error}
             </div>
           </Show>
           <Show when={preview().result !== null}>
-            <div class="border rounded p-3 bg-slate-50 space-y-3" data-testid="stage1-preview">
+            <div class="border rounded p-3 bg-bg-sunken space-y-3" data-testid="stage1-preview">
               <div class="flex items-baseline justify-between">
                 <h3 class="text-sm font-semibold">Vorschau (vor dem Lauf)</h3>
-                <span class="text-xs text-slate-500">
+                <span class="text-xs text-ink-3">
                   {preview().result?.rows.length ?? 0} Bevölkerungsgruppen, Soll-Summe{' '}
                   {preview().result?.totalTarget ?? 0}
                 </span>
@@ -681,7 +681,7 @@ export const Stage1Panel: Component = () => {
                   (preview().result?.underfillStrata ?? 0) > 0
                 }
               >
-                <div class="banner warn flex-col items-stretch text-xs space-y-2">
+                <div class="gat-callout gat-callout--warn flex-col items-stretch text-xs space-y-2">
                   <Show when={(preview().result?.zeroAllocationStrata ?? 0) > 0}>
                     {(() => {
                       const zeros = (preview().result?.rows ?? []).filter(
@@ -829,7 +829,10 @@ export const Stage1Panel: Component = () => {
               </svg>
             </button>
             <Show when={parsed() && validateBands(bands()) !== null}>
-              <div class="banner warn mt-2 text-xs" data-testid="stage1-run-bands-block">
+              <div
+                class="gat-callout gat-callout--warn mt-2 text-xs"
+                data-testid="stage1-run-bands-block"
+              >
                 Run deaktiviert: Altersgruppen-Bänder sind ungültig — siehe oben.
               </div>
             </Show>
@@ -839,7 +842,7 @@ export const Stage1Panel: Component = () => {
 
       <Show when={output()}>
         {(out) => (
-          <section class="space-y-4 stage1-report card" data-testid="stage1-result">
+          <section class="space-y-4 app-stage1-report card" data-testid="stage1-result">
             <div class="card-head">
               <span class="card-eyebrow">Schritt 5–6</span>
               <h2 class="card-title">5. Ergebnis</h2>
@@ -850,21 +853,21 @@ export const Stage1Panel: Component = () => {
                 stage1-summary-cards / stage1-coverage-card /
                 stage1-underfill-card preserved at the same DOM-nesting level
                 — just visually re-laid via .stats-grid + .stat. */}
-            <div class="stats-grid" data-testid="stage1-summary-cards">
-              <div class="stat">
-                <div class="k">Gezogen</div>
-                <div class="v">{out().result.selected.length}</div>
-                <div class="delta">von {parsed()?.rows.length ?? 0} im Pool</div>
+            <div class="app-stats-grid" data-testid="stage1-summary-cards">
+              <div class="app-stat">
+                <div class="app-stat__k">Gezogen</div>
+                <div class="app-stat__v">{out().result.selected.length}</div>
+                <div class="app-stat__delta">von {parsed()?.rows.length ?? 0} im Pool</div>
               </div>
               <Show when={coverage()}>
                 {(c) => (
-                  <div class="stat" data-testid="stage1-coverage-card">
-                    <div class="k">Gruppen-Abdeckung</div>
-                    <div class="v">
+                  <div class="app-stat" data-testid="stage1-coverage-card">
+                    <div class="app-stat__k">Gruppen-Abdeckung</div>
+                    <div class="app-stat__v">
                       {c().coveredStrata}{' '}
                       <span class="text-base text-ink-3">/ {c().totalStrata}</span>
                     </div>
-                    <div class="delta">
+                    <div class="app-stat__delta">
                       {Number.isNaN(c().coverageRatio)
                         ? '–'
                         : `${(c().coverageRatio * 100).toFixed(1)} % mit ≥ 1 Person`}
@@ -872,28 +875,31 @@ export const Stage1Panel: Component = () => {
                   </div>
                 )}
               </Show>
-              <div class="stat" data-testid="stage1-underfill-card">
-                <div class="k">
+              <div class="app-stat" data-testid="stage1-underfill-card">
+                <div class="app-stat__k">
                   Unterbesetzt{' '}
                   <Show when={(coverage()?.underfilledStrata ?? 0) > 0}>
-                    <span class="status-pill status-pill-warn ml-1">Hinweis</span>
+                    <span class="gat-tag gat-tag--warn ml-1">Hinweis</span>
                   </Show>
                   <Show when={(coverage()?.underfilledStrata ?? 0) === 0}>
-                    <span class="status-pill status-pill-ok ml-1">OK</span>
+                    <span class="gat-tag gat-tag--ok ml-1">OK</span>
                   </Show>
                 </div>
-                <div class="v">{coverage()?.underfilledStrata ?? 0}</div>
-                <div class="delta">Gruppen unter Soll</div>
+                <div class="app-stat__v">{coverage()?.underfilledStrata ?? 0}</div>
+                <div class="app-stat__delta">Gruppen unter Soll</div>
               </div>
-              <div class="stat">
-                <div class="k">Dauer · Seed</div>
-                <div class="v">{Math.round(out().durationMs)} ms</div>
-                <div class="delta">Seed {out().signedAudit.doc.seed}</div>
+              <div class="app-stat">
+                <div class="app-stat__k">Dauer · Seed</div>
+                <div class="app-stat__v">{Math.round(out().durationMs)} ms</div>
+                <div class="app-stat__delta">Seed {out().signedAudit.doc.seed}</div>
               </div>
             </div>
 
             <Show when={underfills().length > 0}>
-              <section class="banner warn flex-col" data-testid="stage1-underfill-list">
+              <section
+                class="gat-callout gat-callout--warn flex-col"
+                data-testid="stage1-underfill-list"
+              >
                 <div>
                   <h3 class="font-semibold text-sm mb-1">Unterbesetzte Bevölkerungsgruppen</h3>
                   <p class="text-xs">
@@ -918,7 +924,7 @@ export const Stage1Panel: Component = () => {
             </Show>
 
             <Show when={out().result.warnings.length > 0 && underfills().length === 0}>
-              <div class="banner err">
+              <div class="gat-callout gat-callout--error">
                 <div>
                   <p class="font-semibold">Weitere Warnungen:</p>
                   <ul class="list-disc pl-5">
@@ -929,7 +935,7 @@ export const Stage1Panel: Component = () => {
             </Show>
 
             <Show when={out().csvWarnings.length > 0}>
-              <div class="banner warn">
+              <div class="gat-callout gat-callout--warn">
                 <ul class="list-disc pl-5">
                   <For each={out().csvWarnings}>{(w) => <li>{w}</li>}</For>
                 </ul>
@@ -962,10 +968,13 @@ export const Stage1Panel: Component = () => {
                   out().signedAudit.doc.pool_size,
                 );
                 return (
-                  <section class="callout space-y-2" data-testid="stage1-info-only-bands-report">
+                  <section
+                    class="app-callout space-y-2"
+                    data-testid="stage1-info-only-bands-report"
+                  >
                     <h3 class="text-sm font-semibold">Nicht in Auswahl einbezogen</h3>
                     <div class="overflow-x-auto">
-                      <table class="tbl text-xs">
+                      <table class="app-table text-xs">
                         <thead>
                           <tr>
                             <th>Band</th>
@@ -1016,7 +1025,7 @@ export const Stage1Panel: Component = () => {
                   have overflow-x: auto — mobile-touch-targets.spec asserts
                   getComputedStyle(parent).overflowX === 'auto'. */}
               <div class="overflow-x-auto">
-                <table class="tbl min-w-full text-xs" data-testid="stage1-strata-table">
+                <table class="app-table min-w-full text-xs" data-testid="stage1-strata-table">
                   <thead>
                     <tr>
                       <th>Bevölkerungsgruppe (Stratum)</th>
@@ -1042,7 +1051,7 @@ export const Stage1Panel: Component = () => {
                           <td class="text-right tnum">{s.n_h_actual}</td>
                           <td class="text-center">
                             <span
-                              class={`status-pill ${s.underfilled ? 'status-pill-warn' : 'status-pill-ok'}`}
+                              class={`gat-tag ${s.underfilled ? 'gat-tag--warn' : 'gat-tag--ok'}`}
                             >
                               {s.underfilled ? 'unterbesetzt' : 'ok'}
                             </span>

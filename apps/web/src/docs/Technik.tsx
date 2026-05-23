@@ -65,7 +65,7 @@ const Technik: Component = () => {
         <h2 class="text-xl font-semibold">Bibliotheken (direkte Dependencies)</h2>
         <div class="overflow-x-auto border rounded">
           <table class="w-full text-left" data-testid="tech-table-libs">
-            <thead class="bg-slate-100">
+            <thead class="bg-bg-sunken">
               <tr>
                 <th class="p-1 text-xs">Name</th>
                 <th class="p-1 text-xs">Version</th>
@@ -86,7 +86,7 @@ const Technik: Component = () => {
         <h2 class="text-xl font-semibold">Test- und Dev-Tools</h2>
         <div class="overflow-x-auto border rounded">
           <table class="w-full text-left" data-testid="tech-table-tests">
-            <thead class="bg-slate-100">
+            <thead class="bg-bg-sunken">
               <tr>
                 <th class="p-1 text-xs">Name</th>
                 <th class="p-1 text-xs">Version</th>
@@ -219,7 +219,7 @@ const Technik: Component = () => {
           <code class="font-mono">pnpm build</code>. Alle Versionen sind in der Lockfile
           festgenagelt.
         </p>
-        <p class="text-xs text-slate-600">
+        <p class="text-xs text-ink-3">
           Lockfile-Hash wird zur Runtime nicht berechnet (kein Filesystem-Zugriff im Browser). Der
           Commit-SHA reicht als deterministische Build-Koordinate — er bestimmt sowohl Quellcode als
           auch Lockfile.

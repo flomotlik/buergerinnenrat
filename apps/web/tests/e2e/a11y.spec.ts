@@ -24,19 +24,19 @@ interface RouteCfg {
   expectedViolationIds: string[];
 }
 
-// Baselines captured during #70. Documented in EXECUTION.md:
-//   #/overview — 1 violation: color-contrast on .status-pill-ok and
-//     .status-pill-warn. Status-pill design tokens fail 4.5:1 at 9pt.
-//     Follow-up: design ticket to bump contrast on the 'verfügbar' /
-//     'Konzept' pill foreground colors.
-//   #/docs/algorithmus — 1 violation: scrollable-region-focusable on
-//     hamilton-svg-container. The overflow-x-auto wrapper is not
-//     keyboard-focusable. Follow-up: add tabindex="0" to the wrapper or
-//     refactor the SVG to fit without horizontal scroll.
+// Baselines captured during #70 and refreshed in Phase 2 of #12.
+// #/overview previously had 1 color-contrast violation on .status-pill-ok
+// / -warn. That class family was retired in Phase 2 in favour of DS
+// `.gat-tag --ok` / `--warn`, which clears 4.5:1 contrast — the baseline
+// is empty again.
+// #/docs/algorithmus — 1 violation: scrollable-region-focusable on
+//   hamilton-svg-container. The overflow-x-auto wrapper is not
+//   keyboard-focusable. Follow-up: add tabindex="0" to the wrapper or
+//   refactor the SVG to fit without horizontal scroll.
 const ROUTES: RouteCfg[] = [
   { hash: '#/stage1', expectedViolationIds: [] },
   { hash: '#/stage3', expectedViolationIds: [] },
-  { hash: '#/overview', expectedViolationIds: ['color-contrast'] },
+  { hash: '#/overview', expectedViolationIds: [] },
   { hash: '#/docs', expectedViolationIds: [] },
   { hash: '#/docs/algorithmus', expectedViolationIds: ['scrollable-region-focusable'] },
 ];

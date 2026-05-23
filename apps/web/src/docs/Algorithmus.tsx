@@ -38,7 +38,7 @@ const Algorithmus: Component = () => {
           2 Geschlechter = 6 Bevölkerungsgruppen. Ziel: 10 Personen ziehen.
         </p>
         <HamiltonSvg />
-        <p class="text-xs text-slate-600">
+        <p class="text-xs text-ink-3">
           Pro Gruppe (<Term slug="stratum">Stratum</Term>) berechnet das Verfahren die Soll-Zahl
           (Pool/Gesamt × Ziel), nimmt den Ganzzahl-Anteil (<Term slug="floor">Floor</Term>) und
           verteilt die übrigen Sitze nach den größten Brüchen (
@@ -54,14 +54,14 @@ const Algorithmus: Component = () => {
           Geschlecht × Altersgruppe. Stage 1 läuft in unter 100 ms im Browser.
         </p>
         <p>
-          <a href="#/stage1" class="underline text-slate-700" data-testid="algorithm-try-stage1">
+          <a href="#/stage1" class="underline text-ink-2" data-testid="algorithm-try-stage1">
             → Selbst ausprobieren in „Stage 1 / Versand-Liste"
           </a>
         </p>
       </section>
 
       <section class="space-y-3">
-        <details class="border rounded p-3 bg-slate-50">
+        <details class="border rounded p-3 bg-bg-sunken">
           <summary class="cursor-pointer font-semibold text-sm">
             5-Schritt-Erklärung im Detail
           </summary>

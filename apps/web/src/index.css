@@ -1,7 +1,16 @@
 /*
- * Visual redesign — issue #65 (supersedes #56).
- * Tokens & shell derived from design_handoff_buergerinnenrat/.
- * DO NOT import from design_handoff_buergerinnenrat/reference/ — it is a React/Babel wireframe.
+ * App-level stylesheet — Phase 2 of design-system migration (issue #12).
+ *
+ * The previous OkLCH Hue-145 token layer is gone. All tokens now alias
+ * the Grüne-AT design-system variables (`--gat-color-*`, `--gat-web-*`)
+ * loaded via `apps/web/index.html` from
+ * `https://grueneat.github.io/design-system/design-system.css`.
+ *
+ * The short aliases below (`--bg`, `--ink`, `--accent`, `--ok-soft`, …)
+ * exist only so the Tailwind config in `tailwind.config.cjs` and the
+ * `var(--…)` sites inside this stylesheet stay compact — they are
+ * passthroughs to the DS, not a separate token system. New code should
+ * read the DS variables directly when possible.
  */
 
 @tailwind base;
@@ -9,120 +18,60 @@
 @tailwind utilities;
 
 /* ----------------------------------------------------------------------- *
- * Typography — driven by the Grüne-AT design-system stack loaded in
- * `index.html` (`https://grueneat.github.io/design-system/design-system.css`).
- * The DS imports Barlow Semi Condensed (headline + copy) and Vollkorn
- * (emphasis serif) from Google Fonts and exposes them as
- * `--font-gat-headline`, `--font-gat-copy`, and `--font-gat-emphasis`.
- *
- * The local `--serif` / `--sans` / `--mono` aliases below now alias the
- * DS variables so every existing call-site keeps rendering with the
- * brand stack — no self-hosted Inter / Source Serif 4 / JetBrains Mono.
- * The previous `apps/web/public/fonts/*` woff2 files are deliberately
- * left in place for the moment; Phase 2 (#12) sweeps them when the OkLCH
- * token layer goes away.
- * ----------------------------------------------------------------------- */
-
-/* ----------------------------------------------------------------------- *
- * Base layer — design tokens (CSS variables) + body defaults
+ * Base layer — DS-aliased tokens + body defaults
  * ----------------------------------------------------------------------- */
 @layer base {
   :root {
-    /* Hue indirection (preserved for #67 themability) */
-    --hue: 145;
+    /* ----- Surface / hairline tokens — alias `--gat-web-*` ----- */
+    --bg: var(--gat-web-bg);
+    --bg-sunken: var(--gat-web-surface-sunk);
+    --bg-card: var(--gat-web-surface);
+    --line: var(--gat-web-hairline);
+    --line-strong: var(--gat-web-hairline);
 
-    /* Surfaces — warm-neutral */
-    --bg: oklch(98.4% 0.006 80);
-    --bg-sunken: oklch(96.5% 0.008 80);
-    --bg-card: oklch(100% 0 0);
-    --line: oklch(91% 0.005 80);
-    --line-strong: oklch(82% 0.008 80);
+    /* ----- Ink scale ----- */
+    --ink: var(--gat-web-text);
+    --ink-2: var(--gat-web-text);
+    --ink-3: var(--gat-web-text-soft);
+    --ink-4: var(--gat-web-text-mute);
 
-    /* Ink scale */
-    --ink: oklch(20% 0.01 80);
-    --ink-2: oklch(35% 0.01 80);
-    --ink-3: oklch(50% 0.01 80);
-    --ink-4: oklch(65% 0.01 80);
+    /* ----- Accent (Grüne deep green) ----- */
+    --accent: var(--gat-web-green-deep);
+    --accent-strong: var(--gat-web-green-deep);
+    --accent-soft: var(--gat-web-green-tint);
+    --accent-line: var(--gat-web-green);
+    --accent-ink: var(--gat-web-green-deep);
 
-    /* Accent (civic-green) — pre-computed soft variants, NO color-mix() */
-    --accent: oklch(48% 0.14 var(--hue));
-    --accent-strong: oklch(40% 0.16 var(--hue));
-    --accent-soft: oklch(94% 0.04 var(--hue));
-    --accent-line: oklch(85% 0.06 var(--hue));
-    --accent-ink: oklch(28% 0.13 var(--hue));
+    /* ----- Semantic state tokens — feed off DS callout/tag tokens ----- */
+    --ok: var(--gat-web-tag-ok-text, var(--gat-web-green-deep));
+    --ok-soft: var(--gat-web-tag-ok-bg, var(--gat-web-green-tint));
+    --warn: var(--gat-web-tag-warn-text, var(--gat-web-clay-text));
+    --warn-soft: var(--gat-web-callout-warn-bg, var(--gat-web-yellow));
+    --err: var(--gat-web-tag-error-text, var(--gat-web-clay-text));
+    --err-soft: var(--gat-web-callout-error-bg, var(--gat-web-yellow));
 
-    /* State tokens */
-    --ok: oklch(55% 0.13 145);
-    --ok-soft: oklch(94% 0.04 145);
-    --warn: oklch(58% 0.13 60);
-    --warn-soft: oklch(94% 0.06 60);
-    --err: oklch(54% 0.2 25);
-    --err-soft: oklch(95% 0.04 25);
-
-    /* Spacing & radii */
-    --gap-1: 4px;
-    --gap-2: 8px;
-    --gap-3: 12px;
-    --gap-4: 16px;
-    --gap-5: 24px;
-    --gap-6: 32px;
+    /* ----- Spacing & radii — alias DS scale, supplement where needed ----- */
+    --gap-1: var(--gat-space-1, 4px);
+    --gap-2: var(--gat-space-2, 8px);
+    --gap-3: var(--gat-space-3, 12px);
+    --gap-4: var(--gat-space-4, 16px);
+    --gap-5: var(--gat-space-5, 24px);
+    --gap-6: var(--gat-space-6, 32px);
     --gap-7: 48px;
-    --pad-card: 24px;
-    --row-h: 44px; /* override handoff 40px to satisfy ≥44×44 mobile-touch-targets rule */
-    --radius: 8px;
-    --radius-lg: 14px;
+    --pad-card: var(--gat-space-5, 24px);
+    --row-h: 44px; /* ≥44px touch-target floor (mobile-touch-targets contract). */
+    --radius: var(--gat-radius-sm, 8px);
+    --radius-lg: var(--gat-web-radius-card, 14px);
 
-    /* Layout */
+    /* ----- Layout (app-only — DS has no sidebar primitive yet) ----- */
     --sidebar-w: 256px;
 
-    /* Fonts — alias the design-system stack (Barlow Semi Condensed for
-       sans/headline, Vollkorn for serif/emphasis). DS variables are
-       defined by `design-system.css` linked from `apps/web/index.html`;
-       fallbacks added so `<noscript>` / blocked-CDN renders still get a
-       sensible stack. */
-    --serif: var(--font-gat-emphasis, Vollkorn, Georgia, serif);
+    /* ----- Typography — alias DS font variables ----- */
+    --serif: var(--gat-font-emphasis, Vollkorn, Georgia, serif);
     --sans:
-      var(--font-gat-copy, 'Barlow Semi Condensed'), -apple-system, BlinkMacSystemFont, 'Segoe UI',
+      var(--gat-font-copy, 'Barlow Semi Condensed'), -apple-system, BlinkMacSystemFont, 'Segoe UI',
       sans-serif;
     --mono: ui-monospace, 'SF Mono', Menlo, monospace;
-  }
-
-  [data-theme='dark'] {
-    --bg: oklch(18% 0.01 80);
-    --bg-sunken: oklch(14% 0.008 80);
-    --bg-card: oklch(22% 0.01 80);
-    --line: oklch(30% 0.008 80);
-    --line-strong: oklch(40% 0.012 80);
-    --ink: oklch(96% 0.005 80);
-    --ink-2: oklch(82% 0.008 80);
-    --ink-3: oklch(65% 0.01 80);
-    --ink-4: oklch(50% 0.012 80);
-    --accent: oklch(68% 0.12 var(--hue)); /* NOT 72% — too bright at hue 145 */
-    --accent-strong: oklch(78% 0.14 var(--hue));
-    --accent-soft: oklch(28% 0.06 var(--hue));
-    --accent-line: oklch(40% 0.08 var(--hue));
-    --accent-ink: oklch(88% 0.1 var(--hue));
-  }
-
-  [data-density='compact'] {
-    --gap-3: 8px;
-    --gap-4: 12px;
-    --gap-5: 16px;
-    --gap-6: 24px;
-    --pad-card: 16px;
-    --row-h: 40px;
-  }
-
-  /* OkLCH guard — Firefox ESR 102 etc. without oklch support fall through to a banner. */
-  @supports not (color: oklch(0 0 0)) {
-    body::before {
-      content: 'Dieser Browser unterstützt OkLCH-Farben nicht. Bitte aktualisieren.';
-      display: block;
-      padding: 12px;
-      background: #fde68a;
-      color: #000;
-      font-family: system-ui, sans-serif;
-    }
   }
 
   html {
@@ -147,13 +96,19 @@
 }
 
 /* ----------------------------------------------------------------------- *
- * Component layer — reusable visual primitives. Used across App.tsx,
- * Stage1Panel.tsx, TrustStrip.tsx, DocsHub.tsx, DocsLayout.tsx etc.
+ * Component layer.
  *
- * Class names below match the legacy set (.btn-primary, .card, .dropzone,
- * .pill-tab*, .input-base, .status-pill*, .prose-app, .dropzone-icon/-label
- * /-hint) so consumers in *.tsx don't change. Visual definitions are now
- * token-driven (CSS variables from :root) per issue #65 / handoff styles.css.
+ * Two buckets:
+ *   1. Cross-cutting primitives (.btn-*, .card, .pill-tab, .dropzone,
+ *      .prose-app) — kept under their legacy class names. Their look is
+ *      DS-token-driven; the names stay because the DS does not yet ship
+ *      a drop-in match (e.g. rectangular-rounded button, mobile fallback
+ *      tab pill, CSV drop-zone). When the DS catches up (slated for
+ *      v2.2 / v2.3) they collapse into the matching `.gat-*` class.
+ *   2. App-scoped patterns (`.app-*` namespace) — sortition-specific
+ *      bits: step-rail, audit mono <dl>, stats grid, app-table, doc-grid
+ *      TOC layout, chip toggle, sample picker grid, override editor warn
+ *      surface, sidebar shell. These are explicitly *not* DS candidates.
  * ----------------------------------------------------------------------- */
 @layer components {
   /* ---- Buttons ---- */
@@ -287,63 +242,28 @@
     color: var(--ink);
   }
 
-  /* ---- Status Pills (in tables / inline) ---- */
-  .status-pill {
-    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium;
-  }
-  .status-pill-ok {
-    background: var(--ok-soft);
-    color: var(--ok);
-  }
-  .status-pill-warn {
-    background: var(--warn-soft);
-    color: var(--warn);
-  }
-  .status-pill-err {
-    background: var(--err-soft);
-    color: var(--err);
-  }
+  /* Status pills migrated to DS v2.1 `.gat-tag` + `--ok/--warn/--error` modifiers. */
 
-  /* ---- Form Inputs ---- */
-  .input-base,
-  .input,
-  .select {
-    @apply w-full px-3;
-    /* min-height enforces ≥44px touch target via --row-h. */
+  /* ---- Form Inputs ---- *
+   * Form primitives come from the DS v2.1 (`.gat-input` / `.gat-select`
+   * / `.gat-textarea` / `.gat-field__label`). The local `.input-base` /
+   * `.input-label` / `.field` / `.field-label` rules are gone.
+   *
+   * The DS sizes inputs by font-line + padding, which on mobile drops
+   * below the app's 44 px touch-target floor (mobile-touch-targets.spec.ts
+   * asserts width ≥ 44 AND height ≥ 44 on Stage 1 N / Seed inputs and the
+   * OverrideEditor cells). We bump min-height to --row-h on every DS
+   * input variant the app uses so the contract holds across all call
+   * sites without per-input min-h utilities. */
+  .gat-input,
+  .gat-select,
+  .gat-textarea {
     min-height: var(--row-h);
-    background: var(--bg-card);
-    border: 1px solid var(--line-strong);
-    border-radius: var(--radius);
-    color: var(--ink);
-    font-family: var(--sans);
-    font-size: 15px;
   }
-  .input-base:focus,
-  .input:focus,
-  .select:focus {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
-    border-color: var(--accent);
-  }
-  .input-base:disabled,
-  .input:disabled,
-  .select:disabled {
-    background: var(--bg-sunken);
-    color: var(--ink-3);
-    cursor: not-allowed;
-  }
-  .input-label,
-  .field-label {
-    display: block;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--ink-2);
-    margin-bottom: var(--gap-1);
-  }
-  .field {
-    display: flex;
-    flex-direction: column;
-    gap: var(--gap-1);
+  .gat-textarea {
+    /* Textareas are vertically expandable; the floor still applies for
+       the collapsed state. Use it as min-height, not as enforced height. */
+    min-height: max(var(--row-h), 4rem);
   }
 
   /* ---- Drop-Zone (CSV upload visual style) ---- */
@@ -411,39 +331,11 @@
    * NEW component classes (handoff styles.css → tokenised)
    * ===================================================================== */
 
-  /* ---- Banner — .banner.info / .banner.warn / .banner.ok / .banner.err ---- */
-  .banner {
-    display: flex;
-    gap: var(--gap-3);
-    align-items: flex-start;
-    padding: var(--gap-3) var(--gap-4);
-    border-radius: var(--radius);
-    border: 1px solid;
-    font-size: 14px;
-  }
-  .banner.info {
-    background: var(--accent-soft);
-    border-color: var(--accent-line);
-    color: var(--accent-ink);
-  }
-  .banner.warn {
-    background: var(--warn-soft);
-    border-color: oklch(80% 0.1 60);
-    color: oklch(35% 0.13 60);
-  }
-  .banner.ok {
-    background: var(--ok-soft);
-    border-color: oklch(80% 0.08 145);
-    color: oklch(35% 0.12 145);
-  }
-  .banner.err {
-    background: var(--err-soft);
-    border-color: oklch(80% 0.1 25);
-    color: oklch(35% 0.18 25);
-  }
+  /* Banner family migrated to DS v2.1 `.gat-callout` + `--info/--warn/--error` modifiers. */
 
-  /* ---- Step rail — 6 steps (Stage 1) ---- */
-  .step-rail {
+  /* ---- App: step rail — Stage 1 progress (6 steps).
+       DS `.gat-step-indicator` is slated for v2.3 — until then app-local. */
+  .app-step-rail {
     display: grid;
     gap: var(--gap-2);
     grid-template-columns: repeat(6, 1fr);
@@ -452,16 +344,16 @@
     margin: 0;
   }
   @media (max-width: 1024px) {
-    .step-rail {
+    .app-step-rail {
       grid-template-columns: repeat(3, 1fr);
     }
   }
   @media (max-width: 640px) {
-    .step-rail {
+    .app-step-rail {
       grid-template-columns: 1fr;
     }
   }
-  .step {
+  .app-step {
     display: flex;
     gap: var(--gap-2);
     align-items: center;
@@ -472,31 +364,32 @@
     font-size: 13px;
     color: var(--ink-3);
   }
-  .step.is-current {
+  .app-step.is-current {
     background: var(--accent-soft);
     border-color: var(--accent-line);
     color: var(--accent-ink);
   }
-  .step.is-done {
+  .app-step.is-done {
     color: var(--ink);
   }
-  .step .step-num {
+  .app-step .app-step__num {
     font-family: var(--mono);
     font-weight: 600;
     color: var(--ink-3);
   }
-  .step.is-current .step-num {
+  .app-step.is-current .app-step__num {
     color: var(--accent);
   }
 
-  /* ---- Tables ---- */
-  .tbl {
+  /* ---- App: data tables (Stage 1 strata / Stage 3 quotas).
+       DS `.gat-table` is slated for v2.2. */
+  .app-table {
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
     font-size: 14px;
   }
-  .tbl thead th {
+  .app-table thead th {
     position: sticky;
     top: 0;
     background: var(--bg-sunken);
@@ -509,21 +402,22 @@
     text-transform: uppercase;
     letter-spacing: 0.04em;
   }
-  .tbl tbody td {
+  .app-table tbody td {
     padding: var(--gap-2) var(--gap-3);
     border-bottom: 1px solid var(--line);
     color: var(--ink);
   }
-  .tbl tbody tr:hover td {
+  .app-table tbody tr:hover td {
     background: var(--bg-sunken);
   }
-  .tbl .tnum {
+  .app-table .tnum {
     font-variant-numeric: tabular-nums;
     font-family: var(--mono);
   }
 
-  /* ---- Audit panel mono block ---- */
-  .audit {
+  /* ---- App: audit mono <dl> (Stage 1 audit footer).
+       DS `.gat-prose --mono` is slated for v2.3. */
+  .app-audit {
     font-family: var(--mono);
     font-size: 13px;
     font-variant-numeric: tabular-nums;
@@ -537,93 +431,65 @@
     padding: var(--gap-4);
     color: var(--ink);
   }
-  .audit dl {
+  .app-audit dl {
     display: grid;
     grid-template-columns: max-content 1fr;
     gap: var(--gap-1) var(--gap-3);
   }
-  .audit dt {
+  .app-audit dt {
     color: var(--ink-3);
   }
-  .audit dd {
+  .app-audit dd {
     color: var(--ink);
     word-break: break-all;
     margin: 0;
   }
 
-  .sig-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--gap-2);
-    padding: var(--gap-1) var(--gap-3);
-    background: var(--ok-soft);
-    color: var(--ok);
-    border: 1px solid oklch(80% 0.08 145);
-    border-radius: 9999px;
-    font-family: var(--mono);
-    font-size: 12px;
-    font-feature-settings:
-      'tnum' 1,
-      'calt' 0;
-  }
-  .sig-pill::before {
-    content: '';
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--ok);
-  }
-  .sig-pill.is-unsigned {
-    background: var(--warn-soft);
-    color: var(--warn);
-    border-color: oklch(80% 0.1 60);
-  }
-  .sig-pill.is-unsigned::before {
-    background: var(--warn);
-  }
+  /* Signature lozenge migrated to DS v2.1 `.gat-tag --ok / --warn`. */
 
-  /* ---- Stats grid: 4 cols ≥lg, 2 md→lg, 1 <md ---- */
-  .stats-grid {
+  /* ---- App: stats grid (Stage 1 result KPIs).
+       DS `.gat-metric-card --neutral` is open. */
+  .app-stats-grid {
     display: grid;
     gap: var(--gap-3);
     grid-template-columns: repeat(4, 1fr);
   }
   @media (max-width: 1024px) {
-    .stats-grid {
+    .app-stats-grid {
       grid-template-columns: repeat(2, 1fr);
     }
   }
   @media (max-width: 640px) {
-    .stats-grid {
+    .app-stats-grid {
       grid-template-columns: 1fr;
     }
   }
-  .stat {
+  .app-stat {
     background: var(--bg-card);
     border: 1px solid var(--line);
     border-radius: var(--radius);
     padding: var(--gap-3);
   }
-  .stat .k {
+  .app-stat__k {
     font-size: 12px;
     color: var(--ink-3);
     text-transform: uppercase;
     letter-spacing: 0.06em;
   }
-  .stat .v {
+  .app-stat__v {
     font-family: var(--mono);
     font-size: 22px;
     color: var(--ink);
     margin-top: 2px;
     font-variant-numeric: tabular-nums;
   }
-  .stat .delta {
+  .app-stat__delta {
     font-size: 12px;
     color: var(--ink-3);
   }
 
-  /* ---- Axis chips ---- */
-  .chip {
+  /* ---- App: axis chips (AxisPicker / docs filters) ---- */
+  .app-chip {
     display: inline-flex;
     align-items: center;
     gap: var(--gap-1);
@@ -639,33 +505,33 @@
       background 120ms ease,
       border-color 120ms ease;
   }
-  .chip:hover {
+  .app-chip:hover {
     border-color: var(--ink-3);
   }
-  .chip.is-on {
+  .app-chip.is-on {
     background: var(--accent-soft);
     border-color: var(--accent-line);
     color: var(--accent-ink);
   }
-  .chip.is-on::before {
+  .app-chip.is-on::before {
     content: '';
     width: 6px;
     height: 6px;
     border-radius: 50%;
     background: var(--accent);
   }
-  .chip[aria-disabled='true'] {
+  .app-chip[aria-disabled='true'] {
     opacity: 0.55;
     cursor: not-allowed;
   }
 
-  /* ---- Sample picker grid + cards (Beispiele.tsx) ---- */
-  .sample-grid {
+  /* ---- App: sample picker grid + cards (docs/Beispiele) ---- */
+  .app-sample-grid {
     display: grid;
     gap: var(--gap-3);
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   }
-  .sample-card {
+  .app-sample-card {
     background: var(--bg-card);
     border: 1px solid var(--line);
     border-radius: var(--radius-lg);
@@ -673,23 +539,23 @@
     cursor: pointer;
     transition: border-color 120ms ease;
   }
-  .sample-card:hover {
+  .app-sample-card:hover {
     border-color: var(--accent);
   }
 
-  /* ---- Doc grid: sticky 220px TOC + 68ch body ---- */
-  .doc-grid {
+  /* ---- App: doc grid (sticky 220px TOC + 68ch body) ---- */
+  .app-doc-grid {
     display: grid;
     grid-template-columns: 220px minmax(0, 68ch);
     gap: var(--gap-6);
     align-items: start;
   }
   @media (max-width: 1024px) {
-    .doc-grid {
+    .app-doc-grid {
       grid-template-columns: 1fr;
     }
   }
-  .doc-toc {
+  .app-doc-toc {
     position: sticky;
     top: var(--gap-4);
     font-size: 13px;
@@ -698,31 +564,56 @@
     padding-right: var(--gap-2);
     border-right: 1px solid var(--line);
   }
-  .doc-toc ol {
+  .app-doc-toc ol {
     list-style: none;
     padding: 0;
     margin: 0;
     display: grid;
     gap: var(--gap-1);
   }
-  .doc-toc a {
+  .app-doc-toc a {
     color: var(--ink-3);
     text-decoration: none;
   }
-  .doc-toc a:hover,
-  .doc-toc a.is-active {
+  .app-doc-toc a:hover,
+  .app-doc-toc a.is-active {
     color: var(--accent);
   }
-  .doc-body {
+  .app-doc-body {
     color: var(--ink);
   }
   @media (max-width: 1024px) {
-    .doc-toc {
+    .app-doc-toc {
       display: none;
     }
   }
 
-  .callout {
+  /* `.app-axis-breakdown` is the wrapper class on the Stage 1 SVG chart
+     (AxisBreakdown.tsx). Layout/colour come from Tailwind + ds-palette.ts;
+     no extra rules are needed here, but the class stays in markup as a
+     QA / print-selector handle. */
+
+  /* ---- App: override editor warn surface (sortition-specific deviation
+       block — manual seat allocation that the auditor will flag). Soft
+       amber tied to the DS yellow token. */
+  .app-override-editor {
+    background: color-mix(in oklab, var(--gat-web-yellow, #f7c100) 12%, transparent);
+    border: 1px solid color-mix(in oklab, var(--gat-web-yellow, #f7c100) 35%, transparent);
+    border-radius: var(--radius);
+    padding: var(--gap-4);
+  }
+  .app-override-editor__warning {
+    background: color-mix(in oklab, var(--gat-web-yellow, #f7c100) 18%, transparent);
+    border-left: 4px solid var(--gat-web-yellow, #f7c100);
+    padding: var(--gap-2);
+    border-radius: var(--radius);
+    color: var(--ink);
+  }
+
+  /* ---- App: callout (sortition-specific info-only-bands report).
+       Different shape than `.gat-callout` (left-stripe + soft tint, no
+       icon/border-all-around), kept local. */
+  .app-callout {
     border-left: 3px solid var(--accent);
     background: var(--accent-soft);
     padding: var(--gap-3) var(--gap-4);
@@ -730,11 +621,12 @@
     margin: var(--gap-4) 0;
   }
 
-  /* ---- Sidebar (md+ — wrapper class for shell + print rule) ---- */
-  .sidebar {
+  /* ---- App: sidebar shell (md+).
+       DS has no sidebar primitive yet — sortition-tool keeps its own. */
+  .app-sidebar {
     background: var(--bg-sunken);
   }
-  .sidebar nav a {
+  .app-sidebar nav a {
     display: flex;
     align-items: center;
     gap: var(--gap-2);
@@ -746,11 +638,11 @@
     text-decoration: none;
     transition: background 120ms ease;
   }
-  .sidebar nav a:hover {
+  .app-sidebar nav a:hover {
     background: var(--bg-card);
     color: var(--ink);
   }
-  .sidebar nav a.is-active {
+  .app-sidebar nav a.is-active {
     background: var(--accent-soft);
     color: var(--accent-ink);
     font-weight: 500;
@@ -782,30 +674,30 @@
   }
 
   /* Remove background fills so printer ink isn't wasted. */
-  .stage1-report,
-  .stage1-report * {
+  .app-stage1-report,
+  .app-stage1-report * {
     background: transparent !important;
     color: #000 !important;
     box-shadow: none !important;
   }
 
   /* Force the strata details to render expanded on print. */
-  .stage1-report details {
+  .app-stage1-report details {
     display: block !important;
   }
-  .stage1-report details > *:not(summary) {
+  .app-stage1-report details > *:not(summary) {
     display: block !important;
   }
 
   /* Tighten typography for paper. */
-  .stage1-report {
+  .app-stage1-report {
     font-size: 10pt;
   }
-  .stage1-report h2,
-  .stage1-report h3 {
+  .app-stage1-report h2,
+  .app-stage1-report h3 {
     page-break-after: avoid;
   }
-  .stage1-report svg {
+  .app-stage1-report svg {
     page-break-inside: avoid;
   }
 
@@ -840,15 +732,15 @@
 }
 
 /* ----------------------------------------------------------------------- *
- * Print rules added by issue #65 — hide new shell chrome on print.
- * Existing print rules above (lines 322–395, ported from #56) remain in
- * force; this block only covers chrome introduced by the redesign.
+ * Print rules — hide app shell chrome on print. The earlier @media print
+ * block scopes the result document; this one scopes everything that lives
+ * outside the printed report.
  * ----------------------------------------------------------------------- */
 @media print {
-  .sidebar,
+  .app-sidebar,
   .mobile-drawer,
   .overview-hero,
-  .step-rail,
+  .app-step-rail,
   [data-testid='primary-nav'] {
     display: none !important;
   }

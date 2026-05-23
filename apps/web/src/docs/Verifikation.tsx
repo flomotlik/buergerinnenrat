@@ -109,14 +109,14 @@ const Verifikation: Component = () => {
                 <h3 class="text-sm font-semibold">{snippet.title}</h3>
                 <button
                   type="button"
-                  class="text-xs underline text-slate-600 print:hidden"
+                  class="text-xs underline text-ink-3 print:hidden"
                   onClick={() => copy(snippet)}
                   data-testid={`copy-snippet-${idx() + 1}`}
                 >
                   {copiedId() === snippet.id ? 'Kopiert ✓' : 'Kopieren'}
                 </button>
               </div>
-              <pre class="bg-slate-100 p-3 rounded text-xs font-mono overflow-x-auto whitespace-pre">
+              <pre class="bg-bg-sunken p-3 rounded text-xs font-mono overflow-x-auto whitespace-pre">
                 {snippet.code}
               </pre>
             </div>
@@ -150,12 +150,12 @@ const Verifikation: Component = () => {
 
       <section class="space-y-2">
         <h2 class="text-xl font-semibold">Quellen im Repo</h2>
-        <ul class="list-disc pl-5 space-y-1 text-sm font-mono text-slate-700">
+        <ul class="list-disc pl-5 space-y-1 text-sm font-mono text-ink-2">
           <li>scripts/stage1_reference.py — native Python-Referenz</li>
           <li>scripts/stage1_cross_validate.sh — Cross-Validation-Lauf</li>
           <li>scripts/verify_audit.py — Signatur-Prüfung</li>
         </ul>
-        <p class="text-xs text-slate-600">
+        <p class="text-xs text-ink-3">
           Die Pfade sind relativ zur Repo-Wurzel. Sobald die App ein öffentliches Code-Hosting hat
           (z. B. GitHub-Pages für die App, Repo daneben), werden die Pfade hier zu klickbaren Links.
         </p>

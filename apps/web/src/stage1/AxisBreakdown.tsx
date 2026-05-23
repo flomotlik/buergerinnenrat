@@ -60,7 +60,7 @@ export const AxisBreakdown: Component<Props> = (props) => {
 
   return (
     <div
-      class="border rounded p-3 bg-white"
+      class="border rounded p-3 bg-bg-card app-axis-breakdown"
       data-testid={`stage1-axis-breakdown-${props.marginals.axis}`}
     >
       <h3 class="text-sm font-semibold mb-2">

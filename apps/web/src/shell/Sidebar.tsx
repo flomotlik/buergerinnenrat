@@ -63,7 +63,7 @@ function NavDisabled(props: DisabledNavItemProps) {
 export const Sidebar: Component<Props> = (props) => {
   return (
     <aside
-      class="sidebar hidden md:flex md:flex-col md:w-sidebar-w md:fixed md:inset-y-0 md:left-0 md:border-r md:border-line"
+      class="app-sidebar hidden md:flex md:flex-col md:w-sidebar-w md:fixed md:inset-y-0 md:left-0 md:border-r md:border-line"
       data-testid="sidebar"
     >
       <div class="p-4">

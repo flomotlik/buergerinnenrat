@@ -97,7 +97,7 @@ export const FileImport: Component<FileImportProps> = (props) => {
       </label>
 
       <Show when={error()}>
-        <p class="text-sm text-red-700" data-testid="file-error">
+        <p class="text-sm text-err" data-testid="file-error">
           {error()}
         </p>
       </Show>
@@ -105,7 +105,7 @@ export const FileImport: Component<FileImportProps> = (props) => {
       <Show when={parsed()}>
         {(p) => (
           <div class="space-y-4">
-            <div class="text-sm text-slate-700">
+            <div class="text-sm text-ink-2">
               <Show
                 when={p().format === 'csv'}
                 fallback={
@@ -132,7 +132,7 @@ export const FileImport: Component<FileImportProps> = (props) => {
               <thead>
                 <tr>
                   <For each={p().headers}>
-                    {(h) => <th class="border px-2 py-1 bg-slate-100 text-left">{h}</th>}
+                    {(h) => <th class="border px-2 py-1 bg-bg-sunken text-left">{h}</th>}
                   </For>
                 </tr>
                 <tr>
@@ -172,12 +172,12 @@ export const FileImport: Component<FileImportProps> = (props) => {
               {(v) => (
                 <div class="space-y-1 text-sm">
                   <Show when={!v().ok}>
-                    <p class="text-red-700" data-testid="file-validation-error">
+                    <p class="text-err" data-testid="file-validation-error">
                       <For each={v().errors}>{(err) => <span>{err} </span>}</For>
                     </p>
                   </Show>
                   <Show when={v().ok}>
-                    <p class="text-green-700" data-testid="file-validation-ok">
+                    <p class="text-ok" data-testid="file-validation-ok">
                       Mapping ok — {p().rows.length} Personen,{' '}
                       {Object.values(mapping()).filter((m) => m !== '__ignore__').length} Felder.
                     </p>
@@ -188,7 +188,7 @@ export const FileImport: Component<FileImportProps> = (props) => {
 
             <button
               type="button"
-              class="px-3 py-1.5 bg-slate-900 text-white rounded text-sm disabled:opacity-50"
+              class="px-3 py-1.5 bg-accent text-white rounded text-sm disabled:opacity-50"
               disabled={!validation()?.ok}
               onClick={commit}
               data-testid="file-commit"

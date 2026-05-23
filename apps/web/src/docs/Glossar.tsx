@@ -51,10 +51,7 @@ const Glossar: Component = () => {
           data-testid="glossar-filter"
         />
       </div>
-      <Show
-        when={visible().length > 0}
-        fallback={<p class="text-xs text-slate-600">Keine Treffer.</p>}
-      >
+      <Show when={visible().length > 0} fallback={<p class="text-xs text-ink-3">Keine Treffer.</p>}>
         <dl class="space-y-4">
           <For each={visible()}>
             {(entry) => (
@@ -62,10 +59,10 @@ const Glossar: Component = () => {
                 <dt id={entry.slug} class="font-semibold text-base scroll-mt-4">
                   {entry.term}
                 </dt>
-                <dd class="text-sm text-slate-700 mt-1">
+                <dd class="text-sm text-ink-2 mt-1">
                   <p>{entry.kurz}</p>
                   <Show when={(entry.see_also ?? []).length > 0}>
-                    <p class="text-xs text-slate-600 mt-1">
+                    <p class="text-xs text-ink-3 mt-1">
                       Siehe auch:{' '}
                       <For each={entry.see_also}>
                         {(ref, i) => (

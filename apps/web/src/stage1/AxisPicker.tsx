@@ -60,12 +60,12 @@ export const AxisPicker: Component<AxisPickerProps> = (props) => {
       </legend>
       {/* Chip-styled checkboxes — the underlying <input type="checkbox"> is
           preserved (axis-checkbox-<h> testid) but visually hidden via
-          .sr-only; the .chip wrapper is the visible tap surface. */}
+          .sr-only; the .app-chip wrapper is the visible tap surface. */}
       <div class="flex flex-wrap gap-2">
         <For each={props.headers}>
           {(h) => (
             <label
-              class="chip"
+              class="app-chip"
               classList={{ 'is-on': isSelected(h) }}
               data-testid={`stage1-axis-pill-${h}`}
             >

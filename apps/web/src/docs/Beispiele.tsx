@@ -53,7 +53,7 @@ function downloadHref(filename: string): string {
 const Beispiele: Component = () => {
   return (
     <div class="space-y-6" data-testid="docs-page-beispiele">
-      <aside class="banner info" data-testid="beispiele-banner">
+      <aside class="gat-callout gat-callout--info" data-testid="beispiele-banner">
         <div>
           Diese Daten sind <strong>synthetisch erzeugt</strong>. Sie enthalten keine echten
           Personen. Sie dürfen frei verwendet werden, um den Workflow auszuprobieren.
@@ -68,13 +68,13 @@ const Beispiele: Component = () => {
           <code>.xlsx</code>) zur Verfügung — anschließend in den entsprechenden Stage-Reiter
           hochladen.
         </p>
-        <div class="sample-grid" data-testid="beispiele-table">
+        <div class="app-sample-grid" data-testid="beispiele-table">
           {FILES.map((f) => {
             const xlsxFilename = f.filename.replace(/\.csv$/, '.xlsx');
             return (
-              <div class="sample-card flex flex-col gap-2">
+              <div class="app-sample-card flex flex-col gap-2">
                 <div class="flex items-center justify-between gap-2">
-                  <span class="chip">{f.stage}</span>
+                  <span class="app-chip">{f.stage}</span>
                   <span class="text-xs tabular-nums text-ink-3">{f.personen} Personen</span>
                 </div>
                 <div class="font-mono text-xs text-ink break-all">{f.slug}</div>
