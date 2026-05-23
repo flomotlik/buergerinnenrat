@@ -63,16 +63,25 @@ module.exports = {
         'err-soft': 'var(--err-soft)',
       },
       fontFamily: {
+        // Typography is driven by the Grüne-AT design-system stack
+        // (`https://grueneat.github.io/design-system/design-system.css`
+        // linked from `apps/web/index.html`): Barlow Semi Condensed for
+        // copy/headline, Vollkorn for emphasis serif. The DS CSS exposes
+        // these via `--font-gat-copy` / `--font-gat-headline` /
+        // `--font-gat-emphasis`; the stacks below alias the DS vars with
+        // a sensible fallback so blocked-CDN renders still degrade
+        // gracefully.
         sans: [
-          'Inter',
+          'var(--font-gat-copy)',
+          'Barlow Semi Condensed',
           'system-ui',
           '-apple-system',
           'BlinkMacSystemFont',
           'Segoe UI',
           'sans-serif',
         ],
-        serif: ['Source Serif 4', 'Vollkorn', 'Georgia', 'serif'],
-        mono: ['JetBrains Mono', 'ui-monospace', 'SF Mono', 'Menlo', 'monospace'],
+        serif: ['var(--font-gat-emphasis)', 'Vollkorn', 'Georgia', 'serif'],
+        mono: ['ui-monospace', 'SF Mono', 'Menlo', 'monospace'],
       },
       spacing: {
         'gap-1': 'var(--gap-1)',

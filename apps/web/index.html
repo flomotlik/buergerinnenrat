@@ -14,25 +14,12 @@
       rel="stylesheet"
       href="https://grueneat.github.io/design-system/design-system.css"
     />
-    <!-- Self-hosted fonts: Inter v3.19, Source Serif 4 v4.005R, JetBrains Mono v2.304.
-         All SIL OFL 1.1 — see apps/web/public/fonts/<family>/OFL.txt. Preload above-fold
-         weights so first paint reads them from the network early. The crossorigin
-         attribute is REQUIRED — without it, the browser issues a second fetch for the
-         same file when @font-face references it. -->
-    <link
-      rel="preload"
-      as="font"
-      type="font/woff2"
-      href="/fonts/inter/Inter-Regular.woff2"
-      crossorigin="anonymous"
-    />
-    <link
-      rel="preload"
-      as="font"
-      type="font/woff2"
-      href="/fonts/source-serif-4/SourceSerif4-Semibold.woff2"
-      crossorigin="anonymous"
-    />
+    <!-- Typography is loaded via the design-system CSS above (Barlow Semi
+         Condensed + Vollkorn from Google Fonts). The previous self-hosted
+         Inter / Source Serif 4 / JetBrains Mono preloads are gone — the
+         brand stack is now CDN-driven. Phase 2 of #12 will retire the
+         `public/fonts/*` woff2 assets that still ship with the SPA. -->
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
     <!-- Favicon: Grüne-AT wordmark from the design-system CDN. Same source
          as the Brand block in `src/shell/Brand.tsx` — single brand-asset
          origin, no vendoring. -->
