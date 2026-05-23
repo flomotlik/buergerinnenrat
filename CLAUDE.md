@@ -77,6 +77,26 @@ Generische Operationen, die für alle Use-Cases (Bürger:innenrat, Landeskonfere
 .
 ├── CLAUDE.md                       # dieses Dokument
 ├── README.md                       # Projekt-Readme
+├── package.json                    # pnpm-Workspace-Root
+├── apps/
+│   └── web/                        # Solid.js + Vite + Tailwind 3 SPA
+│       ├── index.html              # HTML-Eintragspunkt
+│       ├── src/
+│       │   ├── App.tsx             # Route-Switcher (#/overview, #/stage1, #/stage3, #/docs)
+│       │   ├── main.tsx            # Vite-Entry, montiert App
+│       │   ├── index.css           # Tokens + lokale Komponenten-Schicht (.btn-*, .card-*, .banner, .tbl …)
+│       │   ├── shell/              # Sidebar + Brand + NavGroup
+│       │   ├── stage1/             # Stage-1 Versand-Sampler (Stage1Panel, AxisBreakdown, StratificationExplainer)
+│       │   ├── stage3-Komponenten/ # in `run/`, `quotas/`, `import/` (siehe Verzeichnis)
+│       │   ├── docs/               # Dokumentations-Hub
+│       │   └── …
+│       ├── tailwind.config.cjs
+│       └── tests/                  # Playwright-E2E + Vitest-Komponenten-Tests
+├── packages/
+│   ├── core/                       # Pool-/Quoten-Modell + Stratifikations-Helfer
+│   ├── engine-contract/            # Engine-API-Schemas + Verifier
+│   ├── engine-a/                   # TS+HiGHS-Maximin-Engine (Stage 3)
+│   └── metrics/                    # Drift/Quality-Vergleich Engine A vs Reference
 ├── research/                       # Bürgerrat-Kontext-Research
 │   ├── 00-synthesis.md             # Einstieg, Gesamteinordnung
 │   ├── 01-codebase-analysis.md     # adhocracy+ Gap-Analyse
@@ -91,18 +111,27 @@ Generische Operationen, die für alle Use-Cases (Bürger:innenrat, Landeskonfere
 │   ├── 03-algorithm-port.md        # nachzubessern — GPL-Fixture-Widerspruch
 │   ├── 04-frontend-architecture.md # VERWORFEN — drei Sachfehler
 │   ├── 05-product-and-licensing.md # Marktanalyse solide
-│   └── 06-review-consolidation.md  # AKTUELLSTES — Review-Findings + Backlog
-└── reviews/                        # externe LLM-Reviews (Rohartefakte)
-    ├── review-...-claude-opus-4-7.md   # WARN, 7 high, 8 medium
-    ├── review-...-gpt-5-4.md           # FAIL, 2 critical, 4 high, 5 medium
-    └── review-...-gemini.md            # FAIL, 3 critical, 2 high, 1 medium
+│   ├── 06-review-consolidation.md  # AKTUELLSTES — Review-Findings + Backlog
+│   └── 07-two-stage-workflow-analysis.md  # Stage 1/2/4-Gap-Analyse
+├── reviews/                        # externe LLM-Reviews (Rohartefakte)
+└── .issues/                        # issue-cli Artefakte (offene/archivierte Issues, Notizen)
 ```
+
+## Code-Stand (Stand 2026-05-23)
+
+Iteration 1 ist gebaut und läuft End-to-End im Browser. Das Repo enthält:
+
+- **`apps/web/`** — Solid.js + Vite + Tailwind 3 SPA mit ~45 `.tsx`/`.ts`-Dateien (Stage-1 Versand-Sampler, Stage-3 Panel-Auswahl, Docs-Hub, Sidebar/Brand). Eintragspunkt `apps/web/index.html`, Styles in `apps/web/src/index.css` (eigene OkLCH-Hue-145-Token-Schicht + ~895 Zeilen lokale `.btn-*`/`.card-*`/`.banner`/`.tbl`/… Komponenten — siehe `.issues/ngjps-…/notes/audit.md`).
+- **`packages/`** — pnpm-Workspace mit `engine-a` (TS+HiGHS-Maximin), `engine-contract` (Schemas + Verifier), `core` (Pool-/Quoten-Modell), `metrics` (Drift/Quality-Comparison).
+- **Build/Test**: `pnpm dev` (Vite), `pnpm test` (Vitest), `pnpm test:e2e` (Playwright), `pnpm typecheck`, `pnpm lint` — alle aus dem Workspace-Root.
+- **Design-System-Migration (#12)** — Phase 0 (Quick-Wins: DS-CSS-Link, Logo, Schrift, Skiplink, Token-Drift in `AxisBreakdown`/`RunPanel`) läuft; Phase 2 (OkLCH-Tokens raus, alle Komponenten auf `--gat-*-web-*`) wartet auf design-system v2.1.
+
+Veraltete Annahmen: die ältere Aussage „Kein Code, weder Prototyp noch MVP. Nur Planung" gilt nicht mehr — Iteration 1 ist gebaut, der gebaute Stand ist im Repo, das Live-Deployment liegt auf GitHub Pages.
 
 ## Was dieses Repo (noch) nicht enthält
 
-- Kein Code — weder Prototyp noch MVP. Nur Planung.
-- Kein `package.json`, kein Build-Setup. Entscheidungen aus S-1 bis S-6 stehen vor jedem `npm init`.
-- Keine Testdaten. Synthetische kommunale CSVs müssen vor Phase 0b angelegt werden (siehe `06-review-consolidation.md` P1-2).
+- Kein Engine B (Pyodide+Leximin) — bleibt für Iteration 2, abhängig von S-1/S-2.
+- Keine Testdaten in Produktions-Qualität. Synthetische kommunale CSVs liegen bei den Engine-A-Tests, weitere müssen vor breiterem Pilotbetrieb angelegt werden (siehe `06-review-consolidation.md` P1-2).
 - Keine Mandantenkontakte. Marktvalidierung ist pendenz.
 
 ## Kontext aus dem Ursprungsworkspace
