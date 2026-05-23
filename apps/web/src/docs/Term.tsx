@@ -70,7 +70,7 @@ const Term: Component<Props> = (props) => {
     >
       <span
         tabIndex={0}
-        class="border-b border-dotted border-slate-500 cursor-help"
+        class="border-b border-dotted border-line-strong cursor-help"
         onClick={toggle}
       >
         {props.children}
@@ -78,12 +78,12 @@ const Term: Component<Props> = (props) => {
       <Show when={show()}>
         <span
           role="tooltip"
-          class="absolute left-0 top-full z-10 bg-slate-900 text-white text-xs p-2 rounded shadow max-w-xs mt-1"
+          class="absolute left-0 top-full z-10 bg-ink text-bg-card text-xs p-2 rounded shadow max-w-xs mt-1"
           data-testid={`term-tooltip-${props.slug}`}
         >
           <span class="block font-semibold">{entry.term}</span>
           <span class="block mt-1">{entry.kurz}</span>
-          <a class="block mt-2 underline text-sky-300" href={`#/docs/glossar/${entry.slug}`}>
+          <a class="block mt-2 underline text-accent-line" href={`#/docs/glossar/${entry.slug}`}>
             → im Glossar nachschlagen
           </a>
         </span>

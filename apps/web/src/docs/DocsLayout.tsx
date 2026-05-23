@@ -16,7 +16,7 @@ interface TocItem {
 /**
  * Shared shell for every docs subpage. Provides:
  *   - a consistent header (with optional back-to-hub link)
- *   - a 220px sticky TOC + 68ch reading column (.doc-grid / .doc-toc / .doc-body)
+ *   - a 220px sticky TOC + 68ch reading column (.app-doc-grid / .app-doc-toc / .app-doc-body)
  *   - a build-info footer that surfaces the commit SHA + ISO build date so the
  *     printed/exported docs always carry provenance.
  *
@@ -94,8 +94,8 @@ const DocsLayout: Component<Props> = (props) => {
         </Show>
         <h1 class="text-3xl font-serif font-semibold tracking-tight text-ink">{props.title}</h1>
       </header>
-      <div class="doc-grid">
-        <nav class="doc-toc" aria-label="Inhaltsverzeichnis" data-testid="docs-toc">
+      <div class="app-doc-grid">
+        <nav class="app-doc-toc" aria-label="Inhaltsverzeichnis" data-testid="docs-toc">
           <Show when={toc().length > 0} fallback={<span class="text-xs text-ink-3">…</span>}>
             <ol>
               <For each={toc()}>
@@ -108,7 +108,7 @@ const DocsLayout: Component<Props> = (props) => {
             </ol>
           </Show>
         </nav>
-        <div class="doc-body prose-app text-sm leading-relaxed" ref={bodyEl}>
+        <div class="app-doc-body prose-app text-sm leading-relaxed" ref={bodyEl}>
           {props.children}
         </div>
       </div>

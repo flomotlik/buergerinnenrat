@@ -379,39 +379,39 @@ export const Stage1Panel: Component = () => {
     <div class="space-y-6" data-testid="stage1-panel">
       {/* 6-step progress rail (issue #65). Visual hint only — no gating
           logic. Resp 6→3→1 cols across breakpoints. */}
-      <ol class="step-rail" aria-label="Stage-1-Schritte">
+      <ol class="app-step-rail" aria-label="Stage-1-Schritte">
         <li
-          class="step"
+          class="app-step"
           classList={{ 'is-current': currentStep() === 1, 'is-done': currentStep() > 1 }}
         >
-          <span class="step-num">1</span> Eingabe
+          <span class="app-step__num">1</span> Eingabe
         </li>
         <li
-          class="step"
+          class="app-step"
           classList={{ 'is-current': currentStep() === 2, 'is-done': currentStep() > 2 }}
         >
-          <span class="step-num">2</span> Bemessung
+          <span class="app-step__num">2</span> Bemessung
         </li>
         <li
-          class="step"
+          class="app-step"
           classList={{ 'is-current': currentStep() === 3, 'is-done': currentStep() > 3 }}
         >
-          <span class="step-num">3</span> Achsen
+          <span class="app-step__num">3</span> Achsen
         </li>
         <li
-          class="step"
+          class="app-step"
           classList={{ 'is-current': currentStep() === 4, 'is-done': currentStep() > 4 }}
         >
-          <span class="step-num">4</span> Parameter
+          <span class="app-step__num">4</span> Parameter
         </li>
         <li
-          class="step"
+          class="app-step"
           classList={{ 'is-current': currentStep() === 5, 'is-done': currentStep() > 5 }}
         >
-          <span class="step-num">5</span> Ziehen
+          <span class="app-step__num">5</span> Ziehen
         </li>
-        <li class="step" classList={{ 'is-current': currentStep() === 6 }}>
-          <span class="step-num">6</span> Audit &amp; Export
+        <li class="app-step" classList={{ 'is-current': currentStep() === 6 }}>
+          <span class="app-step__num">6</span> Audit &amp; Export
         </li>
       </ol>
 
@@ -667,10 +667,10 @@ export const Stage1Panel: Component = () => {
             </div>
           </Show>
           <Show when={preview().result !== null}>
-            <div class="border rounded p-3 bg-slate-50 space-y-3" data-testid="stage1-preview">
+            <div class="border rounded p-3 bg-bg-sunken space-y-3" data-testid="stage1-preview">
               <div class="flex items-baseline justify-between">
                 <h3 class="text-sm font-semibold">Vorschau (vor dem Lauf)</h3>
-                <span class="text-xs text-slate-500">
+                <span class="text-xs text-ink-3">
                   {preview().result?.rows.length ?? 0} Bevölkerungsgruppen, Soll-Summe{' '}
                   {preview().result?.totalTarget ?? 0}
                 </span>
@@ -842,7 +842,7 @@ export const Stage1Panel: Component = () => {
 
       <Show when={output()}>
         {(out) => (
-          <section class="space-y-4 stage1-report card" data-testid="stage1-result">
+          <section class="space-y-4 app-stage1-report card" data-testid="stage1-result">
             <div class="card-head">
               <span class="card-eyebrow">Schritt 5–6</span>
               <h2 class="card-title">5. Ergebnis</h2>
@@ -853,21 +853,21 @@ export const Stage1Panel: Component = () => {
                 stage1-summary-cards / stage1-coverage-card /
                 stage1-underfill-card preserved at the same DOM-nesting level
                 — just visually re-laid via .stats-grid + .stat. */}
-            <div class="stats-grid" data-testid="stage1-summary-cards">
-              <div class="stat">
-                <div class="k">Gezogen</div>
-                <div class="v">{out().result.selected.length}</div>
-                <div class="delta">von {parsed()?.rows.length ?? 0} im Pool</div>
+            <div class="app-stats-grid" data-testid="stage1-summary-cards">
+              <div class="app-stat">
+                <div class="app-stat__k">Gezogen</div>
+                <div class="app-stat__v">{out().result.selected.length}</div>
+                <div class="app-stat__delta">von {parsed()?.rows.length ?? 0} im Pool</div>
               </div>
               <Show when={coverage()}>
                 {(c) => (
-                  <div class="stat" data-testid="stage1-coverage-card">
-                    <div class="k">Gruppen-Abdeckung</div>
-                    <div class="v">
+                  <div class="app-stat" data-testid="stage1-coverage-card">
+                    <div class="app-stat__k">Gruppen-Abdeckung</div>
+                    <div class="app-stat__v">
                       {c().coveredStrata}{' '}
                       <span class="text-base text-ink-3">/ {c().totalStrata}</span>
                     </div>
-                    <div class="delta">
+                    <div class="app-stat__delta">
                       {Number.isNaN(c().coverageRatio)
                         ? '–'
                         : `${(c().coverageRatio * 100).toFixed(1)} % mit ≥ 1 Person`}
@@ -875,8 +875,8 @@ export const Stage1Panel: Component = () => {
                   </div>
                 )}
               </Show>
-              <div class="stat" data-testid="stage1-underfill-card">
-                <div class="k">
+              <div class="app-stat" data-testid="stage1-underfill-card">
+                <div class="app-stat__k">
                   Unterbesetzt{' '}
                   <Show when={(coverage()?.underfilledStrata ?? 0) > 0}>
                     <span class="gat-tag gat-tag--warn ml-1">Hinweis</span>
@@ -885,13 +885,13 @@ export const Stage1Panel: Component = () => {
                     <span class="gat-tag gat-tag--ok ml-1">OK</span>
                   </Show>
                 </div>
-                <div class="v">{coverage()?.underfilledStrata ?? 0}</div>
-                <div class="delta">Gruppen unter Soll</div>
+                <div class="app-stat__v">{coverage()?.underfilledStrata ?? 0}</div>
+                <div class="app-stat__delta">Gruppen unter Soll</div>
               </div>
-              <div class="stat">
-                <div class="k">Dauer · Seed</div>
-                <div class="v">{Math.round(out().durationMs)} ms</div>
-                <div class="delta">Seed {out().signedAudit.doc.seed}</div>
+              <div class="app-stat">
+                <div class="app-stat__k">Dauer · Seed</div>
+                <div class="app-stat__v">{Math.round(out().durationMs)} ms</div>
+                <div class="app-stat__delta">Seed {out().signedAudit.doc.seed}</div>
               </div>
             </div>
 
@@ -968,10 +968,13 @@ export const Stage1Panel: Component = () => {
                   out().signedAudit.doc.pool_size,
                 );
                 return (
-                  <section class="callout space-y-2" data-testid="stage1-info-only-bands-report">
+                  <section
+                    class="app-callout space-y-2"
+                    data-testid="stage1-info-only-bands-report"
+                  >
                     <h3 class="text-sm font-semibold">Nicht in Auswahl einbezogen</h3>
                     <div class="overflow-x-auto">
-                      <table class="tbl text-xs">
+                      <table class="app-table text-xs">
                         <thead>
                           <tr>
                             <th>Band</th>
@@ -1022,7 +1025,7 @@ export const Stage1Panel: Component = () => {
                   have overflow-x: auto — mobile-touch-targets.spec asserts
                   getComputedStyle(parent).overflowX === 'auto'. */}
               <div class="overflow-x-auto">
-                <table class="tbl min-w-full text-xs" data-testid="stage1-strata-table">
+                <table class="app-table min-w-full text-xs" data-testid="stage1-strata-table">
                   <thead>
                     <tr>
                       <th>Bevölkerungsgruppe (Stratum)</th>

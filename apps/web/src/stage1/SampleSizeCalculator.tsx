@@ -110,7 +110,7 @@ export const SampleSizeCalculator: Component<SampleSizeCalculatorProps> = (props
               if (Number.isFinite(v) && v >= 0) setPanelSize(Math.floor(v));
             }}
           />
-          <p class="text-xs text-slate-500 mt-1">
+          <p class="text-xs text-ink-3 mt-1">
             Z.B. 30 für einen Gemeinde-Bürgerrat, 50–100 für eine Landeskonferenz-Delegation, 160
             für einen Bundes-Bürgerrat.
           </p>
@@ -136,7 +136,7 @@ export const SampleSizeCalculator: Component<SampleSizeCalculatorProps> = (props
               />
               <span>
                 <strong>{OUTREACH_DEFAULTS['mail-plus-phone'].label}</strong>{' '}
-                <span class="text-slate-500">
+                <span class="text-ink-3">
                   ({formatPercent(OUTREACH_DEFAULTS['mail-plus-phone'].rateMin)}–
                   {formatPercent(OUTREACH_DEFAULTS['mail-plus-phone'].rateMax)} Rücklauf)
                 </span>
@@ -154,7 +154,7 @@ export const SampleSizeCalculator: Component<SampleSizeCalculatorProps> = (props
               />
               <span>
                 <strong>{OUTREACH_DEFAULTS['mail-only'].label}</strong>{' '}
-                <span class="text-slate-500">
+                <span class="text-ink-3">
                   ({formatPercent(OUTREACH_DEFAULTS['mail-only'].rateMin)}–
                   {formatPercent(OUTREACH_DEFAULTS['mail-only'].rateMax)} Rücklauf)
                 </span>
@@ -172,7 +172,7 @@ export const SampleSizeCalculator: Component<SampleSizeCalculatorProps> = (props
               />
               <span>
                 <strong>Eigene Rücklaufquote</strong>{' '}
-                <span class="text-slate-500">(min/max in % selbst angeben)</span>
+                <span class="text-ink-3">(min/max in % selbst angeben)</span>
               </span>
             </label>
           </fieldset>
@@ -180,7 +180,7 @@ export const SampleSizeCalculator: Component<SampleSizeCalculatorProps> = (props
       </div>
 
       <Show when={outreach() === 'custom'}>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 border-l-4 border-slate-300 pl-3">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 border-l-4 border-line-strong pl-3">
           <div>
             <label class="gat-field__label" for="stage1-custom-rate-min">
               Rücklauf min (%)

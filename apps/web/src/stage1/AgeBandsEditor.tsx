@@ -78,7 +78,7 @@ export const AgeBandsEditor: Component<AgeBandsEditorProps> = (props) => {
           {(b, i) => (
             <li class="flex flex-wrap items-center gap-2 text-sm">
               <label class="inline-flex items-center gap-1">
-                <span class="text-xs text-slate-500">Min</span>
+                <span class="text-xs text-ink-3">Min</span>
                 <input
                   type="number"
                   min="0"
@@ -91,7 +91,7 @@ export const AgeBandsEditor: Component<AgeBandsEditorProps> = (props) => {
                 />
               </label>
               <label class="inline-flex items-center gap-1">
-                <span class="text-xs text-slate-500">Max</span>
+                <span class="text-xs text-ink-3">Max</span>
                 <input
                   type="number"
                   min="0"
@@ -111,10 +111,10 @@ export const AgeBandsEditor: Component<AgeBandsEditorProps> = (props) => {
                   checked={b.max === null}
                   onChange={(e) => setOpen(i(), e.currentTarget.checked)}
                 />
-                <span class="text-xs text-slate-500">offen</span>
+                <span class="text-xs text-ink-3">offen</span>
               </label>
               <label class="inline-flex items-center gap-1">
-                <span class="text-xs text-slate-500">Label</span>
+                <span class="text-xs text-ink-3">Label</span>
                 <input
                   type="text"
                   class="gat-input w-32"

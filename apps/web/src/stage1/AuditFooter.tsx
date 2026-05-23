@@ -53,7 +53,7 @@ export const AuditFooter: Component<Props> = (props) => {
         <span class="card-eyebrow">Schritt 6</span>
         <h2 class="card-title">Protokoll / Audit</h2>
       </div>
-      <div class="audit">
+      <div class="app-audit">
         <dl>
           <dt>Schema-Version</dt>
           <dd>{props.doc.schema_version}</dd>

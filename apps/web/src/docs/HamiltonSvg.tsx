@@ -84,7 +84,7 @@ const HamiltonSvg: Component = () => {
           }}
         </For>
       </svg>
-      <p class="text-xs text-slate-600 mt-2">
+      <p class="text-xs text-ink-3 mt-2">
         Summe Floor: {rows.reduce((a, r) => a + r.floor, 0)} · Bonus-Sitze:{' '}
         {rows.reduce((a, r) => a + r.bonus, 0)} · Final: {rows.reduce((a, r) => a + r.final, 0)}
       </p>

@@ -22,14 +22,14 @@ export const FilePreview: Component<FilePreviewProps> = (props) => {
     <div class="overflow-x-auto" data-testid="file-preview-wrap">
       <table class="w-full text-xs border-collapse" data-testid="file-preview-table">
         <thead>
-          <tr class="bg-slate-100">
+          <tr class="bg-bg-sunken">
             <For each={props.headers}>{(h) => <th class="border px-2 py-1 text-left">{h}</th>}</For>
           </tr>
         </thead>
         <tbody>
           <For each={visibleRows()}>
             {(row, i) => (
-              <tr class={i() % 2 === 0 ? 'bg-white' : 'bg-slate-50'}>
+              <tr class={i() % 2 === 0 ? 'bg-bg-card' : 'bg-bg-sunken'}>
                 <For each={props.headers}>
                   {(h) => <td class="border px-2 py-1">{row[h] ?? ''}</td>}
                 </For>
@@ -38,7 +38,7 @@ export const FilePreview: Component<FilePreviewProps> = (props) => {
           </For>
         </tbody>
       </table>
-      <p class="text-xs text-slate-500 mt-1">
+      <p class="text-xs text-ink-3 mt-1">
         Vorschau: erste {limit()} von {props.rows.length} Zeilen.
       </p>
     </div>
