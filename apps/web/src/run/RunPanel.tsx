@@ -174,9 +174,16 @@ export const RunPanel: Component<RunPanelProps> = (props) => {
           Neuer Seed
         </button>
         <Show when={!running()}>
+          {/* Run/Cancel buttons use the token-aliased Tailwind classes
+              (`bg-accent`, `bg-err`) which read `--accent` / `--err` from
+              `index.css`. The previous `bg-slate-900` / `bg-red-700` were
+              raw Tailwind palette colours and broke the brand axis — see
+              the drift section of `.issues/ngjps-…/notes/audit.md`. Phase 2
+              of #12 maps these onto `--gat-color-primary` /
+              `--gat-web-clay-text` once the DS-v2.1 tokens land. */}
           <button
             type="button"
-            class="ml-4 px-4 py-1.5 bg-slate-900 text-white rounded text-sm"
+            class="ml-4 px-4 py-1.5 bg-accent text-white rounded text-sm hover:bg-accent-strong"
             onClick={start}
             data-testid="run-start"
           >
@@ -186,7 +193,7 @@ export const RunPanel: Component<RunPanelProps> = (props) => {
         <Show when={running()}>
           <button
             type="button"
-            class="ml-4 px-4 py-1.5 bg-red-700 text-white rounded text-sm"
+            class="ml-4 px-4 py-1.5 bg-err text-white rounded text-sm"
             onClick={cancel}
             data-testid="run-cancel"
           >

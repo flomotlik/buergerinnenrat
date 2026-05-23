@@ -4,6 +4,15 @@
  * backward-compat during the redesign sweep; new code should reference the
  * token-aliased colors (bg, ink, accent, ok, warn, err …) which read CSS
  * variables from :root / [data-theme="dark"] in index.css.
+ *
+ * Branding direction (2026-05-23, see issue #12): the previous
+ * civic-tech-neutral positioning is lifted. The tool now carries full
+ * Grüne-AT branding (magenta CTAs, green wordmark via DS CDN, Barlow
+ * Semi Condensed via the design-system.css stack). The local OkLCH
+ * Hue-145 token layer stays put for Phase 0 backward-compat; Phase 2
+ * retires it in favour of `--gat-color-*` / `--gat-web-*` once
+ * design-system v2.1 is shipped. Don't add new civic-neutral framings
+ * here — the brand axis is Grüne, not civic-generic.
  */
 
 /** @type {import('tailwindcss').Config} */
@@ -12,13 +21,15 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Brand color family for Personenauswahl — civic green signals
-        // democratic / participatory framing, applicable to Bürgerräte and
-        // other stratified-selection use cases. Kept for backward-compat.
+        // Brand color family — retained for backward-compat during Phase 0
+        // of the design-system migration (#12). New code should reach for
+        // the DS tokens (`--gat-color-*`, `--gat-web-*`) loaded via
+        // design-system.css; the brand.* aliases below stick around so
+        // un-migrated call-sites keep rendering until Phase 2 sweeps them.
         // - DEFAULT: dunkler, seriöser Grundton (Slate-900-Variante) für H1/Logo
         // - fg: Vordergrundfarbe auf Brand-Hintergrund (weiß)
         // - muted: ganz leichter Brand-Tint für Card-Hintergründe
-        // - accent: civic-grüner Primär-Akzent
+        // - accent: grüner Primär-Akzent
         // - accent-strong: dunklere Hover-/Press-Variante des Accent-Tons
         brand: {
           DEFAULT: '#0f172a',
@@ -52,16 +63,25 @@ module.exports = {
         'err-soft': 'var(--err-soft)',
       },
       fontFamily: {
+        // Typography is driven by the Grüne-AT design-system stack
+        // (`https://grueneat.github.io/design-system/design-system.css`
+        // linked from `apps/web/index.html`): Barlow Semi Condensed for
+        // copy/headline, Vollkorn for emphasis serif. The DS CSS exposes
+        // these via `--font-gat-copy` / `--font-gat-headline` /
+        // `--font-gat-emphasis`; the stacks below alias the DS vars with
+        // a sensible fallback so blocked-CDN renders still degrade
+        // gracefully.
         sans: [
-          'Inter',
+          'var(--font-gat-copy)',
+          'Barlow Semi Condensed',
           'system-ui',
           '-apple-system',
           'BlinkMacSystemFont',
           'Segoe UI',
           'sans-serif',
         ],
-        serif: ['Source Serif 4', 'Vollkorn', 'Georgia', 'serif'],
-        mono: ['JetBrains Mono', 'ui-monospace', 'SF Mono', 'Menlo', 'monospace'],
+        serif: ['var(--font-gat-emphasis)', 'Vollkorn', 'Georgia', 'serif'],
+        mono: ['ui-monospace', 'SF Mono', 'Menlo', 'monospace'],
       },
       spacing: {
         'gap-1': 'var(--gap-1)',
@@ -79,7 +99,7 @@ module.exports = {
         lg: 'var(--radius-lg)',
       },
       boxShadow: {
-        // Subtle civic-tech card shadows — not the heavy material drop-shadow
+        // Soft card shadows — kept light deliberately, not a material drop.
         card: '0 1px 2px 0 rgb(15 23 42 / 0.04), 0 1px 3px 0 rgb(15 23 42 / 0.06)',
         'card-hover':
           '0 4px 6px -1px rgb(15 23 42 / 0.08), 0 2px 4px -2px rgb(15 23 42 / 0.06)',

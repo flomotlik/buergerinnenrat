@@ -51,7 +51,7 @@ export const StratificationExplainer: Component<StratificationExplainerProps> = 
     <details
       open={props.open()}
       onToggle={(e) => props.onToggle((e.currentTarget as HTMLDetailsElement).open)}
-      class="border rounded p-3 bg-slate-50"
+      class="border rounded p-3 bg-bg-sunken"
       data-testid="stage1-stratification-explainer"
     >
       <summary class="cursor-pointer font-semibold text-sm select-none">
@@ -63,7 +63,7 @@ export const StratificationExplainer: Component<StratificationExplainerProps> = 
           Stichprobe wird so gezogen, dass jede Gruppe proportional zu ihrem Anteil in der
           Bevölkerung vertreten ist.
         </p>
-        <div class="border-l-4 border-sky-300 bg-white p-2 font-mono text-xs leading-relaxed">
+        <div class="border-l-4 border-accent-line bg-bg-card p-2 font-mono text-xs leading-relaxed">
           <p class="font-sans text-sm font-semibold">Beispiel:</p>
           <p>
             Pool 1.000 Personen, davon 510 weiblich (51 %), 490 männlich (49 %). Bei
@@ -78,10 +78,10 @@ export const StratificationExplainer: Component<StratificationExplainerProps> = 
           <Show
             when={counts().length > 0}
             fallback={
-              <p class="text-amber-800">
+              <div class="banner warn">
                 Keine Achsen gewählt — die Stichprobe wäre eine einfache Zufallsstichprobe ohne
                 Strukturierung.
-              </p>
+              </div>
             }
           >
             <p>

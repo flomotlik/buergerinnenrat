@@ -4,27 +4,30 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>Personenauswahl — stratifizierte Zufallsauswahl</title>
-    <!-- Self-hosted fonts: Inter v3.19, Source Serif 4 v4.005R, JetBrains Mono v2.304.
-         All SIL OFL 1.1 — see apps/web/public/fonts/<family>/OFL.txt. Preload above-fold
-         weights so first paint reads them from the network early. The crossorigin
-         attribute is REQUIRED — without it, the browser issues a second fetch for the
-         same file when @font-face references it. -->
+    <!-- Grüne-AT Design System (v2.0, see issue #12). Loaded from CDN — never
+         vendored. Carries the brand tokens (`--gat-color-*`, `--gat-web-*`),
+         the typography stack (Barlow Semi Condensed et al.), the
+         `.gat-skiplink` utility, and the brand assets we link in markup.
+         Pinned to the project page via the canonical URL; CDN refresh
+         delivers v2.1+ automatically once design-system#13 ships. -->
     <link
-      rel="preload"
-      as="font"
-      type="font/woff2"
-      href="/fonts/inter/Inter-Regular.woff2"
-      crossorigin="anonymous"
+      rel="stylesheet"
+      href="https://grueneat.github.io/design-system/design-system.css"
     />
+    <!-- Typography is loaded via the design-system CSS above (Barlow Semi
+         Condensed + Vollkorn from Google Fonts). The previous self-hosted
+         Inter / Source Serif 4 / JetBrains Mono preloads are gone — the
+         brand stack is now CDN-driven. Phase 2 of #12 will retire the
+         `public/fonts/*` woff2 assets that still ship with the SPA. -->
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+    <!-- Favicon: Grüne-AT wordmark from the design-system CDN. Same source
+         as the Brand block in `src/shell/Brand.tsx` — single brand-asset
+         origin, no vendoring. -->
     <link
-      rel="preload"
-      as="font"
-      type="font/woff2"
-      href="/fonts/source-serif-4/SourceSerif4-Semibold.woff2"
-      crossorigin="anonymous"
+      rel="icon"
+      type="image/svg+xml"
+      href="https://grueneat.github.io/design-system/assets/gruene-logo.svg"
     />
-    <!-- Inline SVG favicon: assembly icon (one large circle with smaller circles around it). -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2316a34a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='4' fill='%2316a34a'/%3E%3Ccircle cx='12' cy='3' r='1.5'/%3E%3Ccircle cx='20' cy='7.5' r='1.5'/%3E%3Ccircle cx='20' cy='16.5' r='1.5'/%3E%3Ccircle cx='12' cy='21' r='1.5'/%3E%3Ccircle cx='4' cy='16.5' r='1.5'/%3E%3Ccircle cx='4' cy='7.5' r='1.5'/%3E%3C/svg%3E" />
   </head>
   <body class="bg-slate-50 text-slate-900 font-sans antialiased">
     <div id="root"></div>

@@ -681,7 +681,7 @@ export const Stage1Panel: Component = () => {
                   (preview().result?.underfillStrata ?? 0) > 0
                 }
               >
-                <div class="text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded p-2 space-y-2">
+                <div class="banner warn flex-col items-stretch text-xs space-y-2">
                   <Show when={(preview().result?.zeroAllocationStrata ?? 0) > 0}>
                     {(() => {
                       const zeros = (preview().result?.rows ?? []).filter(

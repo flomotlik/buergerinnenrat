@@ -1,12 +1,23 @@
 import type { Component } from 'solid-js';
 import { For, Show } from 'solid-js';
 import type { MarginalsForAxis } from '@sortition/core';
+import { GAT_CHART_INK, GAT_CHART_PALETTE } from '../lib/ds-palette';
 
 interface Props {
   marginals: MarginalsForAxis;
   /** When true, show only Soll bars (used for pre-run preview before draw). */
   previewMode?: boolean;
 }
+
+// DS-aligned chart colours. SVG attributes can't read CSS custom
+// properties cross-renderer, so we consume the mirrored constants from
+// `lib/ds-palette.ts` directly. Source: `--gat-web-chart-*` /
+// `--gat-web-ink-*` in `design-system.css` (issue #12).
+const SOLL_STROKE = GAT_CHART_INK.hairline;
+const SOLL_FILL = GAT_CHART_INK.hairlineSoft;
+const IST_FILL = GAT_CHART_PALETTE.teal;
+const LABEL_PRIMARY = GAT_CHART_INK.primary;
+const LABEL_SECONDARY = GAT_CHART_INK.secondary;
 
 /**
  * Per-axis bar chart: each axis-value gets one row with two side-by-side
@@ -54,14 +65,14 @@ export const AxisBreakdown: Component<Props> = (props) => {
     >
       <h3 class="text-sm font-semibold mb-2">
         Merkmal: <span class="font-mono">{props.marginals.axis}</span>{' '}
-        <span class="text-xs text-slate-500 font-normal">
+        <span class="text-xs text-ink-3 font-normal">
           ({props.marginals.buckets.length} Werte, gesamt Soll {props.marginals.totalTarget}
           {!props.previewMode && `, Ist ${props.marginals.totalActual}`})
         </span>
       </h3>
       <Show
         when={props.marginals.buckets.length > 0}
-        fallback={<p class="text-xs text-slate-500">(keine Werte)</p>}
+        fallback={<p class="text-xs text-ink-3">(keine Werte)</p>}
       >
         <div class="overflow-x-auto">
           <svg
@@ -79,8 +90,8 @@ export const AxisBreakdown: Component<Props> = (props) => {
             <desc>{aggregateDesc()}</desc>
             <defs>
               <pattern id={patternId()} patternUnits="userSpaceOnUse" width="6" height="6">
-                <rect width="6" height="6" fill="#e2e8f0" />
-                <path d="M0,6 L6,0" stroke="#94a3b8" stroke-width="1.5" />
+                <rect width="6" height="6" fill={SOLL_FILL} />
+                <path d="M0,6 L6,0" stroke={SOLL_STROKE} stroke-width="1.5" />
               </pattern>
             </defs>
             <For each={props.marginals.buckets}>
@@ -96,7 +107,7 @@ export const AxisBreakdown: Component<Props> = (props) => {
                       y={y + 12}
                       font-family="ui-monospace, monospace"
                       font-size="11"
-                      fill="#1e293b"
+                      fill={LABEL_PRIMARY}
                     >
                       {b.value}
                     </text>
@@ -108,14 +119,15 @@ export const AxisBreakdown: Component<Props> = (props) => {
                       width={sollW}
                       height={9}
                       fill={`url(#${patternId()})`}
-                      stroke="#94a3b8"
+                      stroke={SOLL_STROKE}
                       stroke-width="0.5"
                     >
                       <title>{`Soll: ${b.target} Personen (Wert ${b.value}, Pool ${b.pool})`}</title>
                     </rect>
-                    {/* Ist bar (blue) — only when not in preview mode */}
+                    {/* Ist bar — DS chart palette (teal). Was bg-blue
+                        (#3b82f6) before the design-system migration. */}
                     <Show when={!props.previewMode}>
-                      <rect x={120} y={y + 13} width={istW} height={9} fill="#3b82f6">
+                      <rect x={120} y={y + 13} width={istW} height={9} fill={IST_FILL}>
                         <title>{`Ist: ${b.actual} Personen (Wert ${b.value}, Soll ${b.target})`}</title>
                       </rect>
                     </Show>
@@ -124,7 +136,7 @@ export const AxisBreakdown: Component<Props> = (props) => {
                       x={120 + Math.max(sollW, istW) + 6}
                       y={y + 13}
                       font-size="10"
-                      fill="#475569"
+                      fill={LABEL_SECONDARY}
                     >
                       Soll {b.target}
                       {!props.previewMode && ` · Ist ${b.actual}`} (Pool {b.pool})
@@ -136,16 +148,16 @@ export const AxisBreakdown: Component<Props> = (props) => {
           </svg>
         </div>
         <Show when={!props.previewMode}>
-          <div class="flex gap-4 text-xs text-slate-600 mt-2">
+          <div class="flex gap-4 text-xs text-ink-3 mt-2">
             <span class="flex items-center gap-1">
               <span
-                class="inline-block w-3 h-3 border border-slate-400"
-                style="background-image: linear-gradient(135deg, #94a3b8 25%, #e2e8f0 25%, #e2e8f0 50%, #94a3b8 50%, #94a3b8 75%, #e2e8f0 75%); background-size: 4px 4px;"
+                class="inline-block w-3 h-3 border border-line-strong"
+                style={`background-image: linear-gradient(135deg, ${SOLL_STROKE} 25%, ${SOLL_FILL} 25%, ${SOLL_FILL} 50%, ${SOLL_STROKE} 50%, ${SOLL_STROKE} 75%, ${SOLL_FILL} 75%); background-size: 4px 4px;`}
               />{' '}
               Soll (gestreift)
             </span>
             <span class="flex items-center gap-1">
-              <span class="inline-block w-3 h-3 bg-blue-500" /> Ist
+              <span class="inline-block w-3 h-3" style={`background-color: ${IST_FILL};`} /> Ist
             </span>
           </div>
         </Show>
