@@ -59,30 +59,32 @@ export const FileImport: Component<FileImportProps> = (props) => {
   return (
     <section class="space-y-4">
       {/* Drop-zone: visual upload target consistent with Stage 1.
-          DnD wiring stays here (Stage 3 already had it pre-#56). */}
+          DnD wiring stays here (Stage 3 already had it pre-#56).
+          DS v2.2 `.gat-dropzone` + BEM children (`__icon`, `__label`,
+          `__hint`) replace the local `.dropzone` family. */}
       <label
         data-testid="file-dropzone"
         onDragOver={(e) => e.preventDefault()}
         onDrop={onDrop}
-        class="dropzone"
+        class="gat-dropzone"
       >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          class="dropzone-icon"
-          aria-hidden="true"
-        >
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-          <polyline points="17 8 12 3 7 8" />
-          <line x1="12" x2="12" y1="3" y2="15" />
-        </svg>
-        <span class="dropzone-label">CSV oder Excel hochladen oder hier ablegen</span>
-        <span class="dropzone-hint">
+        <span class="gat-dropzone__icon" aria-hidden="true">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="17 8 12 3 7 8" />
+            <line x1="12" x2="12" y1="3" y2="15" />
+          </svg>
+        </span>
+        <span class="gat-dropzone__label">CSV oder Excel hochladen oder hier ablegen</span>
+        <span class="gat-dropzone__hint">
           CSV (UTF-8/Latin-1) oder Excel (.xlsx) mit Header in Zeile 1
         </span>
         <input

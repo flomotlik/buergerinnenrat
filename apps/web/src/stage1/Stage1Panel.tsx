@@ -440,26 +440,26 @@ export const Stage1Panel: Component = () => {
             CSV- oder Excel-Datei mit der Personen-Liste (Melderegister, Mitgliederliste, …).
           </p>
         </div>
-        <label class="dropzone" data-testid="stage1-file-dropzone">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            class="dropzone-icon"
-            aria-hidden="true"
-          >
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-            <polyline points="17 8 12 3 7 8" />
-            <line x1="12" x2="12" y1="3" y2="15" />
-          </svg>
-          <span class="dropzone-label">
+        <label class="gat-dropzone" data-testid="stage1-file-dropzone">
+          <span class="gat-dropzone__icon" aria-hidden="true">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="17 8 12 3 7 8" />
+              <line x1="12" x2="12" y1="3" y2="15" />
+            </svg>
+          </span>
+          <span class="gat-dropzone__label">
             Melderegister-CSV oder Excel hochladen oder hier ablegen
           </span>
-          <span class="dropzone-hint">
+          <span class="gat-dropzone__hint">
             CSV (UTF-8/Latin-1) oder Excel (.xlsx) mit Header in Zeile 1
           </span>
           <Show when={file()}>
