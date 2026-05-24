@@ -99,16 +99,21 @@
  * Component layer.
  *
  * Two buckets:
- *   1. Cross-cutting primitives (.btn-*, .card, .pill-tab, .dropzone,
- *      .prose-app) — kept under their legacy class names. Their look is
- *      DS-token-driven; the names stay because the DS does not yet ship
- *      a drop-in match (e.g. rectangular-rounded button, mobile fallback
- *      tab pill, CSV drop-zone). When the DS catches up (slated for
- *      v2.2 / v2.3) they collapse into the matching `.gat-*` class.
+ *   1. Cross-cutting primitives (.btn-*, .card, .pill-tab, .prose-app) —
+ *      kept under their legacy class names. Their look is DS-token-
+ *      driven; the names stay because the DS does not yet ship a
+ *      drop-in match (e.g. rectangular-rounded button, mobile fallback
+ *      tab pill). When the DS catches up (slated for v2.3) they
+ *      collapse into the matching `.gat-*` class.
  *   2. App-scoped patterns (`.app-*` namespace) — sortition-specific
- *      bits: step-rail, audit mono <dl>, stats grid, app-table, doc-grid
- *      TOC layout, chip toggle, sample picker grid, override editor warn
+ *      bits: step-rail, audit mono <dl>, stats grid, doc-grid TOC
+ *      layout, chip toggle, sample picker grid, override editor warn
  *      surface, sidebar shell. These are explicitly *not* DS candidates.
+ *
+ * v2.2 adoption (this iteration) replaced `.app-table`, `.dropzone`
+ * and the sticky-action-footer Tailwind-class soup with `.gat-table`,
+ * `.gat-dropzone` and `.gat-toolbar` from the DS — the local rules
+ * are gone below.
  * ----------------------------------------------------------------------- */
 @layer components {
   /* ---- Buttons ---- */
@@ -266,41 +271,7 @@
     min-height: max(var(--row-h), 4rem);
   }
 
-  /* ---- Drop-Zone (CSV upload visual style) ---- */
-  .dropzone {
-    @apply flex flex-col items-center justify-center gap-2 cursor-pointer text-center;
-    min-height: 176px;
-    padding: var(--gap-5);
-    background: var(--bg-sunken);
-    border: 2px dashed var(--line-strong);
-    border-radius: var(--radius-lg);
-    color: var(--ink-3);
-    transition:
-      border-color 120ms ease,
-      background 120ms ease;
-  }
-  .dropzone:hover,
-  .dropzone:focus-within {
-    border-color: var(--accent);
-    background: var(--accent-soft);
-  }
-  .dropzone.is-drag {
-    border-color: var(--accent);
-    background: var(--accent-soft);
-  }
-  .dropzone-icon {
-    width: 32px;
-    height: 32px;
-    color: var(--ink-3);
-  }
-  .dropzone-label {
-    font-weight: 600;
-    color: var(--ink);
-  }
-  .dropzone-hint {
-    font-size: 13px;
-    color: var(--ink-3);
-  }
+  /* Drop-zone migrated to DS v2.2 `.gat-dropzone` + `__icon`/`__label`/`__hint`. */
 
   /* ---- Prose wrapper for docs subpages ---- */
   .prose-app {
@@ -381,39 +352,9 @@
     color: var(--accent);
   }
 
-  /* ---- App: data tables (Stage 1 strata / Stage 3 quotas).
-       DS `.gat-table` is slated for v2.2. */
-  .app-table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    font-size: 14px;
-  }
-  .app-table thead th {
-    position: sticky;
-    top: 0;
-    background: var(--bg-sunken);
-    color: var(--ink-3);
-    font-weight: 500;
-    text-align: left;
-    padding: var(--gap-2) var(--gap-3);
-    border-bottom: 1px solid var(--line-strong);
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-  }
-  .app-table tbody td {
-    padding: var(--gap-2) var(--gap-3);
-    border-bottom: 1px solid var(--line);
-    color: var(--ink);
-  }
-  .app-table tbody tr:hover td {
-    background: var(--bg-sunken);
-  }
-  .app-table .tnum {
-    font-variant-numeric: tabular-nums;
-    font-family: var(--mono);
-  }
+  /* Data tables migrated to DS v2.2 `.gat-table` + `--zebra`/`--compact`
+     modifiers, with `.gat-table-scroll` wrapper providing the mobile
+     horizontal-scroll affordance. */
 
   /* ---- App: audit mono <dl> (Stage 1 audit footer).
        DS `.gat-prose --mono` is slated for v2.3. */
