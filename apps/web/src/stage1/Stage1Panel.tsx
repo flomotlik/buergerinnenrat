@@ -973,22 +973,22 @@ export const Stage1Panel: Component = () => {
                     data-testid="stage1-info-only-bands-report"
                   >
                     <h3 class="text-sm font-semibold">Nicht in Auswahl einbezogen</h3>
-                    <div class="overflow-x-auto">
-                      <table class="app-table text-xs">
+                    <div class="gat-table-scroll">
+                      <table class="gat-table gat-table--zebra gat-table--compact text-xs">
                         <thead>
                           <tr>
                             <th>Band</th>
-                            <th class="text-right">Im Pool</th>
-                            <th class="text-right">Hypothetisch (Soll-Proportion)</th>
+                            <th class="gat-table__num">Im Pool</th>
+                            <th class="gat-table__num">Hypothetisch (Soll-Proportion)</th>
                           </tr>
                         </thead>
                         <tbody>
                           <For each={report}>
                             {(row) => (
                               <tr>
-                                <td class="tnum">{row.label}</td>
-                                <td class="text-right tnum">{row.poolCount}</td>
-                                <td class="text-right tnum">{row.hypotheticalSoll}</td>
+                                <td>{row.label}</td>
+                                <td class="gat-table__num">{row.poolCount}</td>
+                                <td class="gat-table__num">{row.hypotheticalSoll}</td>
                               </tr>
                             )}
                           </For>
@@ -1023,15 +1023,20 @@ export const Stage1Panel: Component = () => {
               {/* Mobile: horizontal scroll container so the table doesn't
                   break into wrap-salat. Desktop: inline. The parent div MUST
                   have overflow-x: auto — mobile-touch-targets.spec asserts
-                  getComputedStyle(parent).overflowX === 'auto'. */}
-              <div class="overflow-x-auto">
-                <table class="app-table min-w-full text-xs" data-testid="stage1-strata-table">
+                  getComputedStyle(parent).overflowX === 'auto'.
+                  `.gat-table-scroll` from DS v2.2 ships that overflow rule
+                  plus a hairline border + rounded corners. */}
+              <div class="gat-table-scroll">
+                <table
+                  class="gat-table gat-table--zebra gat-table--compact min-w-full text-xs"
+                  data-testid="stage1-strata-table"
+                >
                   <thead>
                     <tr>
                       <th>Bevölkerungsgruppe (Stratum)</th>
-                      <th class="text-right">Pool</th>
-                      <th class="text-right">Soll</th>
-                      <th class="text-right">Ist</th>
+                      <th class="gat-table__num">Pool</th>
+                      <th class="gat-table__num">Soll</th>
+                      <th class="gat-table__num">Ist</th>
                       <th class="text-center">Status</th>
                     </tr>
                   </thead>
@@ -1046,9 +1051,9 @@ export const Stage1Panel: Component = () => {
                                   .map(([k, v]) => `${k}=${v}`)
                                   .join(', ')}
                           </td>
-                          <td class="text-right tnum">{s.n_h_pool}</td>
-                          <td class="text-right tnum">{s.n_h_target}</td>
-                          <td class="text-right tnum">{s.n_h_actual}</td>
+                          <td class="gat-table__num">{s.n_h_pool}</td>
+                          <td class="gat-table__num">{s.n_h_target}</td>
+                          <td class="gat-table__num">{s.n_h_actual}</td>
                           <td class="text-center">
                             <span
                               class={`gat-tag ${s.underfilled ? 'gat-tag--warn' : 'gat-tag--ok'}`}
