@@ -96,6 +96,22 @@ test.describe('Sidebar navigation (≥md)', () => {
     const ariaCurrent = await item.getAttribute('aria-current');
     expect(ariaCurrent).toBeNull();
   });
+
+  test('nav-mailto is a mailto link to the tool maintainer', async ({ page }) => {
+    await page.goto('/');
+    const item = page.getByTestId('nav-mailto');
+    await expect(item).toBeVisible();
+    await expect(item).toHaveAttribute('href', 'mailto:florian.motlik@gruene.at');
+    // mailto: URLs are not navigable browsing contexts — target/rel must
+    // not be set. If a future refactor adds them, this assertion fires.
+    const target = await item.getAttribute('target');
+    expect(target).toBeNull();
+    const rel = await item.getAttribute('rel');
+    expect(rel).toBeNull();
+    // Mailto link sits outside the route space — no active state.
+    const ariaCurrent = await item.getAttribute('aria-current');
+    expect(ariaCurrent).toBeNull();
+  });
 });
 
 test.describe('Sidebar at <md viewport', () => {

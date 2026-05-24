@@ -62,6 +62,44 @@ function NavExternal(props: ExternalNavItemProps) {
   );
 }
 
+interface MailtoNavItemProps {
+  href: string;
+  testid: string;
+  children: string;
+}
+
+/**
+ * Mailto nav link — hands the URL to the OS-registered mail client. No
+ * target="_blank"/rel="noopener" because mailto: never opens a browsing
+ * context; those attributes only apply to navigable URLs. A small inline
+ * envelope SVG (no extra dependency) marks the item as a contact affordance
+ * and pairs with aria-hidden="true" so the visible link text remains the
+ * accessible name.
+ */
+function NavMailto(props: MailtoNavItemProps) {
+  return (
+    <li>
+      <a href={props.href} data-testid={props.testid} class="inline-flex items-center gap-2">
+        <svg
+          aria-hidden="true"
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <rect x="3" y="5" width="18" height="14" rx="2" />
+          <path d="m3 7 9 6 9-6" />
+        </svg>
+        <span>{props.children}</span>
+      </a>
+    </li>
+  );
+}
+
 interface DisabledNavItemProps {
   testid: string;
   hint: string;
@@ -140,6 +178,15 @@ export const Sidebar: Component<Props> = (props) => {
           <NavExternal href="https://grueneat.github.io/werkzeuge/" testid="nav-werkzeuge">
             Werkzeuge
           </NavExternal>
+        </NavGroup>
+        {/* Support section — mailto contact to the tool's maintainer.
+            Visually separated from the app-navigation block; the NavGroup
+            label "Support" makes the role explicit. mailto: opens the OS
+            mail client, so no target/rel attributes are set. */}
+        <NavGroup label="Support">
+          <NavMailto href="mailto:florian.motlik@gruene.at" testid="nav-mailto">
+            florian.motlik@gruene.at
+          </NavMailto>
         </NavGroup>
       </nav>
       <div class="mt-auto p-4 space-y-1 border-t border-line">

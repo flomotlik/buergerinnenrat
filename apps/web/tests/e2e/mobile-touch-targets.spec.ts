@@ -199,6 +199,7 @@ test('desktop (1280): sidebar nav-* items meet baseline tap-area (regression-det
     'nav-docs',
     'nav-beispiele',
     'nav-werkzeuge',
+    'nav-mailto',
   ]) {
     const item = page.getByTestId(tid);
     await item.waitFor({ state: 'visible', timeout: 5_000 });
