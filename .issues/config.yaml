@@ -1,21 +1,46 @@
-# Issue system configuration
-# Docs: see /issue:init, /issue:new, /issue:work
+# Issue-System — Konfiguration (Schema: vorlagen-Stil, 2026-05)
+# Single-Repo auf GitHub. Workspace IST ein git repo (auf flomotlik/buergerinnenrat).
 
+# ---- Per-Stage Agent-Modelle ---------------------------------------------
 research_model: opus
 plan_model: opus
 execute_model: sonnet
 
+# ---- Issue-Quelle --------------------------------------------------------
+# Neue Issues werden auch auf GitHub Issues angelegt; ISSUE.md-Frontmatter
+# bekommt source/source_id/source_url zurueckgeschrieben.
 source:
-  type: local
-  sync_on_create: false
+  type: github
+  repo: flomotlik/buergerinnenrat
+  sync_on_create: true
 
-branch:
-  template: "{slug}"
+github:
+  repo: flomotlik/buergerinnenrat
 
-commit:
+# ---- Branch-Naming -------------------------------------------------------
+# Bestandskonvention: nur Slug, ohne `issue/`-Praefix (z. B. `01-upstream-...`,
+# `08-engine-a-...`). Migrations-Slugs der DS-Welle nutzten `issue/<slug>`-
+# Konvention, beide funktionieren.
+naming:
+  branch: "{slug}"
+  prefix: ""
+  separator: "-"
+
+# ---- Commit-Format -------------------------------------------------------
+commits:
   format: conventional
+  prefix: false
 
-# Single-workspace mode (no multi-repo).
-# Note: this workspace is not a git repo. `/issue:execute` and `/issue:ship`
-# will require `git init` (or moving work into a child repo) before they work.
-repos: []
+# ---- Workflow-Flags ------------------------------------------------------
+commit_artifacts: true
+
+worktrees: true
+worktree_dir: ".worktrees"
+
+staleness_days: 7
+
+# ---- Repos ---------------------------------------------------------------
+# Single-Repo: Workspace-Wurzel ist das Repo selbst.
+repos:
+  - name: personenwahl
+    path: .
