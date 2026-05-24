@@ -789,19 +789,19 @@ export const Stage1Panel: Component = () => {
             </div>
           </Show>
           {/* Sticky run-button footer (issue #53 D, variant 1; iOS safe-area
-              from #56). bottom uses env(safe-area-inset-bottom) so on iOS
-              with home-indicator the button isn't covered. The negative
-              margin + padding pair compensates parent section padding so the
-              white background spans the full section width. Print drops
-              sticky and renders statically so the button does not float at
-              the bottom of every printed page. */}
-          {/* Sticky run-button wrapper — ALSO carries an inline
+              from #56). DS v2.2 `.gat-toolbar` ships sticky + bottom:0 +
+              border-top + flex; we add the iOS safe-area override on top.
+              The negative-margin/padding pair compensates parent section
+              padding so the toolbar background spans the full section
+              width. `print:static` drops sticky on paper so the button
+              doesn't float at the bottom of every printed page. */}
+          {/* Sticky run-button wrapper — carries an inline
               style="padding-bottom: env(safe-area-inset-bottom)" so iOS
               Safari with home-indicator doesn't cover the button on
               scroll-bottom. mobile-touch-targets.spec asserts the regex
               /safe-area-inset-bottom/ matches the wrapper outerHTML. */}
           <div
-            class="sticky [bottom:env(safe-area-inset-bottom,0)] -mx-4 px-4 pt-3 pb-3 bg-bg border-t border-line z-10 print:static print:border-0 print:p-0 print:bg-transparent"
+            class="gat-toolbar [bottom:env(safe-area-inset-bottom,0)] -mx-4 px-4 print:static print:border-0 print:p-0 print:bg-transparent"
             style="padding-bottom: env(safe-area-inset-bottom)"
           >
             <button
